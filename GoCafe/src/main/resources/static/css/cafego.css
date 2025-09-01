@@ -197,3 +197,21 @@ footer .cg-container{padding:18px 24px; color:var(--muted); font-size:12px}
 .cg-auth-submit{ margin-top: 6px; width: 100%; }
 .cg-auth-tip{ margin: 14px 0 0; color: var(--muted); font-size: 14px; }
 
+/* ===== MyPage layout & components ===== */
+.cg-mypage-grid{display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start}
+@media (max-width:960px){.cg-mypage-grid{grid-template-columns:1fr}}
+
+.cg-sidenav a{
+  display:block;padding:12px 14px;margin-bottom:8px;
+  border:1px solid var(--line);border-radius:12px;
+  text-decoration:none;color:var(--text)
+}
+.cg-sidenav a:hover{background:#f8fafc}
+.cg-sidenav a.is-active{border-color:#2a6b57;background:#eaf7f2;color:#2a6b57}
+.cg-sidenav a.is-danger{border-color:#fecaca;background:#fff7f7;color:#dc2626}
+
+.cg-card__head{border-bottom:1px solid var(--line);padding:16px 24px}
+.cg-avatar-lg{width:120px;height:120px;border-radius:9999px;object-fit:cover}
+
+.cg-form label{display:block;margin:0 0 6px 2px;font-weight:800}
+.cg-form input{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px}

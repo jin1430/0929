@@ -3,37 +3,55 @@
 <main class="cg-container mypage" style="padding:24px 0">
     <h1 class="cg-title">마이페이지</h1>
 
-    <!-- 좌우 분할 컨테이너: aside + section 형제 -->
-    <div id="me-layout" style="display:grid;grid-template-columns:220px 1fr;column-gap:24px;align-items:start;">
-        <!-- 왼쪽 네비 -->
+    <div class="cg-mypage-grid" id="me-layout">
+        <!-- 좌측 네비 -->
         <aside>
-            <nav>
-                <a href="/member/edit"      style="display:block;padding:12px 14px;margin-bottom:8px;border:1px solid #e5e7eb;border-radius:12px;text-decoration:none;">내 정보 수정</a>
-                <a href="/reviews/mine"     style="display:block;padding:12px 14px;margin-bottom:8px;border:1px solid #e5e7eb;border-radius:12px;text-decoration:none;">내가 쓴 리뷰</a>
-                <a href="/favorites"        style="display:block;padding:12px 14px;margin-bottom:8px;border:1px solid #e5e7eb;border-radius:12px;text-decoration:none;">즐겨찾기 목록 확인</a>
-                <a href="/member/withdraw"  style="display:block;padding:12px 14px;margin-bottom:8px;border:1px solid #fecaca;border-radius:12px;background:#fff7f7;color:#dc2626;text-decoration:none;">회원 탈퇴</a>
+            <nav class="cg-sidenav">
+                <a href="/member/me"       class="{{#nav_me}}is-active{{/nav_me}}">내 정보</a>
+                <a href="/member/edit"     class="{{#nav_edit}}is-active{{/nav_edit}}">내 정보 수정</a>
+                <a href="/reviews/mine"    class="{{#nav_reviews}}is-active{{/nav_reviews}}">내가 쓴 리뷰</a>
+                <a href="/favorites"       class="{{#nav_favorites}}is-active{{/nav_favorites}}">즐겨찾기 목록 확인</a>
+                <a href="/member/withdraw" class="is-danger {{#nav_withdraw}}is-active{{/nav_withdraw}}">회원 탈퇴</a>
             </nav>
         </aside>
 
-        <!-- 오른쪽 메인 -->
+        <!-- 우측 본문 -->
         <section>
-            <div class="cg-card">
-                <div class="cg-card__body" style="padding:36px 50px;box-sizing:border-box;">
-                    <div style="display:flex;justify-content:space-between;gap:24px;margin:0;">
-                        <div style="flex:1;">
-                            <p><b>닉네임</b> : {{member.memberNickname}}</p>
-                            <p><b>이메일</b> : {{member.memberEmail}}</p>
-                            <p><b>역할</b> : {{member.memberRole}}</p>
-                            <p><b>성별</b> : {{member.memberGender}}</p>
-                            <p><b>나이</b> : {{member.memberAge}}</p>
-                            <p><b>가입일</b> : {{member.memberDate}}</p>
+            {{#member}}
+                <div class="cg-card">
+                    <div class="cg-card__head"><h2 style="font-size:18px;margin:0;">내 정보</h2></div>
+                    <div class="cg-card__body" style="padding:24px 32px;">
+                        <div style="display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+                            <div style="flex:1;min-width:260px;">
+                                <p><b>닉네임</b> : {{memberNickname}}</p>
+                                <p><b>이메일</b> : {{memberEmail}}</p>
+                                <p><b>역할</b> : {{memberRole}}</p>
+                                <p><b>성별</b> : {{memberGender}}</p>
+                                <p><b>나이</b> : {{memberAge}}</p>
+                                <p><b>가입일</b> : {{memberDate}}</p>
+
+                            </div>
+
+                            <div style="width:160px;text-align:center;">
+                                {{#hasPhoto}}
+                                    <img src="{{photoUrl}}" alt="프로필 사진" class="cg-avatar-lg" />
+                                    <div style="margin-top:8px;font-size:12px;color:#6b7280;">현재: {{photoName}}</div>
+                                {{/hasPhoto}}
+                                {{^hasPhoto}}
+                                    <div class="cg-avatar-lg" style="background:#e5e7eb;display:flex;align-items:center;justify-content:center;margin:0 auto;">
+                                        <span style="font-size:12px;color:#6b7280;">NO IMG</span>
+                                    </div>
+                                    <div style="margin-top:8px;font-size:12px;color:#6b7280;">현재: 없음</div>
+                                {{/hasPhoto}}
+                            </div>
                         </div>
-                        {{#member.memberPhoto}}
-                            <img src="/images/profile/{{member.memberPhoto}}" alt="프로필" class="cg-avatar-lg"/>
-                        {{/member.memberPhoto}}
                     </div>
                 </div>
-            </div>
+            {{/member}}
+
+            {{^member}}
+                <div class="cg-card"><div class="cg-card__body">사용자 정보를 불러오지 못했습니다.</div></div>
+            {{/member}}
         </section>
     </div>
 </main>
