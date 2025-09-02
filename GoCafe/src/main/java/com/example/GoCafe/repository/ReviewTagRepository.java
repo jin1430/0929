@@ -30,4 +30,6 @@ public interface ReviewTagRepository extends JpaRepository<ReviewTag, Long> {
     @Transactional
     @Query(value = "DELETE FROM review_tag WHERE review_id = :reviewId", nativeQuery = true)
     void deleteByReviewId(@Param("reviewId") Long reviewId);
+
+    List<ReviewTag> findByReviewId(Long reviewId);
 }

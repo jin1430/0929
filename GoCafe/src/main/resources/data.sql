@@ -36,7 +36,7 @@ INSERT INTO cafe_tag (cafe_id, tag_category_code, tag_code) VALUES
 INSERT INTO member
 (member_id, member_email, member_password, member_nickname, member_age, member_gender, member_role, member_date, member_photo, token_version)
 VALUES
-(1,'test@cafego.dev','11111111','테스터',25,'M','ROLE_USER',CURRENT_TIMESTAMP,NULL,0);
+(1,'test@cafego.dev','11111111','테스터',25,'M','ROLE_ADMIN',CURRENT_TIMESTAMP,NULL,0);
 
 -- FK 재활성화
 SET REFERENTIAL_INTEGRITY TRUE;

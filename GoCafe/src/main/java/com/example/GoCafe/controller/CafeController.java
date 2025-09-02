@@ -5,10 +5,10 @@ import com.example.GoCafe.domain.CafeStatus;
 import com.example.GoCafe.dto.CafeForm;
 import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.Member;
-import com.example.GoCafe.service.CafeService;
-import com.example.GoCafe.service.CafeStatsService;
-import com.example.GoCafe.service.MemberService;
-import com.example.GoCafe.service.ReviewService;
+import com.example.GoCafe.entity.ReviewPhoto;
+import com.example.GoCafe.repository.ReviewRepository;
+import com.example.GoCafe.repository.ReviewTagRepository;
+import com.example.GoCafe.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -29,6 +29,8 @@ public class CafeController {
     private final MemberService memberService;
     private final ReviewService reviewService;
     private final CafeStatsService cafeStatsService;
+    private final ReviewPhotoService reviewPhotoService;
+    private final ReviewTagRepository reviewTagRepository;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/new")
@@ -84,19 +86,29 @@ public class CafeController {
         boolean isOwner = (meId != null && cafe.getCafeOwnerId() != null
                 && meId.equals(cafe.getCafeOwnerId()));
 
-        // 승인 상태가 아니면 소유자/관리자만 열람 허용
         if (cafe.getStatus() != CafeStatus.APPROVED && !(isOwner || isAdmin)) {
             throw new com.example.GoCafe.support.NotFoundException("승인되지 않은 카페입니다.");
         }
 
         model.addAttribute("cafe", cafe);
-        model.addAttribute("reviews", reviewService.findByCafeIdWithMember(cafeId));
+
+        // ✅ 리뷰 조회 + 각 리뷰에 사진/태그 세팅
+        var reviews = reviewService.findByCafeIdWithMember(cafeId);
+        for (var r : reviews) {
+            var list = reviewPhotoService.getPhotos(r.getReviewId()) // List<ReviewPhoto>
+                    .stream()
+                    .map(ReviewPhoto::getReviewPhotoUrl)  // ← 필드/게터명에 맞게 수정
+                    .toList(); // Java 17 OK. (구버전이면 Collectors.toList())
+            r.setPhotos(list); // List<String>
+        }
+        model.addAttribute("reviews", reviews);
+
 
         // ✅ 좋아요/아쉬워요 합계 + LIKE 태그 상위 12개
         var stats = cafeStatsService.buildStats(cafeId, 12);
         model.addAttribute("cafeGood", stats.get("good"));
         model.addAttribute("cafeBad",  stats.get("bad"));
-        model.addAttribute("cafeTags", stats.get("tags")); // 템플릿의 {{#cafeTags}}가 사용
+        model.addAttribute("cafeTags", stats.get("tags"));
 
         return "cafes/detail";
     }

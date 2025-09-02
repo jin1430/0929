@@ -53,10 +53,17 @@ public class SecurityConfig {
                         // ✅ CSP: 인라인 스크립트 금지(외부 파일만), 인라인 스타일은 허용
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
                                 "default-src 'self'; " +
-                                        "script-src 'self'; " +
+                                        // JS SDK
+                                        "script-src 'self' https://dapi.kakao.com https://t1.daumcdn.net 'unsafe-inline'; " +
+                                        // ✅ 타일/마커/클러스터 이미지: mts, map0~n, t1 등 전부 커버
+                                        "img-src 'self' data: blob: https://*.daumcdn.net; " +
+                                        // 지오코딩/클러스터 등 XHR 대비
+                                        "connect-src 'self' https://dapi.kakao.com https://*.daumcdn.net; " +
+                                        // (필요 시) 폰트/스타일
                                         "style-src 'self' 'unsafe-inline'; " +
-                                        "img-src 'self' data: blob:; " +
-                                        "base-uri 'self'; frame-ancestors 'self'; object-src 'none';"
+                                        "font-src 'self' https://*.daumcdn.net; " +
+                                        "base-uri 'self'; frame-ancestors 'self'; object-src 'none'; " +
+                                        "upgrade-insecure-requests;"
                         ))
                         .frameOptions(fo -> fo.sameOrigin())
                         .referrerPolicy(ref -> ref.policy(

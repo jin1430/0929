@@ -1,138 +1,306 @@
 {{>layout/header}}
 
 <main class="cg-container">
-    <!-- 헤더 -->
-    <header class="cg-map-header" style="display:flex;justify-content:space-between;align-items:center;margin:20px 0;">
-        <h1 class="cg-title">CafeGo Map</h1>
-        <a href="/mypage" class="cg-link">마이페이지</a>
-    </header>
 
-    <!-- 검색 -->
-    <div class="cg-search-box" style="display:flex;gap:8px;margin-bottom:20px;">
-        <input type="text" class="cg-search-input" placeholder="주소 또는 장소 입력"
-               style="flex:1;padding:10px;border:1px solid var(--line,#dbe7e2);border-radius:8px;">
-        <button class="cg-search-btn"
-                style="padding:10px 16px;background:var(--mint,#3aa17e);color:var(--white,#fff);border:none;border-radius:8px;font-weight:700;cursor:pointer;">
-            검색
-        </button>
-    </div>
+    <!-- 타이틀 + 검색 -->
+    <section class="cg-section" style="margin-top:20px;">
+        <div class="cg-search" style="display:flex; gap:8px;">
+            <input id="searchInput" class="cg-input" type="text" placeholder="주소 또는 키워드를 입력하세요 (예: 브런치, 감성, 홍대입구)">
+            <button id="searchBtn" class="cg-btn">검색</button>
+        </div>
+        <p class="cg-meta" style="margin-top:8px;">※ 데이터는 홍대입구·상수·연트럴파크·합정의 <b>1.2km 이내</b> 카페만 포함됩니다. 지도는 해당 권역보다 <b>더 넓게(줌아웃)</b> 볼 수 없습니다. 줌인은 자유롭게 가능하며, 줌아웃하면 항상 초기 크기까지만 돌아옵니다.</p>
+    </section>
 
     <!-- 지도 + 인기 장소 -->
-    <div class="cg-map-content" style="display:flex;gap:24px;">
-        <div class="cg-map-area" style="flex:2;">
-            <div id="map" style="width:100%;height:480px;border-radius:12px;border:1px solid var(--line,#dbe7e2);"></div>
+    <section class="cg-section" style="display:flex; gap:24px; align-items:flex-start; background:#E8F3EE; border-radius:32px; padding:32px;">
+        <!-- 지도 카드 -->
+        <div style="flex:2;">
+            <div class="cg-card">
+                <div class="cg-card__body" style="padding:0;">
+                    <div id="map" style="width:100%; height:520px; border-radius:16px;"></div>
+                </div>
+            </div>
         </div>
 
-        <aside class="cg-popular-places" style="flex:1;background:var(--mint-weak,#e8f3ee);padding:16px;border-radius:12px;">
-            <h2 class="cg-subtitle" style="margin:0 0 12px;color:var(--text,#1e2a2a);font-size:18px;">주변 인기 장소</h2>
-            <ul class="cg-place-list" style="list-style:none;margin:0;padding:0;">
+        <!-- 주변 인기 장소(리스트) -->
+        <aside style="flex:1;">
+            <div class="cg-section__head" style="display:flex; align-items:center; justify-content:space-between;">
+                <h2 class="cg-title" style="font-size:28px;">주변 인기 장소</h2>
+                <button id="resetBtn" class="cg-btn" style="white-space:nowrap;">초기화</button>
+            </div>
+
+            <ul id="placeList" class="cg-card-grid" style="grid-template-columns:1fr;">
                 {{#places}}
-                    <li class="cg-place-item" style="padding:10px 0;border-bottom:1px solid var(--line,#dbe7e2);">
-                        <div class="cg-place-name" style="font-weight:700;margin-bottom:4px;">{{name}}</div>
-                        <div class="cg-place-rating" style="color:var(--muted,#5b6a6a);font-size:14px;">⭐ {{rating}}</div>
+                    <li>
+                        <a class="cg-card cg-card__link" href="/cafe/{{id}}">
+                            <div class="cg-card__body">
+                                <h3 class="cg-card__title">{{name}}</h3>
+                                <p class="cg-meta">⭐ {{rating}}</p>
+                                {{#address}}<p class="cg-meta">{{address}}</p>{{/address}}
+                            </div>
+                        </a>
                     </li>
                 {{/places}}
                 {{^places}}
-                    <li class="cg-place-item" style="padding:10px 0;color:var(--muted,#5b6a6a);">표시할 장소가 없습니다.</li>
+                    <li class="cg-card" style="padding:16px;">표시할 장소가 없습니다.</li>
                 {{/places}}
             </ul>
         </aside>
-    </div>
+    </section>
 </main>
 
-<!-- 모달 -->
-<div id="placeModal" class="cg-modal" aria-hidden="true"
-     style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:1000;">
-    <div class="cg-modal__overlay" data-close="true"
-         style="position:absolute;inset:0;background:rgba(0,0,0,.4);"></div>
-    <div class="cg-modal__content" role="dialog" aria-modal="true" aria-labelledby="placeTitle"
-         style="position:relative;background:var(--white,#fff);width:min(520px,92vw);border:1px solid var(--line,#dbe7e2);
-              border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.15);overflow:hidden;">
-        <div style="display:flex;gap:14px;align-items:center;padding:16px 18px;background:var(--mint-weak,#e8f3ee);">
-            <div id="placeThumb" style="width:64px;height:64px;border-radius:12px;background:#ddd;flex:none;"></div>
-            <div style="flex:1;">
-                <h3 id="placeTitle" style="margin:0 0 6px;font-size:18px;color:var(--text,#1e2a2a);"></h3>
-                <div id="placeRating" style="font-size:14px;color:var(--muted,#5b6a6a);"></div>
-            </div>
-            <button class="cg-btn-close" data-close="true"
-                    style="border:none;background:transparent;font-size:20px;line-height:1;cursor:pointer;">✕</button>
+<!-- Kakao Maps SDK (+services,clusterer) -->
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey={{kakaoJsKey}}&autoload=false&libraries=services,clusterer"></script>
+
+<script>
+    // 서버에서 주입되는 초기 데이터
+    const SERVER_PLACES  = {{&placesJson}}  || [];   // [{id,name,rating,address,lat,lng,tags,thumbnail}]
+  const ANCHORS        = {{&anchorsJson}} || [];   // [{id,name,lat,lng}]
+  const RADIUS_M = 1200;
+
+  // 전역 참조
+  let map, clusterer, infoWindow;
+  let MIN_OUT_LEVEL = null; // "줌아웃 상한(초기 크기)" 고정값
+  let placeMarkers = [];    // 현재 표시 중인 마커 배열
+
+  kakao.maps.load(initMap);
+
+  function initMap() {
+    const container = document.getElementById('map');
+    map = new kakao.maps.Map(container, {
+      center: new kakao.maps.LatLng(37.553, 126.921),
+      level: 5
+    });
+
+    infoWindow = new kakao.maps.InfoWindow({ removable: true });
+    clusterer  = new kakao.maps.MarkerClusterer({
+      map,
+      averageCenter: true,
+      minLevel: 6
+    });
+
+    // ----- 권역(anchors의 1.2km 박스 union) 계산 -----
+    const allowedBounds = buildAllowedBounds(ANCHORS, RADIUS_M);
+    if (!allowedBounds.isEmpty()) {
+      map.setBounds(allowedBounds); // 초기 화면을 권역 전체로
+    }
+
+    // ⬇️ 초기 레벨(가장 넓은 상태)을 저장해 '줌아웃 상한'으로 사용
+    function setMinLevelOnce() {
+      MIN_OUT_LEVEL = map.getLevel();           // 초기 레벨(최대 확대영역) 고정
+      kakao.maps.event.removeListener(map, 'idle', setMinLevelOnce);
+      if (map.setMaxLevel) map.setMaxLevel(MIN_OUT_LEVEL); // 엔진 차원 상한
+    }
+    kakao.maps.event.addListener(map, 'idle', setMinLevelOnce);
+
+    // ✅ 줌인은 허용, 줌아웃은 '초기 레벨'까지만 허용
+    kakao.maps.event.addListener(map, 'zoom_changed', () => {
+      if (MIN_OUT_LEVEL == null) return;
+      const lvl = map.getLevel();
+      if (lvl > MIN_OUT_LEVEL) {
+        map.setLevel(MIN_OUT_LEVEL, { anchor: map.getCenter() }); // 초기 크기로 복귀
+      }
+    });
+
+    // 드래그로 권역 밖으로 못 나가게(센터 클램프)
+    kakao.maps.event.addListener(map, 'dragend', () => clampCenterIntoBounds(map, allowedBounds));
+
+    // 앵커 마커
+    drawAnchorMarkers(ANCHORS);
+
+    // 초기 장소 마커 & 리스트
+    renderPlaces(SERVER_PLACES);
+
+    // 검색 고도화: 주소 + 키워드
+    wireSearchHandlers(allowedBounds);
+
+    // 초기화 버튼
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      infoWindow.close();
+      map.setBounds(allowedBounds);
+      renderPlaces(SERVER_PLACES); // 초기 데이터로 복원
+    });
+  }
+
+  // ---------- 권역 계산/제약 ----------
+  function metersToDegree(lat, meters){
+    const dLat = meters / 111320; // 위도 1도 ≈ 111.32km
+    const dLng = meters / (111320 * Math.cos(lat * Math.PI / 180));
+    return { dLat, dLng };
+  }
+
+  function buildAllowedBounds(anchors, radiusM){
+    const bounds = new kakao.maps.LatLngBounds();
+    (anchors || []).forEach(a => {
+      const { dLat, dLng } = metersToDegree(a.lat, radiusM);
+      const sw = new kakao.maps.LatLng(a.lat - dLat, a.lng - dLng);
+      const ne = new kakao.maps.LatLng(a.lat + dLat, a.lng + dLng);
+      bounds.extend(sw); bounds.extend(ne);
+    });
+    return bounds;
+  }
+
+  function clampCenterIntoBounds(map, bounds){
+    const c  = map.getCenter();
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    const lat = Math.min(Math.max(c.getLat(), sw.getLat()), ne.getLat());
+    const lng = Math.min(Math.max(c.getLng(), sw.getLng()), ne.getLng());
+    if (lat !== c.getLat() || lng !== c.getLng()) {
+      map.setCenter(new kakao.maps.LatLng(lat, lng));
+    }
+  }
+
+  // ---------- 앵커/마커/리스트 렌더 ----------
+  function drawAnchorMarkers(anchors){
+    const anchorImg = new kakao.maps.MarkerImage(
+      'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+      new kakao.maps.Size(24, 35)
+    );
+    (anchors || []).forEach(a => {
+      const pos = new kakao.maps.LatLng(a.lat, a.lng);
+      new kakao.maps.Marker({ map, position: pos, title: a.name, image: anchorImg });
+    });
+  }
+
+  function clearPlaceMarkers(){
+    infoWindow.close();
+    if (placeMarkers.length) {
+      placeMarkers.forEach(m => m.setMap(null));
+      placeMarkers = [];
+    }
+    clusterer.clear();
+  }
+
+  function renderPlaces(places){
+    // 리스트
+    renderList(places);
+
+    // 마커 + 클러스터
+    clearPlaceMarkers();
+    const markers = [];
+    (places || []).forEach(p => {
+      if (!p.lat || !p.lng) return;
+      const pos = new kakao.maps.LatLng(p.lat, p.lng);
+      const marker = new kakao.maps.Marker({ position: pos, title: p.name });
+      kakao.maps.event.addListener(marker, 'click', () => openInfo(marker, p));
+      markers.push(marker);
+    });
+    placeMarkers = markers;
+    clusterer.addMarkers(markers);
+  }
+
+  function openInfo(marker, p){
+    const tags = Array.isArray(p.tags) ? p.tags.slice(0,3).join(' · ') : '';
+    const rating = (p.rating != null) ? `⭐ ${p.rating}` : '평점 정보 없음';
+    const addr = p.address ? `<div class="cg-meta" style="margin:4px 0;">${escapeHtml(p.address)}</div>` : '';
+    const detailHref = p.id ? `/cafe/${p.id}` : (p.place_url || `https://map.kakao.com/link/to/${encodeURIComponent(p.name)},${p.lat},${p.lng}`);
+    const content = `
+      <div style="padding:10px 12px; min-width:220px;">
+        <strong style="display:block; font-size:14px; margin-bottom:4px;">${escapeHtml(p.name)}</strong>
+        <div class="cg-meta" style="margin-bottom:4px;">${rating}${tags ? ' · ' + escapeHtml(tags) : ''}</div>
+        ${addr}
+        <div style="margin-top:8px; display:flex; gap:8px;">
+          <a href="${detailHref}" target="${p.id ? '_self' : '_blank'}" class="cg-btn" style="padding:4px 8px; font-size:12px;">자세히 보기</a>
+          <a href="https://map.kakao.com/link/to/${encodeURIComponent(p.name)},${p.lat},${p.lng}" target="_blank" class="cg-btn" style="padding:4px 8px; font-size:12px;">길찾기</a>
         </div>
-        <div style="padding:16px 18px;">
-            <div id="placeAddr" style="margin-bottom:10px;color:var(--text,#1e2a2a);"></div>
-            <div id="placeTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
-            <div style="display:flex;gap:10px;justify-content:flex-end;">
-                <a id="placeDetailLink" href="#" class="cg-btn-primary"
-                   style="text-decoration:none;padding:10px 14px;background:var(--mint,#3aa17e);color:#fff;border-radius:10px;font-weight:700;">
-                    자세히 보기
-                </a>
+      </div>
+    `;
+    infoWindow.setContent(content);
+    infoWindow.open(map, marker);
+  }
+
+  function renderList(places){
+    const listEl = document.getElementById('placeList');
+    if (!places || places.length === 0) {
+      listEl.innerHTML = `<li class="cg-card" style="padding:16px;">표시할 장소가 없습니다.</li>`;
+      return;
+    }
+    const html = places.map(p => {
+      const href = p.id ? `/cafe/${p.id}` : (p.place_url || `https://map.kakao.com/link/to/${encodeURIComponent(p.name)},${p.lat},${p.lng}`);
+      const target = p.id ? '_self' : '_blank';
+      const rating = (p.rating != null) ? `⭐ ${p.rating}` : '평점 정보 없음';
+      const addr = p.address ? `<p class="cg-meta">${escapeHtml(p.address)}</p>` : '';
+      return `
+        <li>
+          <a class="cg-card cg-card__link" href="${href}" target="${target}">
+            <div class="cg-card__body">
+              <h3 class="cg-card__title">${escapeHtml(p.name)}</h3>
+              <p class="cg-meta">${rating}</p>
+              ${addr}
             </div>
-        </div>
-    </div>
-</div>
+          </a>
+        </li>
+      `;
+    }).join('');
+    listEl.innerHTML = html;
+  }
+
+  function escapeHtml(s){
+    return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ---------- 검색(주소 + 키워드) ----------
+  function wireSearchHandlers(allowedBounds){
+    const $input = document.getElementById('searchInput');
+    const $btn   = document.getElementById('searchBtn');
+
+    const ps = new kakao.maps.services.Places();
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    function runSearch(){
+      const q = ($input.value || '').trim();
+      if (!q) return;
+
+      // 1) 주소일 경우 지도 중심 이동(권역 외부면 드래그 클램프에 의해 가장자리로 보정)
+      geocoder.addressSearch(q, (res, status) => {
+        if (status === kakao.maps.services.Status.OK && res[0]) {
+          const pos = new kakao.maps.LatLng(res[0].y, res[0].x);
+          map.setCenter(pos);
+        }
+      });
+
+      // 2) 키워드 검색(현재 지도 bounds 우선)
+      ps.keywordSearch(q, (data, status) => {
+        if (status !== kakao.maps.services.Status.OK || !data?.length) {
+          renderPlaces([]); // 결과 없음
+          return;
+        }
+        // Kakao Places → 내부 Place 포맷으로 변환
+        const places = data.map(d => ({
+          id: null, // 서버 DB 아이디 없음
+          name: d.place_name,
+          rating: null,
+          address: d.road_address_name || d.address_name || '',
+          lat: parseFloat(d.y),
+          lng: parseFloat(d.x),
+          tags: [],
+          thumbnail: null,
+          place_url: d.place_url
+        }));
+
+        renderPlaces(places);
+
+        // 검색 결과 범위로 맞추되, 초기 레벨보다 더 넓게 보이지 않도록 상한 유지
+        const b = new kakao.maps.LatLngBounds();
+        places.forEach(p => b.extend(new kakao.maps.LatLng(p.lat, p.lng)));
+        if (!b.isEmpty()) {
+          map.setBounds(b);
+          // setBounds가 초기 레벨보다 더 넓게 요구해도 setMaxLevel로 제한됨
+          if (MIN_OUT_LEVEL != null && map.getLevel() > MIN_OUT_LEVEL) {
+            map.setLevel(MIN_OUT_LEVEL);
+          }
+          // 결과가 권역 밖에 걸치면 드래그 보정이 유지됨
+          clampCenterIntoBounds(map, allowedBounds);
+        }
+      }, { bounds: map.getBounds() });
+    }
+
+    $btn.addEventListener('click', runSearch);
+    $input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') runSearch();
+    });
+  }
+</script>
 
 {{>layout/footer}}
-
-<!-- Kakao Maps SDK: 앱 키 교체 필수 -->
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey="></script>
-<script>
-    // ----- 서버에서 내려준 데이터 -----
-    const PLACES  = {{&placesJson}}   || [];
-  const ANCHORS = {{&anchorsJson}}  || [];
-
-  // ----- 지도 생성 -----
-  const map = new kakao.maps.Map(document.getElementById('map'), {
-    center: new kakao.maps.LatLng(37.553, 126.921), // 초기값 (곧 bounds로 조정)
-    level: 5
-  });
-
-  // ----- 모달 핸들러 -----
-  const modal   = document.getElementById('placeModal');
-  const elTitle = document.getElementById('placeTitle');
-  const elRating= document.getElementById('placeRating');
-  const elAddr  = document.getElementById('placeAddr');
-  const elTags  = document.getElementById('placeTags');
-  const elThumb = document.getElementById('placeThumb');
-  const elDetail= document.getElementById('placeDetailLink');
-
-  function openModal(place) {
-    elTitle.textContent = place.name || '';
-    elRating.textContent = place.rating ? `⭐ ${place.rating}` : '';
-    elAddr.textContent = place.address || '';
-    elTags.innerHTML = (place.tags || []).map(t =>
-      `<span style="padding:4px 8px;border-radius:999px;background:var(--mint-weak,#e8f3ee);
-                     color:var(--text,#1e2a2a);font-size:12px;">#${t}</span>`).join('');
-    elThumb.style.background = place.thumbnail ? `center/cover url(${place.thumbnail})` : '#ddd';
-    elDetail.href = `/cafe/${place.id || ''}`;
-    modal.style.display = 'flex';
-    modal.setAttribute('aria-hidden','false');
-  }
-  function closeModal() { modal.style.display = 'none'; modal.setAttribute('aria-hidden','true'); }
-  modal.addEventListener('click', e => { if (e.target.dataset.close !== undefined) closeModal(); });
-  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-
-  // ----- 마커 & 바운즈 -----
-  const bounds = new kakao.maps.LatLngBounds();
-
-  // 앵커(홍대입구/상수/연트럴/합정)는 빨간 마커로
-  const anchorMarkerImg = new kakao.maps.MarkerImage(
-    'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-    new kakao.maps.Size(24, 35)
-  );
-  ANCHORS.forEach(a => {
-    const pos = new kakao.maps.LatLng(a.lat, a.lng);
-    bounds.extend(pos);
-    new kakao.maps.Marker({ map, position: pos, title: a.name, image: anchorMarkerImg });
-  });
-
-  // 장소 마커 (클릭 시 모달)
-  PLACES.forEach(p => {
-    const pos = new kakao.maps.LatLng(p.lat, p.lng);
-    bounds.extend(pos);
-    const m = new kakao.maps.Marker({ map, position: pos, title: p.name });
-    kakao.maps.event.addListener(m, 'click', () => openModal(p));
-  });
-
-  // 모든 포인트가 한 화면에 보이도록
-  if (!bounds.isEmpty()) map.setBounds(bounds);
-  // setTimeout(() => map.relayout(), 50); // 필요한 경우 레이아웃 재계산
-</script>

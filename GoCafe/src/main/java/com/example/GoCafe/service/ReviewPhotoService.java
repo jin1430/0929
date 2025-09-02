@@ -18,11 +18,13 @@ public class ReviewPhotoService {
     private final ReviewPhotoRepository reviewPhotoRepository;
     private final FileStorageService fileStorageService; // 구현체 주입
 
-    /** 리뷰의 사진 목록 (오름차순) */
+    /**
+     * 리뷰의 사진 목록 (오름차순)
+     */
     public List<ReviewPhoto> getPhotos(Long reviewId) {
-        return reviewPhotoRepository.findByReviewIdOrderByReviewPhotoSortOrderAscReviewPhotoIdAsc(reviewId);
+        return reviewPhotoRepository
+                .findByReviewIdOrderByReviewPhotoSortOrderAscReviewPhotoIdAsc(reviewId);
     }
-
     /** 다음에 들어갈 정렬 시작값 계산 (없으면 0부터) */
     int nextSortStart(Long reviewId) {
         Integer max = reviewPhotoRepository.findMaxSortOrderByReviewId(reviewId);
@@ -79,9 +81,14 @@ public class ReviewPhotoService {
 
     @Transactional(readOnly = true)
     public int findMaxSortOrderByReviewId(Long reviewId) {
-        return 0;
+        Integer v = reviewPhotoRepository.findMaxSortOrderByReviewId(reviewId);
+        return v == null ? -1 : v;
     }
 
+    @Transactional
     public void save(ReviewPhoto reviewPhoto) {
+        reviewPhotoRepository.save(reviewPhoto);
     }
+
+
 }

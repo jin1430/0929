@@ -49,6 +49,4 @@ public class Member {
     @Column(name = "token_version", nullable = false)
     private Long tokenVersion = 0L;
 
-    public Long getTokenVersion() { return tokenVersion; }
-    public void setTokenVersion(Long tokenVersion) { this.tokenVersion = tokenVersion; }
 }

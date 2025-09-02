@@ -42,6 +42,11 @@ public class Review {
 
     private LocalDateTime reviewDate;
 
+    @Transient
+    private List<ReviewTag> tags = new ArrayList<>();
+
+
+    @Transient
     @ElementCollection
     @CollectionTable(name = "review_photos", joinColumns = @JoinColumn(name = "review_id"))
     @Column(name = "photo_url")

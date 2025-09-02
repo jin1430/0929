@@ -1,4 +1,4 @@
-package com.example.GoCafe.controller;
+package com.example.GoCafe.apiController;
 
 import com.example.GoCafe.domain.CafeStatus;
 import com.example.GoCafe.entity.Cafe;
@@ -27,4 +27,5 @@ public class AdminCafeController {
 
     @PostMapping("/{id}/reject")
     public void reject(@PathVariable Long id) { cafeService.reject(id); }
+
 }

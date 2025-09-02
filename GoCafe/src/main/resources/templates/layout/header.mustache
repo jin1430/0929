@@ -14,8 +14,9 @@
         <a href="/" class="cg-brand" aria-label="CafeGo">CafeGo</a>
 
         <ul class="cg-navlinks">
-            <li><a href="/index/cafes">탐색</a></li>
-            <li><a href="/index/map">지도</a></li>
+            <li>
+                <a href="/index/map" class="{{#isMap}}cg-nav-active{{/isMap}}">탐색 지도</a>
+            </li>
         </ul>
 
         <div class="cg-nav__actions">
@@ -27,11 +28,13 @@
             {{#isLoggedIn}}
                 안녕하세요,<span class="cg-me-email">{{currentUserNickname}}</span>님!
                 <a href="/member/me" class="cg-btn-outline" aria-label="마이페이지">마이페이지</a>
+                {{#isAdmin}}<a href="/admin" class="cg-btn-outline">관리자 페이지</a>{{/isAdmin}}
                 <!-- JS가 이 폼 submit 가로채서 로그아웃 처리 -->
                 <form id="logoutForm" action="/api/auth/logout" method="post" style="display:inline">
                     <button class="cg-btn-outline" type="submit">로그아웃</button>
                 </form>
             {{/isLoggedIn}}
+
         </div>
     </div>
 </nav>

@@ -35,6 +35,11 @@ public class GlobalViewAdvice {
             }
         }
 
+        // ✅ 관리자 여부 주입
+        boolean isAdmin = isLoggedIn && authentication.getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+        model.addAttribute("isAdmin", isAdmin);
+
         model.addAttribute("currentUserEmail", email);
         model.addAttribute("currentUserNickname", nickname);
     }

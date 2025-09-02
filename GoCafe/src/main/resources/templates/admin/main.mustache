@@ -1,0 +1,40 @@
+{{> layout/header}}
+
+<main class="cg-container" style="padding:24px 0">
+    <h1 class="cg-title">관리자 대시보드</h1>
+
+    <section style="margin-top:24px">
+        <h2>승인 대기 카페</h2>
+        {{#pendingCafes.length}}
+            <table class="cg-table" style="width:100%;margin-top:12px">
+                <thead>
+                <tr><th>ID</th><th>이름</th><th>주소</th><th>액션</th></tr>
+                </thead>
+                <tbody>
+                {{#pendingCafes}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td><a href="/cafes/{{id}}">{{name}}</a></td>
+                        <td>{{address}}</td>
+                        <td style="display:flex; gap:8px">
+                            <form method="post" action="/admin/cafes/{{id}}/approve">
+                                <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}"/>
+                                <button class="cg-btn">승인</button>
+                            </form>
+                            <form method="post" action="/admin/cafes/{{id}}/reject">
+                                <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}"/>
+                                <button class="cg-btn-outline is-danger">거절</button>
+                            </form>
+                        </td>
+                    </tr>
+                {{/pendingCafes}}
+                </tbody>
+            </table>
+        {{/pendingCafes.length}}
+        {{^pendingCafes.length}}
+            <p>승인 대기 중인 카페가 없습니다.</p>
+        {{/pendingCafes.length}}
+    </section>
+</main>
+
+{{> layout/footer}}
