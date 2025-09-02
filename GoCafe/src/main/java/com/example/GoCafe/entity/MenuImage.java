@@ -1,0 +1,41 @@
+package com.example.GoCafe.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "menu_image")
+public class MenuImage {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id", nullable = false)
+    private Menu menu;
+
+    @Column(name = "stored_name", nullable = false, length = 120)
+    private String storedName;
+
+    @Column(name = "original_name", nullable = false, length = 255)
+    private String originalName;
+
+    @Column(name = "content_type", length = 100)
+    private String contentType;
+
+    @Column(name = "size_bytes")
+    private Long sizeBytes;
+
+    @Column(name = "url", nullable = false, length = 255)
+    private String url;
+
+    @Column(name = "is_main", nullable = false)
+    private boolean isMain = false;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+}

@@ -18,41 +18,48 @@
         <!-- 우측 본문 -->
         <section>
             {{#member}}
-                <div class="cg-card">
-                    <div class="cg-card__head"><h2 style="font-size:18px;margin:0;">내 정보</h2></div>
-                    <div class="cg-card__body" style="padding:24px 32px;">
-                        <div style="display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;">
-                            <div style="flex:1;min-width:260px;">
-                                <p><b>닉네임</b> : {{memberNickname}}</p>
-                                <p><b>이메일</b> : {{memberEmail}}</p>
-                                <p><b>역할</b> : {{memberRole}}</p>
-                                <p><b>성별</b> : {{memberGender}}</p>
-                                <p><b>나이</b> : {{memberAge}}</p>
-                                <p><b>가입일</b> : {{memberDate}}</p>
+                <article class="cg-panel">
+                    <header class="cg-panel__head">
+                        <div>
+                            <div class="cg-eyebrow">내 계정</div>
+                            <h2 class="cg-panel__title">내 정보</h2>
+                        </div>
+                    </header>
 
-                            </div>
+                    <div class="cg-panel__body">
+                        <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
+                            {{#hasPhoto}}
+                                <img src="{{photoUrl}}" alt="프로필" class="cg-avatar-lg cg-avatar-ring">
+                            {{/hasPhoto}}
+                            {{^hasPhoto}}
+                                <div class="cg-avatar-lg cg-avatar-ring" style="background:#e5e7eb;display:flex;align-items:center;justify-content:center;">
+                                    <span style="font-size:12px;color:#6b7280;">NO IMG</span>
+                                </div>
+                            {{/hasPhoto}}
 
-                            <div style="width:160px;text-align:center;">
-                                {{#hasPhoto}}
-                                    <img src="{{photoUrl}}" alt="프로필 사진" class="cg-avatar-lg" />
-                                    <div style="margin-top:8px;font-size:12px;color:#6b7280;">현재: {{photoName}}</div>
-                                {{/hasPhoto}}
-                                {{^hasPhoto}}
-                                    <div class="cg-avatar-lg" style="background:#e5e7eb;display:flex;align-items:center;justify-content:center;margin:0 auto;">
-                                        <span style="font-size:12px;color:#6b7280;">NO IMG</span>
-                                    </div>
-                                    <div style="margin-top:8px;font-size:12px;color:#6b7280;">현재: 없음</div>
-                                {{/hasPhoto}}
+                            <div class="cg-badges" style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <span class="cg-badge">{{memberNickname}}</span>
+                                <span class="cg-badge" title="역할">{{memberRole}}</span>
                             </div>
                         </div>
+
+                        <div class="cg-divider"></div>
+
+                        <dl class="cg-kv">
+                            <dt>이메일</dt><dd>{{memberEmail}}</dd>
+                            <dt>성별</dt><dd>{{memberGender}}</dd>
+                            <dt>나이</dt><dd>{{memberAge}}</dd>
+                            <dt>가입일</dt><dd>{{memberDate}}</dd>
+                        </dl>
                     </div>
-                </div>
+                </article>
             {{/member}}
 
             {{^member}}
-                <div class="cg-card"><div class="cg-card__body">사용자 정보를 불러오지 못했습니다.</div></div>
+                <div class="cg-panel"><div class="cg-panel__body">사용자 정보를 불러오지 못했습니다.</div></div>
             {{/member}}
         </section>
+
     </div>
 </main>
 

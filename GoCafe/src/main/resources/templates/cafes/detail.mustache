@@ -1,27 +1,28 @@
 {{>layout/header}}
 
-<main class="cg-container">
+<main class="cg-container" {{#cafe}}data-cafe-id="{{cafeId}}"{{/cafe}}>
 
-    <!-- 헤더/히어로: 대표 이미지 + 타이틀 -->
+    <!-- 헤더/히어로 -->
     <section class="cg-hero cg-hero--one">
         {{#cafe}}
             <div class="cg-hero__inner">
                 <div class="cg-hero__left">
                     <h1 class="cg-title">{{cafeName}}</h1>
                     <div class="cg-hero__meta">
-                        <span>조회수 {{cafeViews}}</span>
+                        {{#cafeViews}}<span>조회수 {{cafeViews}}</span>{{/cafeViews}}
+                        {{^cafeViews}}<span>조회수 0</span>{{/cafeViews}}
                         <span class="cg-dot">·</span>
                         {{#cafeDateFmt}}<span>등록 {{cafeDateFmt}}</span>{{/cafeDateFmt}}
                         {{^cafeDateFmt}}<span>등록 {{cafeDate}}</span>{{/cafeDateFmt}}
                         <span class="cg-dot">·</span>
-                        <span>{{cafeCode}}</span>
+                        <span>좋아요 {{cafeGood}} / 아쉬워요 {{cafeBad}}</span>
                     </div>
 
                     <!-- 태그 칩 -->
                     <div class="cg-chips">
                         {{#cafeTags}}
                             <button class="cg-chip" data-category="{{tagCategoryCode}}" data-tag="{{tagCode}}">
-                                {{tagCode}}
+                                {{tagCode}}<small class="cg-badge">{{count}}</small>
                             </button>
                         {{/cafeTags}}
                         {{^cafeTags}}<span class="cg-empty">등록된 태그가 없어요.</span>{{/cafeTags}}
@@ -34,9 +35,13 @@
                            href="https://map.kakao.com/link/to/{{cafeName}},{{cafeLat}},{{cafeLon}}">
                             길찾기
                         </a>
-                        {{#isLoggedIn}}
-                            <a class="cg-btn" href="/reviews/new?cafeId={{cafeId}}">후기 작성</a>
-                        {{/isLoggedIn}}
+
+                        <!-- 해시(#reviewModal) 대신 JS로 여는 버튼 -->
+                        <a class="cg-btn"
+                           href="#"
+                           data-review-modal
+                           data-cafe-id="{{cafeId}}">후기 작성</a>
+
                         {{#isOwner}}
                             <a class="cg-btn-outline" href="/cafes/{{cafeId}}/edit">정보 수정</a>
                             <form method="post" action="/cafes/{{cafeId}}/delete" style="display:inline">
@@ -121,14 +126,13 @@
         </div>
     </section>
 
-    <!-- 지도 -->
+    <!-- 위치 -->
     <section class="cg-section">
         <div class="cg-section__head"><h3>위치</h3></div>
         <div class="cg-card">
             <div class="cg-card__body">
                 {{#cafe}}
                     <div id="map" class="cg-map" data-lat="{{cafeLat}}" data-lon="{{cafeLon}}" data-name="{{cafeName}}">
-                        <!-- 지도는 별도 JS에서 data-*를 읽어 렌더링 -->
                         <div class="cg-empty">지도가 여기에 표시됩니다.</div>
                     </div>
                 {{/cafe}}
@@ -140,7 +144,7 @@
     <section class="cg-section">
         <div class="cg-section__head">
             <h3>메뉴</h3>
-            <a class="cg-link" href="/cafes/{{cafe.cafeId}}/menu">전체 메뉴</a>
+            {{#cafe}}<a class="cg-link" href="/cafes/{{cafeId}}/menu">전체 메뉴</a>{{/cafe}}
         </div>
 
         <ul class="cg-card-grid">
@@ -160,17 +164,24 @@
         </ul>
     </section>
 
-    <!-- 리뷰 -->
+    <!-- 방문자 리뷰 -->
     <section class="cg-section">
-        <div class="cg-section__head">
-            <h3>방문자 리뷰</h3>
-            {{#isLoggedIn}}<a class="cg-link" href="/reviews/new?cafeId={{cafe.cafeId}}">후기 작성</a>{{/isLoggedIn}}
-        </div>
+        <div class="cg-section__head"><h3>방문자 리뷰</h3></div>
 
         <ul class="cg-feed">
             {{#reviews}}
                 <li class="cg-feed__item">
                     <p class="cg-feed__text">{{reviewContent}}</p>
+
+                    {{#photos}}
+                        <div class="cg-feed__photos" data-review-photos>
+                            {{#photos}}
+                                <img class="cg-feed__photo" src="{{.}}" alt="리뷰 사진" loading="lazy" onerror="this.style.display='none'"/>
+                            {{/photos}}
+                            <span class="cg-feed__photo-count" hidden></span>
+                        </div>
+                    {{/photos}}
+
                     <div class="cg-feed__meta">
                         <span>{{reviewDate}}</span>
                         <span>좋아요 {{reviewGood}} / 아쉬워요 {{reviewBad}}</span>
@@ -180,65 +191,145 @@
             {{/reviews}}
             {{^reviews}}<li class="cg-empty">아직 리뷰가 없네요.</li>{{/reviews}}
         </ul>
-
-        <!-- 리뷰 작성 -->
-        <section class="cg-section">
-            <div class="cg-section__head"><h3>리뷰 작성</h3></div>
-
-            <div class="cg-card">
-                {{#isLoggedIn}}
-                    <form class="cg-card__body" method="post" action="/reviews/new" enctype="multipart/form-data">
-                        {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                        <input type="hidden" name="cafeId" value="{{cafe.cafeId}}"/>
-
-                        <!-- 댓글(내용) -->
-                        <div class="cg-field" style="display:grid;row-gap:8px">
-                            <label for="reviewContent" class="cg-label">내용</label>
-                            <textarea id="reviewContent" name="reviewContent" class="cg-input" rows="4"
-                                      placeholder="방문 후기를 남겨주세요." required></textarea>
-                        </div>
-
-                        <!-- 사진 추가 -->
-                        <div class="cg-field" style="margin-top:12px;display:grid;row-gap:8px">
-                            <label class="cg-label">사진 (선택)</label>
-
-                            <input type="file" name="photos" accept="image/*" multiple>
-
-
-                            <!-- 미리보기 -->
-                            <div id="photoPreview" class="cg-preview"></div>
-                            <small class="cg-help">최대 5장, 이미지당 10MB 이하 권장</small>
-                        </div>
-
-                        <!-- 제출 -->
-                        <div class="cg-actions" style="justify-content:flex-end;margin-top:16px">
-                            <button type="submit" class="cg-btn">등록</button>
-                        </div>
-                    </form>
-                {{/isLoggedIn}}
-
-                {{^isLoggedIn}}
-                    <div class="cg-card__body">
-                        <div class="cg-empty">
-                            로그인 후 작성하실 수 있어요.
-                            <a class="cg-link" href="/login?redirect=/cafes/{{cafe.cafeId}}">로그인하기</a>
-                        </div>
-                    </div>
-                {{/isLoggedIn}}
-            </div>
-        </section>
     </section>
-
-    <!-- 하단 플로팅 액션 (모바일 편의) -->
-    <div class="cg-fab">
-        {{#cafe}}
-            <a class="cg-fab__btn" href="tel:{{cafeNumber}}">전화</a>
-            <a class="cg-fab__btn" target="_blank"
-               href="https://map.kakao.com/link/to/{{cafeName}},{{cafeLat}},{{cafeLon}}">길찾기</a>
-            {{#isLoggedIn}}<a class="cg-fab__btn" href="/reviews/new?cafeId={{cafeId}}">후기</a>{{/isLoggedIn}}
-        {{/cafe}}
-    </div>
 
 </main>
 
-{{>layout/footer}}
+<!-- ===========================
+     모달 (리뷰 작성)
+     =========================== -->
+<style>
+    /* 모달: 기본 숨김, is-open 때만 표시 */
+    .cg-modal{
+      position: fixed; inset: 0;
+      display: none;
+      z-index: 1000;
+    }
+    .cg-modal.is-open{ display: grid; }
+
+    /* 오버레이(전체 클릭 영역) */
+    .cg-modal__backdrop{
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.45);
+    }
+
+    /* 다이얼로그 래퍼(시트를 가운데 정렬) */
+    .cg-modal__dialog{
+      position: relative;
+      width: 100%; height: 100%;
+      display: grid; place-items: center;
+      padding: 20px;
+      pointer-events: none; /* 바깥쪽 클릭 판정 쉽게 */
+    }
+
+    /* 실제 시트(내용) */
+    .cg-modal__sheet{
+      width: min(720px, 96vw);
+      max-height: 88vh;
+      background: #fff;
+      border-radius: 16px;
+      overflow: auto;
+      pointer-events: auto; /* 시트 내부만 상호작용 */
+    }
+
+    .cg-modal__header,
+    .cg-modal__footer{ padding: 16px 20px; }
+    .cg-modal__content{ padding: 0 20px 16px; }
+    .cg-modal__title{ margin: 0; font-size: 20px; }
+    .cg-modal__close{
+      border: 0; background: transparent; font-size: 28px; line-height: 1;
+      cursor: pointer; margin-left: auto;
+    }
+
+    /* 모달 오픈 시 배경 스크롤 잠금 */
+    body.cg-modal-open{ overflow: hidden; }
+</style>
+
+<div id="reviewModal" class="cg-modal" aria-hidden="true" role="dialog" aria-labelledby="reviewModalTitle">
+    <!-- 오버레이: 클릭 시 닫힘 -->
+    <div class="cg-modal__backdrop" data-close-modal></div>
+
+    <div class="cg-modal__dialog">
+        <form id="reviewForm" class="cg-modal__sheet" method="post" action="/reviews/new" enctype="multipart/form-data" novalidate>
+            <input type="hidden" name="cafeId" id="modalCafeId"/>
+            {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+            <input type="hidden" name="cafeId" id="modalCafeId"/>
+
+            <!-- 헤더 -->
+            <div class="cg-modal__header" style="display:flex; gap:8px; align-items:center">
+                <h3 id="reviewModalTitle" class="cg-modal__title">리뷰 작성</h3>
+                <button type="button" class="cg-modal__close" aria-label="닫기" data-close-modal>&times;</button>
+            </div>
+
+            <!-- 내용 -->
+            <div class="cg-modal__content">
+                <label class="cg-label">내용</label>
+                <textarea name="reviewContent" class="cg-input" rows="4" placeholder="방문 후기를 남겨주세요." required maxlength="1000" autofocus></textarea>
+
+                <div class="cg-grid2" style="margin-top:12px">
+                    <div>
+                        <label class="cg-label">웨이팅 시간(분)</label>
+                        <input type="number" name="waitingTime" class="cg-input" min="0" placeholder="예: 15"/>
+                    </div>
+                    <div>
+                        <label class="cg-label">누구와 갔나요?</label>
+                        <select name="companionType" class="cg-input">
+                            <option value="">선택</option>
+                            <option value="SOLO">혼자</option>
+                            <option value="FRIEND">친구</option>
+                            <option value="DATE">연인</option>
+                            <option value="FAMILY">가족</option>
+                            <option value="BUSINESS">비즈니스</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label class="cg-label" style="margin-top:12px">음식의 맛</label>
+                <div class="cg-rating">
+                    <label><input type="radio" name="taste" value="1">1</label>
+                    <label><input type="radio" name="taste" value="2">2</label>
+                    <label><input type="radio" name="taste" value="3" checked>3</label>
+                    <label><input type="radio" name="taste" value="4">4</label>
+                    <label><input type="radio" name="taste" value="5">5</label>
+                </div>
+
+                <label class="cg-label" style="margin-top:12px">전반적 만족도</label>
+                <div class="cg-toggle2" role="group" aria-label="전반적 만족도">
+                    <label class="cg-toggle2__btn">
+                        <input type="radio" name="sentiment" value="GOOD" checked>
+                        <span>좋아요</span>
+                    </label>
+                    <label class="cg-toggle2__btn">
+                        <input type="radio" name="sentiment" value="BAD">
+                        <span>아쉬워요</span>
+                    </label>
+                </div>
+
+                <label class="cg-label" style="margin-top:12px">이런 점이 좋았어요 (복수선택)</label>
+                <div class="cg-chips">
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="맛있어요"> 음식이 맛있어요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="친절해요"> 친절해요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="인테리어"> 인테리어가 멋져요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="신선한재료"> 재료가 신선해요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="특별한메뉴"> 특별한 메뉴가 있어요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="기본안주"> 기본 안주가 좋아요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="음악"> 음악이 좋아요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="혼술"> 혼술하기 좋아요</label>
+                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="가성비"> 가성비가 좋아요</label>
+                </div>
+
+                <label class="cg-label" style="margin-top:12px">사진 (선택)</label>
+                <input type="file" id="photoInput" name="photos" accept="image/*" multiple>
+                <small class="cg-help">최대 5장, 이미지당 10MB 이하 권장</small>
+            </div>
+
+            <!-- 푸터 -->
+            <div class="cg-modal__footer" style="display:flex; justify-content:flex-end; gap:8px">
+                <button type="button" class="cg-btn-outline" data-close-modal>취소</button>
+                <button type="submit" class="cg-btn">등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{>layout/footer}} <!-- ⬅ footer는 맨 마지막 -->

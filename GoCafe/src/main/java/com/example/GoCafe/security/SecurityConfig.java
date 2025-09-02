@@ -1,3 +1,4 @@
+// src/main/java/com/example/GoCafe/security/SecurityConfig.java
 package com.example.GoCafe.security;
 
 import org.springframework.context.annotation.Bean;
@@ -49,9 +50,15 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers
+                        // ✅ CSP: 인라인 스크립트 금지(외부 파일만), 인라인 스타일은 허용
                         .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; object-src 'none';"))
-                        .frameOptions(fo -> fo.sameOrigin()) // H2 콘솔
+                                "default-src 'self'; " +
+                                        "script-src 'self'; " +
+                                        "style-src 'self' 'unsafe-inline'; " +
+                                        "img-src 'self' data: blob:; " +
+                                        "base-uri 'self'; frame-ancestors 'self'; object-src 'none';"
+                        ))
+                        .frameOptions(fo -> fo.sameOrigin())
                         .referrerPolicy(ref -> ref.policy(
                                 org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
                         .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).preload(true))
@@ -65,9 +72,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
 
-                        // ✅ 비로그인 접근 허용
-                        .requestMatchers("/", "/index/**", "/search/**", "/signup", "/cafes/**","/login","/api/**").permitAll()
+                        // 비로그인 접근 허용
+                        .requestMatchers("/", "/index/**", "/search/**", "/signup", "/cafes/**","/login").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/img/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/uploads/**", "/files/**").permitAll()
 
                         .requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
@@ -76,11 +84,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
 
+                        // 리뷰 작성(POST)은 서버에서 인증 체크도 하지만, 보안상 보호
+                        .requestMatchers("/reviews/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
+                // 🔧 필터 순서: XSS -> JWT -> 나머지
                 .addFilterBefore(xssSanitizingFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authenticationProvider());
 
         return http.build();
     }

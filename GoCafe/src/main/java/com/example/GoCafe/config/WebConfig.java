@@ -5,19 +5,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.nio.file.Paths;
-
+// WebConfig
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-
-    @Value("${app.upload.root:uploads}")
-    private String uploadRoot;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 예: /files/** → (프로젝트)/uploads/ 아래 파일 서빙
-        String fileRoot = Paths.get(uploadRoot).toAbsolutePath().toUri().toString();
+        // http://localhost:8080/uploads/... 로 접근
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadDir + "/");
+
+        // (임시 호환) 예전 DB에 /files/... 가 남아 있다면 함께 매핑
         registry.addResourceHandler("/files/**")
-                .addResourceLocations(fileRoot);
+                .addResourceLocations("file:" + uploadDir + "/");
     }
 }

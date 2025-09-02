@@ -13,13 +13,14 @@ ALTER TABLE member    ALTER COLUMN member_id RESTART WITH 1;
 
 -- ===== Cafe 더미 =====
 INSERT INTO cafe
-(cafe_id, cafe_owner_id, cafe_name, cafe_address, cafe_lat, cafe_lon, cafe_number, cafe_date,           cafe_views, cafe_photo,   cafe_code)
+  (cafe_id, cafe_owner_id, cafe_name, cafe_address, cafe_lat, cafe_lon, cafe_number, cafe_date, cafe_views, cafe_photo, cafe_code, status)
 VALUES
-(1, 1, '카페무드 홍대점','서울 마포구 양화로 45',   37.5569,126.9238,'000000000000', CURRENT_TIMESTAMP, 432, 'img/c1.jpg','CAFE000001'),
-(2, 2, '브런치랩 합정',  '서울 마포구 독막로 15',   37.5498,126.9136,'000000000001', CURRENT_TIMESTAMP, 210, 'img/c2.jpg','CAFE000002'),
-(3, 3, '라떼가좋아',    '서울 마포구 잔다리로 20', 37.5531,126.9204,'000000000002', CURRENT_TIMESTAMP, 987, 'img/c3.jpg','CAFE000003'),
-(4, 4, '루프탑뷰',      '서울 마포구 와우산로 80', 37.5539,126.9352,'000000000003', CURRENT_TIMESTAMP, 120, 'img/c4.jpg','CAFE000004'),
-(5, 5, '스페셜티랩',    '서울 마포구 잔다리로 5',  37.5522,126.9190,'000000000004', CURRENT_TIMESTAMP,  75, 'img/c5.jpg','CAFE000005');
+  (1, 1, '카페무드 홍대점','서울 마포구 양화로 45', 37.5569,126.9238,'000000000000', CURRENT_TIMESTAMP, 432, 'img/c1.jpg','CAFE000001','APPROVED'),
+  (2, 2, '브런치랩 합정', '서울 마포구 독막로 15', 37.5498,126.9136,'000000000001', CURRENT_TIMESTAMP, 210, 'img/c2.jpg','CAFE000002','APPROVED'),
+  (3, 3, '라떼가좋아', '서울 마포구 잔다리로 20', 37.5531,126.9204,'000000000002', CURRENT_TIMESTAMP, 987, 'img/c3.jpg','CAFE000003','APPROVED'),
+  (4, 4, '루프탑뷰', '서울 마포구 와우산로 80', 37.5539,126.9352,'000000000003', CURRENT_TIMESTAMP, 120, 'img/c4.jpg','CAFE000004','APPROVED'),
+  (5, 5, '스페셜티랩', '서울 마포구 잔다리로 5', 37.5522,126.9190,'000000000004', CURRENT_TIMESTAMP, 75, 'img/c5.jpg','CAFE000005','APPROVED');
+
 
 -- ===== CafeTag 더미 =====
 -- tag_category_code 예: MOOD / MENU / FEATURE ...

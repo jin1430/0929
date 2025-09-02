@@ -32,7 +32,13 @@ public class AuthViewController {
     }
 
     @GetMapping("/login")
-    public String loginPage() { return "auth/login"; }
+    public String loginPage(@RequestParam(value="error", required=false) String error,
+                            @RequestParam(value="redirect", required=false) String redirect,
+                            Model model) {
+        if (error != null && !error.isBlank()) model.addAttribute("error", error);
+        if (redirect != null && !redirect.isBlank()) model.addAttribute("redirect", redirect);
+        return "auth/login";
+    }
 
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String memberEmail,

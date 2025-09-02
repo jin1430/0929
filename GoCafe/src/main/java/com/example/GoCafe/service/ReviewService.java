@@ -1,3 +1,4 @@
+// src/main/java/com/example/GoCafe/service/ReviewService.java
 package com.example.GoCafe.service;
 
 import com.example.GoCafe.entity.Review;
@@ -52,5 +53,17 @@ public class ReviewService {
 
     public Review save(Review review) {
         return reviewRepository.save(review);
+    }
+
+    // ✅ 추가: 카페 상세에서 사용할 리뷰 목록(최신순), member/cafe 페치
+    @Transactional(readOnly = true)
+    public List<Review> findByCafeIdWithMember(Long cafeId) {
+        return reviewRepository.findByCafe_CafeIdOrderByReviewDateDesc(cafeId);
+    }
+
+    // ✅ 추가: 홈에 “최근 올라온 후기”용 (원하면 사용)
+    @Transactional(readOnly = true)
+    public List<Review> findRecentTop10() {
+        return reviewRepository.findTop10ByOrderByReviewDateDesc();
     }
 }

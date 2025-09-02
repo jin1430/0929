@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +29,9 @@ public class MenuForm {
                 menuName,
                 menuPrice,
                 menuNew,
-                menuRecommanded
+                menuRecommanded,
+                null,                 // menuPhoto 기본 null
+                new ArrayList<>()     // images 기본 빈 리스트
         );
     }
 }

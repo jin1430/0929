@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @NoArgsConstructor
 @Entity
@@ -36,4 +39,10 @@ public class Menu {
 
     @Column(name = "menu_recommanded", length = 1)
     private String menuRecommanded;
+
+    @Column(name = "menu_photo", length = 255)
+    private String menuPhoto;
+
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MenuImage> images = new ArrayList<>();
 }
