@@ -6,7 +6,6 @@ import com.example.GoCafe.dto.CafeForm;
 import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.entity.ReviewPhoto;
-import com.example.GoCafe.repository.ReviewRepository;
 import com.example.GoCafe.repository.ReviewTagRepository;
 import com.example.GoCafe.service.*;
 import jakarta.validation.Valid;
@@ -31,6 +30,9 @@ public class CafeController {
     private final CafeStatsService cafeStatsService;
     private final ReviewPhotoService reviewPhotoService;
     private final ReviewTagRepository reviewTagRepository;
+    private final FavoriteService favoriteService;
+    // 🔹 더 이상 FavoriteRepository 직접 호출 안 함
+    // private final FavoriteRepository favoriteRepository;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/new")
@@ -69,8 +71,10 @@ public class CafeController {
                            Authentication auth,
                            Model model) {
 
+        // 1) 카페 조회
         Cafe cafe = cafeService.findById(cafeId);
 
+        // 2) 로그인 사용자 정보/권한
         String email = (auth != null ? auth.getName() : null);
         Long meId = null;
         boolean isAdmin = false;
@@ -86,29 +90,39 @@ public class CafeController {
         boolean isOwner = (meId != null && cafe.getCafeOwnerId() != null
                 && meId.equals(cafe.getCafeOwnerId()));
 
+        // 3) 승인 전 카페 접근 제한
         if (cafe.getStatus() != CafeStatus.APPROVED && !(isOwner || isAdmin)) {
             throw new com.example.GoCafe.support.NotFoundException("승인되지 않은 카페입니다.");
         }
 
+        // 4) 모델—카페 본문
         model.addAttribute("cafe", cafe);
 
-        // ✅ 리뷰 조회 + 각 리뷰에 사진/태그 세팅
+        // 5) 리뷰 목록 + 사진 주입
         var reviews = reviewService.findByCafeIdWithMember(cafeId);
         for (var r : reviews) {
-            var list = reviewPhotoService.getPhotos(r.getReviewId()) // List<ReviewPhoto>
+            var list = reviewPhotoService.getPhotos(r.getReviewId())
                     .stream()
-                    .map(ReviewPhoto::getReviewPhotoUrl)  // ← 필드/게터명에 맞게 수정
-                    .toList(); // Java 17 OK. (구버전이면 Collectors.toList())
+                    .map(ReviewPhoto::getReviewPhotoUrl)
+                    .toList();
             r.setPhotos(list); // List<String>
         }
         model.addAttribute("reviews", reviews);
 
-
-        // ✅ 좋아요/아쉬워요 합계 + LIKE 태그 상위 12개
+        // 6) 좋아요/아쉬워요 + 태그 집계
         var stats = cafeStatsService.buildStats(cafeId, 12);
         model.addAttribute("cafeGood", stats.get("good"));
         model.addAttribute("cafeBad",  stats.get("bad"));
         model.addAttribute("cafeTags", stats.get("tags"));
+
+        // 7) 즐겨찾기 상태/카운트 (서비스 사용)
+        boolean isFavorited = false;
+        if (email != null) {
+            isFavorited = favoriteService.isFavoritedByEmail(email, cafeId);
+        }
+        long favoriteCount = favoriteService.countForCafe(cafeId);
+        model.addAttribute("isFavorited", isFavorited);
+        model.addAttribute("favoriteCount", favoriteCount);
 
         return "cafes/detail";
     }

@@ -1,40 +1,224 @@
 {{> layout/header}}
 
 <main class="cg-container" style="padding:24px 0">
-    <h1 class="cg-title">관리자 대시보드</h1>
+    <h1 class="cg-title">관리자 페이지</h1>
 
-    <section style="margin-top:24px">
-        <h2>승인 대기 카페</h2>
-        {{#pendingCafes.length}}
-            <table class="cg-table" style="width:100%;margin-top:12px">
-                <thead>
-                <tr><th>ID</th><th>이름</th><th>주소</th><th>액션</th></tr>
-                </thead>
-                <tbody>
-                {{#pendingCafes}}
-                    <tr>
-                        <td>{{id}}</td>
-                        <td><a href="/cafes/{{id}}">{{name}}</a></td>
-                        <td>{{address}}</td>
-                        <td style="display:flex; gap:8px">
-                            <form method="post" action="/admin/cafes/{{id}}/approve">
-                                <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}"/>
-                                <button class="cg-btn">승인</button>
-                            </form>
-                            <form method="post" action="/admin/cafes/{{id}}/reject">
-                                <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}"/>
-                                <button class="cg-btn-outline is-danger">거절</button>
-                            </form>
-                        </td>
-                    </tr>
-                {{/pendingCafes}}
-                </tbody>
-            </table>
-        {{/pendingCafes.length}}
-        {{^pendingCafes.length}}
-            <p>승인 대기 중인 카페가 없습니다.</p>
-        {{/pendingCafes.length}}
-    </section>
+    <div class="cg-mypage-grid" id="admin-layout">
+        <!-- 좌측 내비 -->
+        <aside>
+            <nav class="cg-sidenav">
+                <a href="/admin"              class="is-active">대시보드</a>
+                <a href="#section-cafes">카페 관리</a>
+                <a href="#section-reviews">리뷰 관리</a>
+                <a href="#section-users">유저 관리</a>
+                <!-- 필요시 더 추가: 신고 관리, 통계, 시스템 설정 등 -->
+            </nav>
+        </aside>
+
+        <!-- 우측 본문 -->
+        <section style="display:flex;flex-direction:column;gap:24px">
+
+            <!-- ====== 요약 카드 ====== -->
+            <article class="cg-panel">
+                <header class="cg-panel__head">
+                    <div>
+                        <div class="cg-eyebrow">요약</div>
+                        <h2 class="cg-panel__title">오늘의 현황</h2>
+                    </div>
+                </header>
+                <div class="cg-panel__body">
+                    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+                        <div class="cg-stat">
+                            <div class="cg-stat__label">승인 대기 카페</div>
+                            <div class="cg-stat__value">{{statPendingCafes}}</div>
+                        </div>
+                        <div class="cg-stat">
+                            <div class="cg-stat__label">오늘 등록 리뷰</div>
+                            <div class="cg-stat__value">{{statNewReviewsToday}}</div>
+                        </div>
+                        <div class="cg-stat">
+                            <div class="cg-stat__label">신고된 리뷰</div>
+                            <div class="cg-stat__value">{{statFlaggedReviews}}</div>
+                        </div>
+                        <div class="cg-stat">
+                            <div class="cg-stat__label">총 회원 수</div>
+                            <div class="cg-stat__value">{{statUsers}}</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- ====== 카페 관리 (승인관리 포함) ====== -->
+            <article id="section-cafes" class="cg-panel">
+                <header class="cg-panel__head">
+                    <div>
+                        <div class="cg-eyebrow">카페 관리</div>
+                        <h2 class="cg-panel__title">승인 대기 목록</h2>
+                    </div>
+                </header>
+
+                <div class="cg-panel__body">
+                    {{#pendingCafes}}
+                        <table class="cg-table" style="width:100%">
+                            <thead>
+                            <tr><th style="width:80px">ID</th><th>이름</th><th>주소</th><th style="width:220px">액션</th></tr>
+                            </thead>
+                            <tbody>
+                            {{#pendingCafes}}
+                                <tr>
+                                    <td>{{id}}</td>
+                                    <td><a href="/cafes/{{id}}" target="_blank" rel="noopener">{{name}}</a></td>
+                                    <td>{{address}}</td>
+                                    <td style="display:flex;gap:8px">
+                                        <button class="cg-btn" data-post="/admin/cafes/{{id}}/approve">승인</button>
+                                        <button class="cg-btn-outline is-danger" data-post="/admin/cafes/{{id}}/reject">거절</button>
+                                    </td>
+                                </tr>
+                            {{/pendingCafes}}
+                            </tbody>
+                        </table>
+                    {{/pendingCafes}}
+                    {{^pendingCafes}}
+                        <div class="cg-empty">승인 대기 중인 카페가 없습니다.</div>
+                    {{/pendingCafes}}
+                </div>
+            </article>
+
+            <!-- ====== 리뷰 관리 ====== -->
+            <article id="section-reviews" class="cg-panel">
+                <header class="cg-panel__head">
+                    <div>
+                        <div class="cg-eyebrow">리뷰 관리</div>
+                        <h2 class="cg-panel__title">신고/관리 대상 리뷰</h2>
+                    </div>
+                    <div class="cg-panel__tools" style="display:flex;gap:8px">
+                        <form method="get" action="/admin" style="display:flex;gap:8px">
+                            <input class="cg-input" type="text" name="q" placeholder="리뷰 내용/작성자 검색" value="{{q}}">
+                            <button class="cg-btn">검색</button>
+                        </form>
+                    </div>
+                </header>
+
+                <div class="cg-panel__body">
+                    {{#flaggedReviews}}
+                        <table class="cg-table" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th style="width:80px">ID</th>
+                                <th>카페</th>
+                                <th>작성자</th>
+                                <th>내용</th>
+                                <th style="width:160px">작성일</th>
+                                <th style="width:260px">액션</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#flaggedReviews}}
+                                <tr>
+                                    <td>{{id}}</td>
+                                    <td><a href="/cafes/{{cafeId}}" target="_blank" rel="noopener">{{cafeName}}</a></td>
+                                    <td>{{writerNickname}} <span class="cg-badge">{{writerEmail}}</span></td>
+                                    <td>{{excerpt}}</td>
+                                    <td>{{createdAt}}</td>
+                                    <td style="display:flex;gap:8px;flex-wrap:wrap">
+                                        <a class="cg-btn-outline" href="/reviews/{{id}}" target="_blank" rel="noopener">상세</a>
+                                        <button class="cg-btn" data-post="/admin/reviews/{{id}}/blind">블라인드</button>
+                                        <button class="cg-btn-outline" data-post="/admin/reviews/{{id}}/restore">복구</button>
+                                        <button class="cg-btn-outline is-danger" data-post="/admin/reviews/{{id}}/delete">삭제</button>
+                                    </td>
+                                </tr>
+                            {{/flaggedReviews}}
+                            </tbody>
+                        </table>
+                    {{/flaggedReviews}}
+                    {{^flaggedReviews}}
+                        <div class="cg-empty">신고되었거나 조치가 필요한 리뷰가 없습니다.</div>
+                    {{/flaggedReviews}}
+                </div>
+            </article>
+
+            <!-- ====== 유저 관리 ====== -->
+            <article id="section-users" class="cg-panel">
+                <header class="cg-panel__head">
+                    <div>
+                        <div class="cg-eyebrow">유저 관리</div>
+                        <h2 class="cg-panel__title">회원 목록</h2>
+                    </div>
+                    <div class="cg-panel__tools" style="display:flex;gap:8px">
+                        <form method="get" action="/admin" style="display:flex;gap:8px">
+                            <input class="cg-input" type="text" name="user" placeholder="이메일/닉네임 검색" value="{{user}}">
+                            <button class="cg-btn">검색</button>
+                        </form>
+                    </div>
+                </header>
+
+                <div class="cg-panel__body">
+                    {{#users}}
+                        <table class="cg-table" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th style="width:80px">ID</th>
+                                <th>이메일</th>
+                                <th>닉네임</th>
+                                <th style="width:140px">역할</th>
+                                <th style="width:160px">가입일</th>
+                                <th style="width:260px">액션</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#users}}
+                                <tr>
+                                    <td>{{memberId}}</td>
+                                    <td>{{memberEmail}}</td>
+                                    <td>{{memberNickname}}</td>
+                                    <td><span class="cg-badge">{{memberRole}}</span></td>
+                                    <td>{{memberDate}}</td>
+                                    <td style="display:flex;gap:8px;flex-wrap:wrap">
+                                        <button class="cg-btn" data-post="/admin/users/{{memberId}}/role/USER">USER</button>
+                                        <button class="cg-btn" data-post="/admin/users/{{memberId}}/role/ADMIN">ADMIN</button>
+                                        <button class="cg-btn-outline is-danger" data-post="/admin/users/{{memberId}}/suspend">정지</button>
+                                        <button class="cg-btn-outline" data-post="/admin/users/{{memberId}}/unsuspend">해제</button>
+                                    </td>
+                                </tr>
+                            {{/users}}
+                            </tbody>
+                        </table>
+                    {{/users}}
+                    {{^users}}
+                        <div class="cg-empty">표시할 회원이 없습니다.</div>
+                    {{/users}}
+                </div>
+            </article>
+
+        </section>
+    </div>
 </main>
 
 {{> layout/footer}}
+
+<!-- JWT 전송 방식: 쿠키면 자동 전송, 로컬스토리지면 Authorization 헤더 추가 -->
+<script>
+    async function postWithJwt(url) {
+      const headers = {};
+      const token = localStorage.getItem('accessToken'); // 프로젝트 키에 맞게 조정 가능
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const res = await fetch(url, { method: 'POST', headers });
+      if (!res.ok) throw new Error(res.status + ' ' + (await res.text()).slice(0,200));
+      return res;
+    }
+
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-post]');
+      if (!btn) return;
+      e.preventDefault();
+      btn.disabled = true;
+      try {
+        await postWithJwt(btn.dataset.post);
+        location.reload();
+      } catch (err) {
+        alert('요청 실패: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+</script>

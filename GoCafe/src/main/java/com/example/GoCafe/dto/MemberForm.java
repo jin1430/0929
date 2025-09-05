@@ -1,10 +1,14 @@
 package com.example.GoCafe.dto;
 
+import com.example.GoCafe.entity.Cafe;
+import com.example.GoCafe.entity.Favorite;
 import com.example.GoCafe.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -21,6 +25,7 @@ public class MemberForm {
     private java.time.LocalDateTime memberDate;
     private String memberPhoto;
     private Long tokenVersion;
+    private Cafe favorite;
 
     public Member toEntity() {
         return new Member(
@@ -33,7 +38,8 @@ public class MemberForm {
                 memberRole,
                 memberDate,
                 memberPhoto,
-                tokenVersion
+                tokenVersion,
+                (List<Favorite>) favorite
         );
     }
 }

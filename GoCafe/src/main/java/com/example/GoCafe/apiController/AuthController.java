@@ -156,14 +156,15 @@ public class AuthController {
                     MemberForm out = new MemberForm(
                             m.getMemberId(),
                             m.getMemberEmail(),
-                            null, // 비번 숨김
+                            null, // password는 응답에 내보내지 않을거면 null 유지
                             m.getMemberNickname(),
                             m.getMemberAge(),
                             m.getMemberGender(),
                             m.getMemberRole(),
                             m.getMemberDate(),
                             m.getMemberPhoto(),
-                            null
+                            m.getTokenVersion(), // ✅ 빠졌던 10번째 인자 추가
+                            null // Cafe: 없으면 null
                     );
                     return ResponseEntity.ok(out);
                 })

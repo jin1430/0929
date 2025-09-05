@@ -1,6 +1,7 @@
     package com.example.GoCafe.entity;
 
     import com.example.GoCafe.domain.CafeStatus;
+    import com.fasterxml.jackson.annotation.JsonIgnore;
     import jakarta.persistence.*;
     import lombok.AllArgsConstructor;
     import lombok.Getter;
@@ -80,4 +81,8 @@
         public boolean isApproved() { return status == CafeStatus.APPROVED; }
         public boolean isPending()  { return status == CafeStatus.PENDING;  }
         public boolean isRejected() { return status == CafeStatus.REJECTED; }
+
+        @JsonIgnore
+        @OneToMany(mappedBy = "cafe", cascade = CascadeType.ALL, orphanRemoval = true)
+        private List<Favorite> favorites = new ArrayList<>();
     }

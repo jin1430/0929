@@ -395,3 +395,52 @@ body.cg-modal-open { overflow: hidden; }
 .cg-modal__backdrop { z-index: 1; }
 .cg-modal__dialog   { z-index: 2; pointer-events: none; } /* 바깥 여백 클릭은 통과 */
 .cg-modal__sheet    { pointer-events: auto; }
+
+/* =============== Toast =============== */
+.cg-toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  background: #111; color: #fff; padding: 10px 14px; border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25); display: none; z-index: 2000;
+  font-size: 14px; line-height: 1.2;
+}
+.cg-toast.is-show { display: block; animation: cgToastFade .2s ease-out; }
+@keyframes cgToastFade { from { opacity: .0; transform: translate(-50%, 6px);} to { opacity: 1; transform: translate(-50%,0);} }
+.cg-toast--success { background: #16a34a; }
+.cg-toast--error   { background: #dc2626; }
+
+/* =============== Modal (공통) =============== */
+.cg-modal { position: fixed; inset: 0; display: none; z-index: 1000; }
+.cg-modal.is-open { display: grid; }
+.cg-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+.cg-modal__dialog { position: relative; width: 100%; height: 100%; display: grid; place-items: center; padding: 20px; pointer-events: none; }
+.cg-modal__sheet {
+  width: min(720px, 96vw); max-height: 88vh; background: #fff; border-radius: 16px;
+  overflow: auto; pointer-events: auto;
+}
+.cg-modal__header, .cg-modal__footer { padding: 16px 20px; }
+.cg-modal__content { padding: 0 20px 16px; }
+.cg-modal__title { margin: 0; font-size: 20px; }
+.cg-modal__close { border: 0; background: transparent; font-size: 28px; line-height: 1; cursor: pointer; margin-left: auto; }
+body.cg-modal-open { overflow: hidden; }
+
+/* =============== 즐겨찾기 버튼 상태 =============== */
+/* 기본은 outline 버튼을 사용하고, 'is-favorited'가 붙으면 채워진 스타일로 전환 */
+.cg-fav-btn { position: relative; }
+.cg-fav-btn.is-favorited {
+  background: #111; color: #fff; border-color: #111; /* 프로젝트 팔레트에 맞춰 조정 */
+}
+.cg-fav-btn .cg-fav-icon { margin-right: 6px; font-style: normal; }
+.cg-fav-btn.is-favorited .cg-fav-icon::before { content: "★"; }
+.cg-fav-btn:not(.is-favorited) .cg-fav-icon::before { content: "☆"; }
+
+/* =============== 이미지 없는 카드 placeholder =============== */
+.cg-noimg {
+  background: #f3f4f6; display: grid; place-items: center; color: #9ca3af; min-height: 120px;
+}
+.cg-noimg::before { content: "NO IMG"; font-size: 12px; }
+
+/* =============== 접근성 유틸 =============== */
+.cg-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}

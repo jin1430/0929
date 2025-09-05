@@ -42,6 +42,20 @@
                            data-review-modal
                            data-cafe-id="{{cafeId}}">후기 작성</a>
 
+
+                        <!-- ✅ 즐겨찾기 버튼: 서버가 isFavorited/favoriteCount를 내려주면 더 좋음 -->
+                        <button id="favBtn"
+                                class="cg-btn-outline"
+                                data-cafe-id="{{cafeId}}"
+                                data-favorited="{{isFavorited}}">
+                            {{#isFavorited}}즐겨찾기 해제{{/isFavorited}}{{^isFavorited}}즐겨찾기{{/isFavorited}}
+                        </button>
+
+                        <!-- (선택) 카운트 노출 -->
+                        <span id="favCount" style="margin-left:6px">
+                        {{#favoriteCount}}즐겨찾기 {{favoriteCount}}{{/favoriteCount}}{{^favoriteCount}}즐겨찾기 0{{/favoriteCount}}
+                         </span>
+
                         {{#isOwner}}
                             <a class="cg-btn-outline" href="/cafes/{{cafeId}}/edit">정보 수정</a>
                             <form method="post" action="/cafes/{{cafeId}}/delete" style="display:inline">

@@ -2,6 +2,7 @@
 package com.example.GoCafe.controller;
 
 import com.example.GoCafe.dto.MemberForm;
+import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,15 @@ public class MemberController {
         MemberForm view = new MemberForm(
                 member.getMemberId(),
                 member.getMemberEmail(),
-                null, // 비밀번호 노출 금지
+                (String) null, // 비밀번호 노출 금지
                 member.getMemberNickname(),
                 member.getMemberAge(),
                 member.getMemberGender(),
                 member.getMemberRole(),
                 member.getMemberDate(),
                 member.getMemberPhoto(),
-                member.getTokenVersion()
+                member.getTokenVersion(),
+                (Cafe) member.getFavorites()
         );
 
         model.addAttribute("isLoggedIn", true);
@@ -59,14 +61,15 @@ public class MemberController {
         MemberForm view = new MemberForm(
                 member.getMemberId(),
                 member.getMemberEmail(),
-                null,
+                (String) null,
                 member.getMemberNickname(),
                 member.getMemberAge(),
                 member.getMemberGender(),
                 member.getMemberRole(),
                 member.getMemberDate(),
                 member.getMemberPhoto(),
-                member.getTokenVersion()
+                member.getTokenVersion(),
+                (Cafe) member.getFavorites()
         );
 
         // 본문 모델
