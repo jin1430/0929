@@ -7,29 +7,28 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor
 @Entity
-@Table(
-        name = "review_tag",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_review_tag_review_code", columnNames = {"review_id", "code"})
-        }
-)
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
-public class ReviewTag {
+@Table(name = "user_needs")
+public class UserNeeds {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_tag_id", nullable = false, unique = true)
+    @Column(name = "user_needs_id", nullable = false, unique = true)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "review_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Review review;
+    private Member member;
 
     @Column(name = "category_code", length = 20)
     private String categoryCode;
 
     @Column(name = "code", length = 20)
     private String code;
+
+    @Column(name = "is_necessary", nullable = false)
+    private boolean necessary;
 }

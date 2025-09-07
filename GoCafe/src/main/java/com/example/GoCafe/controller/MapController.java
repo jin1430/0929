@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-public class MapPageController {
+public class MapController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

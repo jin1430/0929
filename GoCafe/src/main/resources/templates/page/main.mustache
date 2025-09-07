@@ -15,8 +15,8 @@
 
             <div class="cg-chips">
                 {{#cafeTags}}
-                    <button class="cg-chip" data-category="{{tagCategoryCode}}" data-tag="{{tagCode}}">
-                        {{tagCode}}
+                    <button class="cg-chip" data-category="{{categoryCode}}" data-tag="{{code}}">
+                        {{code}}
                     </button>
                 {{/cafeTags}}
             </div>
@@ -31,21 +31,21 @@
         </div>
 
         <ul class="cg-card-grid">
-            {{#trendingCafes}}
+            {{#cafeCards}}
                 <li class="cg-card">
-                    <a class="cg-card__link" href="/cafes/{{cafeId}}">
+                    <a class="cg-card__link" href="/cafes/{{id}}">
                         <div class="cg-card__imgwrap">
-                            <img class="cg-card__img" src="{{cafePhoto}}" alt="{{cafeName}}"
+                            <img class="cg-card__img" src="{{mainPhoto}}" alt="{{name}}"
                                  onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');"/>
                         </div>
                         <div class="cg-card__body">
-                            <div class="cg-card__title">{{cafeName}}</div>
-                            <div class="cg-card__meta">조회수 {{cafeViews}}</div>
+                            <div class="cg-card__title">{{name}}</div>
+                            <div class="cg-card__meta">조회수 {{views}}</div>
                         </div>
                     </a>
                 </li>
-            {{/trendingCafes}}
-            {{^trendingCafes}}<li class="cg-empty">표시할 카페가 아직 없어요.</li>{{/trendingCafes}}
+            {{/cafeCards}}
+            {{^cafeCards}}<li class="cg-empty">표시할 카페가 아직 없어요.</li>{{/cafeCards}}
         </ul>
     </section>
 
@@ -55,10 +55,10 @@
         <ul class="cg-feed">
             {{#recentReviews}}
                 <li class="cg-feed__item">
-                    <p class="cg-feed__text">{{reviewContent}}</p>
+                    <p class="cg-feed__text">{{content}}</p>
                     <div class="cg-feed__meta">
-                        <span>{{reviewDate}}</span>
-                        <span>좋아요 {{reviewGood}} / 아쉬워요 {{reviewBad}}</span>
+                        <span>{{createdAt}}</span>
+                        <span>좋아요 {{good}} / 아쉬워요 {{bad}}</span>
                     </div>
                 </li>
             {{/recentReviews}}

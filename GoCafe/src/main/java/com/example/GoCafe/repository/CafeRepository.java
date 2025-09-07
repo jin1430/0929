@@ -10,7 +10,9 @@ import java.util.List;
 @Repository
 public interface CafeRepository extends JpaRepository<Cafe, Long> {
     List<Cafe> findByStatus(CafeStatus status);
-    boolean existsByCafeName(String cafeName);
-    boolean existsByCafeNumber(String cafeNumber);
 
+    boolean existsByName(String cafeName);
+    boolean existsByNumber(String cafeNumber);
+
+    List<Cafe> findTop8ByOrderByViewsDesc();
 }

@@ -1,5 +1,6 @@
 package com.example.GoCafe.dto;
 
+import com.example.GoCafe.entity.Review;
 import com.example.GoCafe.entity.ReviewPhoto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,16 +12,15 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewPhotoForm {
 
-    private Long reviewId;             // 부모 리뷰 ID (필수)
-    private String reviewPhotoUrl;     // 저장된 파일 경로/URL (필수)
-    private int reviewPhotoSortOrder;  // 정렬 순서 (미전송 시 0으로 바인딩됨)
+    private Long reviewId;
+    private String url;
+    private int sortIndex;
 
-    public ReviewPhoto toEntity() {
-        return new ReviewPhoto(
-                null,
-                reviewId,
-                reviewPhotoUrl,
-                reviewPhotoSortOrder
-        );
+    public ReviewPhoto toNewEntity(Review review) {
+        ReviewPhoto entity = new ReviewPhoto();
+        entity.setReview(review);
+        entity.setUrl(url);
+        entity.setSortIndex(sortIndex);
+        return entity;
     }
 }

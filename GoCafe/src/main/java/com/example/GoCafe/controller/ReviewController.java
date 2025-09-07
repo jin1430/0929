@@ -1,4 +1,3 @@
-// src/main/java/com/example/GoCafe/controller/ReviewController.java
 package com.example.GoCafe.controller;
 
 import com.example.GoCafe.dto.ReviewCreateForm;
@@ -75,7 +74,7 @@ public class ReviewController {
 
         // 2) 로그인 사용자 → Member 조회
         String email = authentication.getName(); // JwtTokenProvider.setSubject(email)
-        Member me = memberRepository.findByMemberEmail(email)
+        Member me = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("로그인 사용자 정보를 찾을 수 없습니다."));
 
         // 3) Cafe 조회
@@ -83,34 +82,34 @@ public class ReviewController {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
 
         // 4) Review 저장 (엔티티 연관관계 + 설문 필드까지 함께 반영)
-        Review r = Review.builder()
+        Review review = Review.builder()
                 .cafe(cafe)
                 .member(me)
-                .reviewContent(form.getReviewContent())
-                .reviewGood(0) // int
-                .reviewBad(0)  // int
+                .content(form.getReviewContent())
+                .good(0) // int
+                .bad(0)  // int
                 .waitingTime(form.getWaitingTime())
                 .companionType(form.getCompanionType())
                 .taste(form.getTaste())
                 .sentiment(form.getSentiment())
                 .likedTagCsv(form.getLikedTagCodes() != null ? String.join(",", form.getLikedTagCodes()) : null)
-                .reviewDate(LocalDateTime.now()) // @PrePersist가 있더라도 여기서 명시
+                .createdAt(LocalDateTime.now()) // @PrePersist가 있더라도 여기서 명시
                 .build();
 
-        reviewRepository.save(r);
+        reviewRepository.save(review);
 
         // 5) 설문/태그 저장 (기존 태그 테이블 유지)
         if (form.getWaitingTime() != null)
-            reviewTagRepository.save(new ReviewTag(null, r.getReviewId(), "WAIT", String.valueOf(form.getWaitingTime())));
+            reviewTagRepository.save(new ReviewTag(null, review, "WAIT", String.valueOf(form.getWaitingTime())));
         if (form.getCompanionType() != null && !form.getCompanionType().isBlank())
-            reviewTagRepository.save(new ReviewTag(null, r.getReviewId(), "COMPANION", form.getCompanionType()));
+            reviewTagRepository.save(new ReviewTag(null, review, "COMPANION", form.getCompanionType()));
         if (form.getTaste() != null)
-            reviewTagRepository.save(new ReviewTag(null, r.getReviewId(), "TASTE", String.valueOf(form.getTaste())));
+            reviewTagRepository.save(new ReviewTag(null, review, "TASTE", String.valueOf(form.getTaste())));
         if (form.getLikedTagCodes() != null)
             for (String code : form.getLikedTagCodes())
-                reviewTagRepository.save(new ReviewTag(null, r.getReviewId(), "LIKE", code));
+                reviewTagRepository.save(new ReviewTag(null, review, "LIKE", code));
         if (form.getSentiment() != null && !form.getSentiment().isBlank())
-            reviewTagRepository.save(new ReviewTag(null, r.getReviewId(), "SENTIMENT", form.getSentiment()));
+            reviewTagRepository.save(new ReviewTag(null, review, "SENTIMENT", form.getSentiment()));
 
         // TODO: photos 저장은 기존 이미지 업로드 모듈에 연결
 

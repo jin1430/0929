@@ -1,6 +1,6 @@
 package com.example.GoCafe.apiController;
 
-import com.example.GoCafe.entity.Needs;
+import com.example.GoCafe.entity.UserNeeds;
 import com.example.GoCafe.service.NeedsService;
 import com.example.GoCafe.support.EntityIdUtil;
 import jakarta.validation.Valid;
@@ -21,25 +21,25 @@ public class NeedsApiController {
     private final NeedsService service;
 
     @GetMapping
-    public List<Needs> getAll() {
+    public List<UserNeeds> getAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Needs getOne(@PathVariable Long id) {
+    public UserNeeds getOne(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Needs> create(@RequestBody @Valid Needs body, UriComponentsBuilder uriBuilder) {
-        Needs saved = service.create(body);
+    public ResponseEntity<UserNeeds> create(@RequestBody @Valid UserNeeds body, UriComponentsBuilder uriBuilder) {
+        UserNeeds saved = service.create(body);
         Object id = EntityIdUtil.getId(saved);
         URI location = uriBuilder.path("/api/needs/{id}").buildAndExpand(id).toUri();
         return ResponseEntity.created(location).body(saved);
     }
 
     @PutMapping("/{id}")
-    public Needs update(@PathVariable Long id, @RequestBody @Valid Needs body) {
+    public UserNeeds update(@PathVariable Long id, @RequestBody @Valid UserNeeds body) {
         return service.update(id, body);
     }
 

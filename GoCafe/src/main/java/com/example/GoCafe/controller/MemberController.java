@@ -1,4 +1,3 @@
-// src/main/java/com/example/GoCafe/controller/MemberController.java
 package com.example.GoCafe.controller;
 
 import com.example.GoCafe.dto.MemberForm;
@@ -26,57 +25,67 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/me")
-    public String myPage(@AuthenticationPrincipal User principal, Model model) {
+    public String myPage(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+                         Model model) {
+        // 로그인 여부 확인
         if (principal == null) return "redirect:/login";
 
+        // 사용자 조회
         Member member = memberService.findByEmail(principal.getUsername());
-        MemberForm view = new MemberForm(
-                member.getMemberId(),
-                member.getMemberEmail(),
-                (String) null, // 비밀번호 노출 금지
-                member.getMemberNickname(),
-                member.getMemberAge(),
-                member.getMemberGender(),
-                member.getMemberRole(),
-                member.getMemberDate(),
-                member.getMemberPhoto(),
-                member.getTokenVersion(),
-                (Cafe) member.getFavorites()
-        );
+        if (member == null) return "redirect:/login"; // 존재하지 않으면 로그인 다시
 
+        // MemberForm은 생성자 대신 setter로 채움
+        MemberForm view = new MemberForm();
+        view.setId(member.getId());
+        view.setEmail(member.getEmail());
+        // 비밀번호는 노출 금지
+        view.setNickname(member.getNickname());
+        view.setAge(member.getAge());
+        view.setGender(member.getGender());
+        view.setRoleKind(member.getRoleKind());
+        view.setCreatedAt(member.getCreatedAt());
+        view.setPhoto(member.getPhoto());
+        view.setTokenVersion(member.getTokenVersion());
+        // member.getFavorites()는 List<Favorite>일 가능성 높음. 필요하면 별도 모델 속성으로 전달
+
+        // 모델 바인딩
         model.addAttribute("isLoggedIn", true);
-        model.addAttribute("currentUserNickname", member.getMemberNickname());
+        model.addAttribute("currentUserNickname", member.getNickname());
         model.addAttribute("member", view);
-        model.addAttribute("memberPhoto", member.getMemberPhoto() == null ? "" : member.getMemberPhoto());
+        model.addAttribute("memberPhoto", member.getPhoto() == null ? "" : member.getPhoto());
+        // model.addAttribute("favorites", member.getFavorites()); // 즐겨찾기 목록이 필요하면 사용
 
         return "member/mypage";
     }
 
-    // ====== 프로필 수정 화면 ======
+
+    // 프로필 수정 화면
     @GetMapping("/edit")
-    public String edit(@AuthenticationPrincipal User principal, Model model) {
+    public String edit(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+                       Model model) {
         if (principal == null) return "redirect:/login";
 
         Member member = memberService.findByEmail(principal.getUsername());
-        MemberForm view = new MemberForm(
-                member.getMemberId(),
-                member.getMemberEmail(),
-                (String) null,
-                member.getMemberNickname(),
-                member.getMemberAge(),
-                member.getMemberGender(),
-                member.getMemberRole(),
-                member.getMemberDate(),
-                member.getMemberPhoto(),
-                member.getTokenVersion(),
-                (Cafe) member.getFavorites()
-        );
+        if (member == null) return "redirect:/login";
+
+        // MemberForm은 생성자 대신 setter 사용
+        MemberForm view = new MemberForm();
+        view.setId(member.getId());
+        view.setEmail(member.getEmail());
+        // 비밀번호는 노출/세팅 금지
+        view.setNickname(member.getNickname());
+        view.setAge(member.getAge());
+        view.setGender(member.getGender());
+        view.setRoleKind(member.getRoleKind());
+        view.setCreatedAt(member.getCreatedAt());
+        view.setPhoto(member.getPhoto());
+        view.setTokenVersion(member.getTokenVersion());
 
         // 본문 모델
         model.addAttribute("member", view);
 
-        // ★ 사진 파생 값: 템플릿에서 memberPhoto를 쓰지 않도록 최상위 키로 제공
-        String photoName = member.getMemberPhoto();
+        // 사진 파생 값
+        String photoName = member.getPhoto();
         boolean hasPhoto = photoName != null && !photoName.isBlank();
         model.addAttribute("photoName", hasPhoto ? photoName : "");
         model.addAttribute("photoUrl", hasPhoto ? "/images/profile/" + photoName : "");
@@ -85,10 +94,9 @@ public class MemberController {
         return "member/edit";
     }
 
-
-    // ====== 프로필 수정 + (옵션) 비번 변경 ======
+    // 프로필 수정
     @PostMapping("/edit")
-    public String editDo(@AuthenticationPrincipal User principal,
+    public String editDo(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
                          @RequestParam(value = "member_nickname", required = false) String nickname,
                          @RequestParam(value = "member_age", required = false) Long age,
                          @RequestParam(value = "member_gender", required = false) String gender,
@@ -97,14 +105,19 @@ public class MemberController {
                          @RequestParam(value = "new_password", required = false) String newPassword,
                          HttpServletRequest request,
                          HttpServletResponse response) {
+        // 로그인 확인
         if (principal == null) return "redirect:/login";
 
-        Long myId = memberService.findByEmail(principal.getUsername()).getMemberId();
+        // 현재 회원 조회
+        Member me = memberService.findByEmail(principal.getUsername());
+        if (me == null) return "redirect:/login";
+
+        // 부분 수정은 서비스에서 null 무시 방식으로 처리
         boolean pwChanged = memberService.updateSelf(
-                myId, nickname, age, gender, photo, currentPassword, newPassword
+                me.getId(), nickname, age, gender, photo, currentPassword, newPassword
         );
 
-        // 비번을 바꿨다면 보안을 위해 재로그인 유도
+        // 비밀번호 변경 시 강제 로그아웃
         if (pwChanged) {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             new SecurityContextLogoutHandler().logout(request, response, auth);
@@ -113,31 +126,43 @@ public class MemberController {
         return "redirect:/member/me?update=success";
     }
 
-    // --- 탈퇴 확인 화면 ---
+    // 탈퇴 확인 화면
     @GetMapping("/withdraw")
-    public String withdrawPage(@AuthenticationPrincipal User principal, Model model) {
+    public String withdrawPage(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
+                               Model model) {
+        // 로그인 확인
         if (principal == null) return "redirect:/login";
+
+        // 현재 회원 조회
         Member me = memberService.findByEmail(principal.getUsername());
-        model.addAttribute("email", me.getMemberEmail());   // 점표기 회피용 단일 키
-        model.addAttribute("nickname", me.getMemberNickname());
-        return "member/withdraw"; // templates/member/withdraw.mustache
+        if (me == null) return "redirect:/login";
+
+        // 점표기 회피용 단일 키
+        model.addAttribute("email", me.getEmail());
+        model.addAttribute("nickname", me.getNickname());
+        return "member/withdraw";
     }
 
-    // --- 실제 탈퇴 실행 ---
+    // 탈퇴 실행
     @PostMapping("/withdraw")
-    public String withdrawDo(@AuthenticationPrincipal User principal,
+    public String withdrawDo(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
                              HttpServletRequest request,
                              HttpServletResponse response) {
+        // 로그인 확인
         if (principal == null) return "redirect:/login";
 
-        Long myId = memberService.findByEmail(principal.getUsername()).getMemberId();
-        memberService.withdrawSelf(myId);
+        // 현재 회원 조회
+        Member me = memberService.findByEmail(principal.getUsername());
+        if (me == null) return "redirect:/login";
+
+        // 탈퇴 처리
+        memberService.withdrawSelf(me.getId());
 
         // 세션/시큐리티 컨텍스트 정리
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         new SecurityContextLogoutHandler().logout(request, response, auth);
 
-        // PRG: 홈으로 리다이렉트
+        // PRG
         return "redirect:/?withdraw=success";
     }
 }

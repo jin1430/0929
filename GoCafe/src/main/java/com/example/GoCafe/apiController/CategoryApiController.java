@@ -1,6 +1,6 @@
 package com.example.GoCafe.apiController;
 
-import com.example.GoCafe.entity.Category;
+import com.example.GoCafe.entity.MenuCategory;
 import com.example.GoCafe.service.CategoryService;
 import com.example.GoCafe.support.EntityIdUtil;
 import jakarta.validation.Valid;
@@ -21,25 +21,25 @@ public class CategoryApiController {
     private final CategoryService service;
 
     @GetMapping
-    public List<Category> getAll() {
+    public List<MenuCategory> getAll() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
-    public Category getOne(@PathVariable Long id) {
+    public MenuCategory getOne(@PathVariable Long id) {
         return service.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@RequestBody @Valid Category body, UriComponentsBuilder uriBuilder) {
-        Category saved = service.create(body);
+    public ResponseEntity<MenuCategory> create(@RequestBody @Valid MenuCategory body, UriComponentsBuilder uriBuilder) {
+        MenuCategory saved = service.create(body);
         Object id = EntityIdUtil.getId(saved);
         URI location = uriBuilder.path("/api/categories/{id}").buildAndExpand(id).toUri();
         return ResponseEntity.created(location).body(saved);
     }
 
     @PutMapping("/{id}")
-    public Category update(@PathVariable Long id, @RequestBody @Valid Category body) {
+    public MenuCategory update(@PathVariable Long id, @RequestBody @Valid MenuCategory body) {
         return service.update(id, body);
     }
 

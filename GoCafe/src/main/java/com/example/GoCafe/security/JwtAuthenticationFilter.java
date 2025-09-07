@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Number verClaim = tokenProvider.extractClaim(token, c -> c.get("ver", Number.class)); // null 가능
 
                 if (email != null) {
-                    var opt = memberRepository.findByMemberEmail(email);
+                    var opt = memberRepository.findByEmail(email);
                     if (opt.isPresent()) {
                         long currentVer = opt.get().getTokenVersion() == null ? 0L : opt.get().getTokenVersion();
                         long tokenVer   = verClaim == null ? 0L : verClaim.longValue();

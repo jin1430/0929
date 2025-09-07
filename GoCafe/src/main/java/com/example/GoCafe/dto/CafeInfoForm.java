@@ -1,5 +1,6 @@
 package com.example.GoCafe.dto;
 
+import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.CafeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import lombok.Setter;
 public class CafeInfoForm {
 
     private Long cafeInfoId;
-    private Long cafeId;
+    private Cafe cafe;
     private String cafeNotice;
     private String cafeInfo;
     private String cafeOpenTime;
@@ -22,7 +23,7 @@ public class CafeInfoForm {
     public CafeInfo toEntity() {
         return new CafeInfo(
                 cafeInfoId,
-                cafeId,
+                cafe,
                 cafeNotice,
                 cafeInfo,
                 cafeOpenTime,

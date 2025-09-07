@@ -2,11 +2,9 @@ package com.example.GoCafe.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,31 +18,31 @@ public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", nullable = false, unique = true)
-    private Long memberId;
+    private Long id;
 
-    @Column(name = "member_email", nullable = false, unique = true, length = 100)
-    private String memberEmail;
+    @Column(name = "email", nullable = false, unique = true, length = 100)
+    private String email;
 
-    @Column(name = "member_password", nullable = false, length = 100)
-    private String memberPassword;
+    @Column(name = "password", nullable = false, length = 100)
+    private String password;
 
-    @Column(name = "member_nickname", nullable = false, unique = true, length = 8)
-    private String memberNickname;
+    @Column(name = "nickname", nullable = false, unique = true, length = 8)
+    private String nickname;
 
-    @Column(name = "member_age")
-    private Long memberAge;
+    @Column(name = "age")
+    private Long age;
 
-    @Column(name = "member_gender", length = 1)
-    private String memberGender;
+    @Column(name = "gender", length = 1)
+    private String gender;
 
-    @Column(name = "member_role", nullable = false, length = 20)
-    private String memberRole;
+    @Column(name = "role_kind", nullable = false, length = 20)
+    private String roleKind;
 
-    @Column(name = "member_date", nullable = false)
-    private java.time.LocalDateTime memberDate;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "member_photo", length = 30)
-    private String memberPhoto;
+    @Column(name = "photo", length = 30)
+    private String photo;
 
     @Column(name = "token_version", nullable = false)
     private Long tokenVersion = 0L;
@@ -52,4 +50,8 @@ public class Member {
     @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cafe> cafes = new ArrayList<>();
 }

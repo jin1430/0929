@@ -14,13 +14,13 @@ public interface ReviewTagRepository extends JpaRepository<ReviewTag, Long> {
 
     /* 좋아요 태그 집계 (GOOD 리뷰만) */
     @Query(value = """
-        SELECT t.tag_code AS tagCode, COUNT(*) AS cnt
+        SELECT t.code AS tagCode, COUNT(*) AS cnt
           FROM review_tag t
           JOIN review r ON r.review_id = t.review_id
          WHERE r.cafe_id = :cafeId
-           AND t.tag_category_code = 'LIKE'
+           AND t.category_code = 'LIKE'
            AND r.sentiment = 'GOOD'
-         GROUP BY t.tag_code
+         GROUP BY t.code
          ORDER BY cnt DESC
     """, nativeQuery = true)
     List<Object[]> findLikeTagCountsGood(@Param("cafeId") Long cafeId);
@@ -31,5 +31,5 @@ public interface ReviewTagRepository extends JpaRepository<ReviewTag, Long> {
     @Query(value = "DELETE FROM review_tag WHERE review_id = :reviewId", nativeQuery = true)
     void deleteByReviewId(@Param("reviewId") Long reviewId);
 
-    List<ReviewTag> findByReviewId(Long reviewId);
+    List<ReviewTag> findByReview_Id(Long reviewId);
 }

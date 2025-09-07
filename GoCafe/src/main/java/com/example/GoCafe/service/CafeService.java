@@ -4,7 +4,9 @@ package com.example.GoCafe.service;
 import com.example.GoCafe.domain.CafeStatus;
 import com.example.GoCafe.dto.CafeForm;
 import com.example.GoCafe.entity.Cafe;
+import com.example.GoCafe.entity.CafePhoto;
 import com.example.GoCafe.entity.Member;
+import com.example.GoCafe.repository.CafePhotoRepository;
 import com.example.GoCafe.repository.CafeRepository;
 import com.example.GoCafe.repository.MemberRepository;
 import com.example.GoCafe.support.EntityIdUtil;
@@ -22,15 +24,15 @@ import java.util.List;
 public class CafeService {
 
     private final CafeRepository cafeRepository;
+    private final CafePhotoRepository cafePhotoRepository;
     private final MemberRepository memberRepository;
-    private final FileStorageService fileStorageService; // 파일 저장기(로컬/클라우드)
+    private final FileStorageService fileStorageService;
 
-    /* ========================
-     * 조회
-     * ======================== */
     @Transactional(readOnly = true)
-    public List<Cafe> findAll() {
-        return cafeRepository.findAll();
+    public List<Cafe> findAll() { return cafeRepository.findAll(); }
+
+    public List<Cafe> findTop8ByViews() {
+        return cafeRepository.findTop8ByOrderByViewsDesc(); // DB에서 정렬+TOP8
     }
 
     @Transactional(readOnly = true)
@@ -40,17 +42,12 @@ public class CafeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Cafe> findByStatus(CafeStatus status) {
-        return cafeRepository.findByStatus(status);
-    }
+    public List<Cafe> findByStatus(CafeStatus status) { return cafeRepository.findByStatus(status); }
 
-    /* ========================
-     * 생성/수정/삭제 (엔티티 기반)
-     * ======================== */
+    // 생성/수정/삭제
     @Transactional
     public Cafe create(Cafe entity) {
-        // 신규 등록은 항상 대기 상태로
-        EntityIdUtil.setId(entity, null);
+        EntityIdUtil.setId(entity, null);              // 신규는 id null
         if (entity.getStatus() == null) entity.setStatus(CafeStatus.PENDING);
         return cafeRepository.save(entity);
     }
@@ -60,39 +57,29 @@ public class CafeService {
         Cafe c = cafeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cafe not found: " + id));
 
-        // 소유자/상태/뷰/등록일 등은 보존. 나머지 주요 정보만 갱신
-        if (patch.getCafeName() != null)     c.setCafeName(patch.getCafeName());
-        if (patch.getCafeAddress() != null)  c.setCafeAddress(patch.getCafeAddress());
-        if (patch.getCafeLat() != null)      c.setCafeLat(patch.getCafeLat());
-        if (patch.getCafeLon() != null)      c.setCafeLon(patch.getCafeLon());
-        if (patch.getCafeNumber() != null)   c.setCafeNumber(patch.getCafeNumber());
-        if (patch.getCafePhoto() != null)    c.setCafePhoto(patch.getCafePhoto());
-        if (patch.getCafeCode() != null)     c.setCafeCode(patch.getCafeCode());
-        // 선택 필드들(없을 수도 있어 try)
+        if (patch.getName() != null)     c.setName(patch.getName());
+        if (patch.getAddress() != null)  c.setAddress(patch.getAddress());
+        if (patch.getLat() != null)      c.setLat(patch.getLat());
+        if (patch.getLon() != null)      c.setLon(patch.getLon());
+        if (patch.getNumber() != null)   c.setNumber(patch.getNumber());
+        if (patch.getCode() != null)     c.setCode(patch.getCode());
         try { if (patch.getBizDoc() != null) c.setBizDoc(patch.getBizDoc()); } catch (Throwable ignored) {}
         return c;
     }
 
     @Transactional
     public void delete(Long id) {
-        if (!cafeRepository.existsById(id)) {
-            throw new NotFoundException("Cafe not found: " + id);
-        }
+        if (!cafeRepository.existsById(id)) throw new NotFoundException("Cafe not found: " + id);
         cafeRepository.deleteById(id);
-        // 필요하면 파일도 정리(fileStorageService.delete(...)) — 현재는 생략
+        // 파일 스토리지 정리 필요시 fileStorageService.delete(...) 추가
     }
 
-    /* ========================
-     * 생성 (폼 + 파일 업로드)
-     * ======================== */
-
-    // 기존 호환 시그니처
+    // 생성 (폼 + 파일 업로드)
     @Transactional
     public Long createCafe(Long cafeOwnerId, CafeForm form) throws AccessDeniedException {
         return createCafe(cafeOwnerId, form, null, null);
     }
 
-    // 폼 + 사진/증빙 파일 업로드 포함
     @Transactional
     public Long createCafe(Long cafeOwnerId,
                            CafeForm form,
@@ -100,53 +87,72 @@ public class CafeService {
                            MultipartFile bizDocFile) throws AccessDeniedException {
 
         // 1) 소유자 확인
-        Member member = memberRepository.findById(cafeOwnerId)
+        Member cafeOwner = memberRepository.findById(cafeOwnerId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         // 2) 중복 방지(선택)
-        if (form.getCafeName() != null && cafeRepository.existsByCafeName(form.getCafeName())) {
+        if (form.getName() != null && cafeRepository.existsByName(form.getName()))
             throw new IllegalArgumentException("이미 존재하는 카페명입니다.");
-        }
-        if (form.getCafeNumber() != null && cafeRepository.existsByCafeNumber(form.getCafeNumber())) {
+        if (form.getNumber() != null && cafeRepository.existsByNumber(form.getNumber()))
             throw new IllegalArgumentException("이미 등록된 전화번호입니다.");
-        }
 
-        // 3) 엔티티 생성(기본 상태 PENDING)
+        // 3) 엔티티 생성 + 소유자 연관관계 지정
         Cafe cafe = form.toEntity();
         cafe.setStatus(CafeStatus.PENDING);
-        // 소유자 지정
-        cafe.setCafeOwnerId(cafeOwnerId);
+        cafe.setOwner(cafeOwner);                 // // Member 연관관계로 설정
 
         Cafe saved = cafeRepository.save(cafe);
 
-        // 4) 파일 저장 후 URL 세팅(더티체킹)
+        // 4) 카페 사진 업로드 → CafePhoto INSERT
         if (cafePhotoFile != null && !cafePhotoFile.isEmpty()) {
-            String photoUrl = fileStorageService.save(cafePhotoFile, "cafes/" + saved.getCafeId());
-            saved.setCafePhoto(photoUrl);
+            String photoUrl = fileStorageService.save(cafePhotoFile, "cafes/" + saved.getId());
+
+            boolean hasMain = cafePhotoRepository.existsByCafe_IdAndIsMainTrue(saved.getId()); // 첫 업로드면 자동 메인
+            int nextOrder = (int) cafePhotoRepository.countByCafe_Id(saved.getId());                // 정렬값
+
+            CafePhoto photo = new CafePhoto();
+            photo.setCafe(saved);                     // // FK 연결
+            photo.setUrl(photoUrl);                   // // 저장 경로/URL
+            photo.setSortIndex(nextOrder);         // // 정렬용 숫자(필드명이 int라 여기에 매핑)
+            photo.setMain(!hasMain);             // // 기존 메인 없으면 이번 것을 메인으로
+
+            cafePhotoRepository.save(photo);
         }
+
+        // 5) 사업자 증빙 파일 업로드(선택)
         if (bizDocFile != null && !bizDocFile.isEmpty()) {
-            String docUrl = fileStorageService.save(bizDocFile, "cafes/" + saved.getCafeId() + "/docs");
+            String docUrl = fileStorageService.save(bizDocFile, "cafes/" + saved.getId() + "/docs");
             try { saved.setBizDoc(docUrl); } catch (Throwable ignored) {}
         }
 
-        // 5) 역할 승격(owner)
-        String role = member.getMemberRole();
+        // 6) 역할 승격(owner)
+        String role = cafeOwner.getRoleKind();
         if (role == null || !"owner".equalsIgnoreCase(role)) {
-            member.setMemberRole("owner");
-            memberRepository.save(member);
+            cafeOwner.setRoleKind("owner");
+            memberRepository.save(cafeOwner);
         }
 
-        return saved.getCafeId();
+        return saved.getId();
     }
 
-    /* ========================
-     * 단건 필드 업데이트(파일 경로 등)
-     * ======================== */
+    // 대표 사진 교체(새 URL을 대표로 추가)
     @Transactional
     public void updateCafePhoto(Long cafeId, String photoUrl) {
         Cafe c = cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new NotFoundException("Cafe not found: " + cafeId));
-        c.setCafePhoto(photoUrl);
+
+        // 기존 메인 해제
+        List<CafePhoto> all = cafePhotoRepository.findByCafe_Id(cafeId);
+        for (CafePhoto p : all) p.setMain(false);
+
+        // 새 엔티티 생성 → 메인 지정
+        CafePhoto photo = new CafePhoto();
+        photo.setCafe(c);
+        photo.setUrl(photoUrl);
+        photo.setMain(true);
+        photo.setSortIndex(all.size());           // // 마지막 뒤에 정렬
+
+        cafePhotoRepository.save(photo);             // // 컬렉션 카스케이드에 의존하지 않고 명시 저장
     }
 
     @Transactional
@@ -158,16 +164,12 @@ public class CafeService {
         }
     }
 
-    /* ========================
-     * 승인/거절
-     * ======================== */
-    @Transactional
-    public void changeStatus(Long cafeId, CafeStatus status) {
+    // 상태 변경
+    @Transactional public void changeStatus(Long cafeId, CafeStatus status) {
         Cafe c = cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new IllegalArgumentException("Cafe not found: " + cafeId));
         c.setStatus(status);
     }
-
     @Transactional public void approve(Long cafeId) { changeStatus(cafeId, CafeStatus.APPROVED); }
     @Transactional public void reject(Long cafeId)  { changeStatus(cafeId, CafeStatus.REJECTED); }
 }

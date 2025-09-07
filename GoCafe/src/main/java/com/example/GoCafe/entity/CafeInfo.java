@@ -5,35 +5,39 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor
 @Entity
 @Table(name = "cafe_info")
-@Getter
-@Setter
+@Getter @Setter
 @AllArgsConstructor
 public class CafeInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cafe_info_id", nullable = false, unique = true)
-    private Long cafeInfoId;
+    private Long id;
 
-    @Column(name = "cafe_id", nullable = false, unique = true)
-    private Long cafeId;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cafe_id", nullable = false, unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Cafe cafe;
 
-    @Column(name = "cafe_notice", length = 20)
-    private String cafeNotice;
+    @Column(name = "notice", length = 20)
+    private String notice;
 
-    @Column(name = "cafe_info", length = 300)
-    private String cafeInfo;
+    @Column(name = "info", length = 500)
+    private String info;
 
-    @Column(name = "cafe_open_time", length = 7)
-    private String cafeOpenTime;
+    @Column(name = "open_time", length = 7)
+    private String openTime;
 
-    @Column(name = "cafe_close_time", length = 7)
-    private String cafeCloseTime;
+    @Column(name = "close_time", length = 7)
+    private String closeTime;
 
-    @Column(name = "cafe_holiday", length = 7)
-    private String cafeHoliday;
+    @Column(name = "holiday", length = 7)
+    private String holiday;
+
 }

@@ -1,6 +1,7 @@
 package com.example.GoCafe.dto;
 
-import com.example.GoCafe.entity.Category;
+import com.example.GoCafe.entity.Cafe;
+import com.example.GoCafe.entity.MenuCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,10 @@ import lombok.Setter;
 public class CategoryForm {
 
     private Long categoryId;
-    private Long cafeId;
+    private Cafe cafe;
     private String category;
 
-    public Category toEntity() {
-        return new Category(categoryId, cafeId, category);
+    public MenuCategory toEntity() {
+        return new MenuCategory(categoryId, cafe, category);
     }
 }

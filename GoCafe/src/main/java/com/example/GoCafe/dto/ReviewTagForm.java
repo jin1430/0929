@@ -1,5 +1,6 @@
 package com.example.GoCafe.dto;
 
+import com.example.GoCafe.entity.Review;
 import com.example.GoCafe.entity.ReviewTag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,17 +12,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ReviewTagForm {
 
-    private Long reviewTagId;
+    private Long id;
     private Long reviewId;
-    private String tagCategoryCode;
-    private String tagCode;
+    private String categoryCode;
+    private String code;
 
-    public ReviewTag toEntity() {
-        return new ReviewTag(
-                reviewTagId,
-                reviewId,
-                tagCategoryCode,
-                tagCode
-        );
+    public ReviewTag toNewEntity(Review review) {
+        ReviewTag entity = new ReviewTag();
+        entity.setReview(review);
+        entity.setCategoryCode(categoryCode);
+        entity.setCode(code);
+        return entity;
     }
 }

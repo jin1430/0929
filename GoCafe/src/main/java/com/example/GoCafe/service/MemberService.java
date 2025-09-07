@@ -54,7 +54,7 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
-        return repository.findByMemberEmail(email)
+        return repository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found by email: " + email));
     }
 
@@ -77,28 +77,26 @@ public class MemberService {
 
         // 닉네임 변경 중복 체크
         if (nickname != null && !nickname.isBlank()
-                && !nickname.equals(m.getMemberNickname())
-                && repository.existsByMemberNickname(nickname)) {
+                && !nickname.equals(m.getNickname())
+                && repository.existsByNickname(nickname)) {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
         // 일반 프로필 변경
-        if (nickname != null && !nickname.isBlank()) m.setMemberNickname(nickname);
-        if (age != null) m.setMemberAge(age);
-        if (gender != null && !gender.isBlank()) m.setMemberGender(gender);
-        if (photo != null) m.setMemberPhoto(photo);
+        if (nickname != null && !nickname.isBlank()) m.setNickname(nickname);
+        if (age != null) m.setAge(age);
+        if (gender != null && !gender.isBlank()) m.setGender(gender);
+        if (photo != null) m.setPhoto(photo);
 
         // 비번 변경 (둘 다 들어온 경우에만 시도)
         boolean changePw = (currentPasswordNullable != null && !currentPasswordNullable.isBlank()
                 && newPasswordNullable != null && !newPasswordNullable.isBlank());
 
         if (changePw) {
-            if (!passwordEncoder.matches(currentPasswordNullable, m.getMemberPassword())) {
+            if (!passwordEncoder.matches(currentPasswordNullable, m.getPassword())) {
                 throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
             }
-            m.setMemberPassword(passwordEncoder.encode(newPasswordNullable));
-            bumpTokenVersionInternal(m); // 세션/토큰 무효화 의도
-            return true;
+            m.setPassword(passwordEncoder.encode(newPasswordNullable));
         }
 
         return false;

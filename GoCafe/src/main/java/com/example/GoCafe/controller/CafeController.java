@@ -8,6 +8,7 @@ import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.entity.ReviewPhoto;
 import com.example.GoCafe.repository.ReviewTagRepository;
 import com.example.GoCafe.service.*;
+import com.example.GoCafe.support.NotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -60,7 +61,7 @@ public class CafeController {
             return "redirect:/login";
         }
 
-        Long cafeId = cafeService.createCafe(me.getMemberId(), form, cafePhotoFile, bizDocFile);
+        Long cafeId = cafeService.createCafe(me.getId(), form, cafePhotoFile, bizDocFile);
 
         ra.addFlashAttribute("msg", "카페가 등록되었습니다. (승인 대기 중)");
         return "redirect:/cafes/" + cafeId;
@@ -85,27 +86,25 @@ public class CafeController {
         }
         if (email != null) {
             Member me = memberService.findByEmail(email);
-            meId = (me != null ? me.getMemberId() : null);
+            meId = (me != null ? me.getId() : null);
         }
-        boolean isOwner = (meId != null && cafe.getCafeOwnerId() != null
-                && meId.equals(cafe.getCafeOwnerId()));
+        boolean isOwner = (meId != null && cafe.getOwner() != null
+                && meId.equals(cafe.getOwner()));
 
         // 3) 승인 전 카페 접근 제한
         if (cafe.getStatus() != CafeStatus.APPROVED && !(isOwner || isAdmin)) {
-            throw new com.example.GoCafe.support.NotFoundException("승인되지 않은 카페입니다.");
+            throw new NotFoundException("승인되지 않은 카페입니다.");
         }
 
         // 4) 모델—카페 본문
         model.addAttribute("cafe", cafe);
 
         // 5) 리뷰 목록 + 사진 주입
-        var reviews = reviewService.findByCafeIdWithMember(cafeId);
+        var reviews = reviewService.findByCafeIdWithMember(cafeId);  // member는 fetch join 가정
         for (var r : reviews) {
-            var list = reviewPhotoService.getPhotos(r.getReviewId())
-                    .stream()
-                    .map(ReviewPhoto::getReviewPhotoUrl)
-                    .toList();
-            r.setPhotos(list); // List<String>
+            // 사진 엔티티 목록을 그대로 주입 (정렬은 sortIndex ASC)
+            var photos = reviewPhotoService.findByReviewIdOrderBySortIndexAsc(r.getId());
+            r.setPhotos(photos);
         }
         model.addAttribute("reviews", reviews);
 
@@ -115,7 +114,7 @@ public class CafeController {
         model.addAttribute("cafeBad",  stats.get("bad"));
         model.addAttribute("cafeTags", stats.get("tags"));
 
-        // 7) 즐겨찾기 상태/카운트 (서비스 사용)
+        // 7) 즐겨찾기 상태/카운트
         boolean isFavorited = false;
         if (email != null) {
             isFavorited = favoriteService.isFavoritedByEmail(email, cafeId);
@@ -126,4 +125,5 @@ public class CafeController {
 
         return "cafes/detail";
     }
+
 }

@@ -1,172 +1,140 @@
 {{>layout/header}}
 
-<main class="cg-container" {{#cafe}}data-cafe-id="{{cafeId}}"{{/cafe}}>
+<main class="cg-container" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
 
-    <!-- 헤더/히어로 -->
-    <section class="cg-hero cg-hero--one">
+    <!-- ===== Hero (좌: 메인 사진 / 우: 정보) ===== -->
+    <section class="cg-hero">
         {{#cafe}}
             <div class="cg-hero__inner">
+                <!-- 좌측: 메인 사진 -->
                 <div class="cg-hero__left">
-                    <h1 class="cg-title">{{cafeName}}</h1>
-                    <div class="cg-hero__meta">
-                        {{#cafeViews}}<span>조회수 {{cafeViews}}</span>{{/cafeViews}}
-                        {{^cafeViews}}<span>조회수 0</span>{{/cafeViews}}
+                    <div class="cg-hero__imgwrap">
+                        {{#mainPhoto}}
+                            <img class="cg-card__img" src="{{mainPhoto}}" alt="{{name}}"
+                                 onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');">
+                        {{/mainPhoto}}
+                        {{^mainPhoto}}
+                            <img class="cg-card__img" src="/images/placeholder-cafe.jpg" alt="이미지 없음"
+                                 onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');">
+                        {{/mainPhoto}}
+                    </div>
+                </div>
+
+                <!-- 우측: 제목/메타/정보/태그/버튼 -->
+                <div class="cg-hero__right">
+                    <h1 class="cg-title" style="margin:0 0 8px 0">{{name}}</h1>
+
+                    <div class="cg-hero__meta" style="margin-bottom:12px;display:flex;gap:8px;color:#64748b">
+                        {{#views}}<span>조회수 {{views}}</span>{{/views}}{{^views}}<span>조회수 0</span>{{/views}}
                         <span class="cg-dot">·</span>
-                        {{#cafeDateFmt}}<span>등록 {{cafeDateFmt}}</span>{{/cafeDateFmt}}
-                        {{^cafeDateFmt}}<span>등록 {{cafeDate}}</span>{{/cafeDateFmt}}
+                        {{#dateFmt}}<span>등록 {{dateFmt}}</span>{{/dateFmt}}{{^dateFmt}}<span>등록 {{date}}</span>{{/dateFmt}}
                         <span class="cg-dot">·</span>
                         <span>좋아요 {{cafeGood}} / 아쉬워요 {{cafeBad}}</span>
                     </div>
 
+                    <div class="cg-info-plain">
+                        <dl class="cg-dl">
+                            <div class="cg-dl__row"><dt>주소</dt><dd>{{address}}</dd></div>
+                            <div class="cg-dl__row"><dt>전화번호</dt><dd>{{number}}</dd></div>
+                            <div class="cg-dl__row"><dt>좌표</dt><dd>{{lat}}, {{lon}}</dd></div>
+                        </dl>
+                    </div>
+
                     <!-- 태그 칩 -->
-                    <div class="cg-chips">
+                    <div class="cg-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
                         {{#cafeTags}}
-                            <button class="cg-chip" data-category="{{tagCategoryCode}}" data-tag="{{tagCode}}">
-                                {{tagCode}}<small class="cg-badge">{{count}}</small>
+                            <button class="cg-chip" data-category="{{categoryCode}}" data-tag="{{code}}">
+                                {{code}}{{#count}}<small class="cg-badge">{{count}}</small>{{/count}}
                             </button>
                         {{/cafeTags}}
                         {{^cafeTags}}<span class="cg-empty">등록된 태그가 없어요.</span>{{/cafeTags}}
                     </div>
 
                     <!-- 주요 액션 -->
-                    <div class="cg-actions">
-                        <a class="cg-btn-outline" href="tel:{{cafeNumber}}">전화하기</a>
+                    <div class="cg-actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+                        <a class="cg-btn-outline" href="tel:{{number}}">전화하기</a>
                         <a class="cg-btn-outline" target="_blank"
-                           href="https://map.kakao.com/link/to/{{cafeName}},{{cafeLat}},{{cafeLon}}">
-                            길찾기
-                        </a>
+                           href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">길찾기</a>
 
-                        <!-- 해시(#reviewModal) 대신 JS로 여는 버튼 -->
                         <a class="cg-btn"
                            href="#"
                            data-review-modal
-                           data-cafe-id="{{cafeId}}">후기 작성</a>
+                           data-cafe-id="{{id}}">후기 작성</a>
 
-
-                        <!-- ✅ 즐겨찾기 버튼: 서버가 isFavorited/favoriteCount를 내려주면 더 좋음 -->
                         <button id="favBtn"
                                 class="cg-btn-outline"
-                                data-cafe-id="{{cafeId}}"
+                                data-cafe-id="{{id}}"
                                 data-favorited="{{isFavorited}}">
                             {{#isFavorited}}즐겨찾기 해제{{/isFavorited}}{{^isFavorited}}즐겨찾기{{/isFavorited}}
                         </button>
 
-                        <!-- (선택) 카운트 노출 -->
                         <span id="favCount" style="margin-left:6px">
-                        {{#favoriteCount}}즐겨찾기 {{favoriteCount}}{{/favoriteCount}}{{^favoriteCount}}즐겨찾기 0{{/favoriteCount}}
-                         </span>
+              {{#favoriteCount}}즐겨찾기 {{favoriteCount}}{{/favoriteCount}}{{^favoriteCount}}즐겨찾기 0{{/favoriteCount}}
+            </span>
 
                         {{#isOwner}}
-                            <a class="cg-btn-outline" href="/cafes/{{cafeId}}/edit">정보 수정</a>
-                            <form method="post" action="/cafes/{{cafeId}}/delete" style="display:inline">
+                            <a class="cg-btn-outline" href="/cafes/{{id}}/edit">정보 수정</a>
+                            <form method="post" action="/cafes/{{id}}/delete" style="display:inline">
                                 {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
                                 <button class="cg-btn-outline" type="submit" onclick="return confirm('삭제하시겠어요?')">삭제</button>
                             </form>
                         {{/isOwner}}
                     </div>
                 </div>
-
-                <div class="cg-hero__right">
-                    <div class="cg-card__imgwrap cg-hero__imgwrap">
-                        <img class="cg-card__img" src="{{cafePhoto}}" alt="{{cafeName}}"
-                             onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');"/>
-                    </div>
-                </div>
             </div>
         {{/cafe}}
     </section>
 
-    <!-- 기본 정보 -->
-    <section class="cg-section">
-        <div class="cg-section__head"><h3>기본 정보</h3></div>
-        <div class="cg-card">
-            <div class="cg-card__body">
-                {{#cafe}}
-                    <dl class="cg-dl">
-                        <div class="cg-dl__row">
-                            <dt>주소</dt>
-                            <dd>{{cafeAddress}}</dd>
-                        </div>
-                        <div class="cg-dl__row">
-                            <dt>전화번호</dt>
-                            <dd>{{cafeNumber}}</dd>
-                        </div>
-                        <div class="cg-dl__row">
-                            <dt>좌표</dt>
-                            <dd>{{cafeLat}}, {{cafeLon}}</dd>
-                        </div>
-                    </dl>
-                {{/cafe}}
-            </div>
-        </div>
-    </section>
-
-    <!-- 영업 정보 -->
+    <!-- ===== 영업 정보 / 소개 ===== -->
     <section class="cg-section">
         <div class="cg-section__head"><h3>영업 정보</h3></div>
         <div class="cg-grid2">
-            <div class="cg-card">
-                <div class="cg-card__body">
-                    {{#info}}
-                        <dl class="cg-dl">
-                            <div class="cg-dl__row">
-                                <dt>오픈</dt>
-                                <dd>{{cafeOpenTime}}</dd>
-                            </div>
-                            <div class="cg-dl__row">
-                                <dt>마감</dt>
-                                <dd>{{cafeCloseTime}}</dd>
-                            </div>
-                            <div class="cg-dl__row">
-                                <dt>휴무일</dt>
-                                <dd>{{cafeHoliday}}</dd>
-                            </div>
-                        </dl>
-                    {{/info}}
-                    {{^info}}<div class="cg-empty">영업 정보가 아직 없어요.</div>{{/info}}
-                </div>
-            </div>
+            <div class="cg-card"><div class="cg-card__body">
+                {{#info}}
+                    <dl class="cg-dl">
+                        <div class="cg-dl__row"><dt>오픈</dt><dd>{{cafeOpenTime}}</dd></div>
+                        <div class="cg-dl__row"><dt>마감</dt><dd>{{cafeCloseTime}}</dd></div>
+                        <div class="cg-dl__row"><dt>휴무일</dt><dd>{{cafeHoliday}}</dd></div>
+                    </dl>
+                {{/info}}
+                {{^info}}<div class="cg-empty">영업 정보가 아직 없어요.</div>{{/info}}
+            </div></div>
 
-            <div class="cg-card">
-                <div class="cg-card__body">
-                    {{#info}}
-                        {{#cafeNotice}}<div class="cg-note"><strong>공지</strong> {{cafeNotice}}</div>{{/cafeNotice}}
-                        {{#cafeInfo}}<p class="cg-desc">{{cafeInfo}}</p>{{/cafeInfo}}
-                        {{^cafeNotice}}{{^cafeInfo}}<div class="cg-empty">소개/공지 정보가 아직 없어요.</div>{{/cafeInfo}}{{/cafeNotice}}
-                    {{/info}}
-                    {{^info}}<div class="cg-empty">소개/공지 정보가 아직 없어요.</div>{{/info}}
-                </div>
-            </div>
+            <div class="cg-card"><div class="cg-card__body">
+                {{#info}}
+                    {{#cafeNotice}}<div class="cg-note"><strong>공지</strong> {{cafeNotice}}</div>{{/cafeNotice}}
+                    {{#cafeInfo}}<p class="cg-desc">{{cafeInfo}}</p>{{/cafeInfo}}
+                    {{^cafeNotice}}{{^cafeInfo}}<div class="cg-empty">소개/공지 정보가 아직 없어요.</div>{{/cafeInfo}}{{/cafeNotice}}
+                {{/info}}
+                {{^info}}<div class="cg-empty">소개/공지 정보가 아직 없어요.</div>{{/info}}
+            </div></div>
         </div>
     </section>
 
-    <!-- 위치 -->
+    <!-- ===== 위치(지도) ===== -->
     <section class="cg-section">
         <div class="cg-section__head"><h3>위치</h3></div>
-        <div class="cg-card">
-            <div class="cg-card__body">
-                {{#cafe}}
-                    <div id="map" class="cg-map" data-lat="{{cafeLat}}" data-lon="{{cafeLon}}" data-name="{{cafeName}}">
-                        <div class="cg-empty">지도가 여기에 표시됩니다.</div>
-                    </div>
-                {{/cafe}}
-            </div>
-        </div>
+        <div class="cg-card"><div class="cg-card__body">
+            {{#cafe}}
+                <div id="map" class="cg-map" data-lat="{{lat}}" data-lon="{{lon}}" data-name="{{name}}">
+                    <div class="cg-empty">지도가 여기에 표시됩니다.</div>
+                </div>
+            {{/cafe}}
+        </div></div>
     </section>
 
-    <!-- 메뉴 -->
+    <!-- ===== 메뉴 ===== -->
     <section class="cg-section">
         <div class="cg-section__head">
             <h3>메뉴</h3>
-            {{#cafe}}<a class="cg-link" href="/cafes/{{cafeId}}/menu">전체 메뉴</a>{{/cafe}}
+            {{#cafe}}<a class="cg-link" href="/cafes/{{id}}/menu">전체 메뉴</a>{{/cafe}}
         </div>
-
         <ul class="cg-card-grid">
             {{#menus}}
                 <li class="cg-card">
                     <div class="cg-card__imgwrap">
                         <img class="cg-card__img" src="{{menuPhoto}}" alt="{{menuName}}"
-                             onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');"/>
+                             onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');" />
                     </div>
                     <div class="cg-card__body">
                         <div class="cg-card__title">{{menuName}}</div>
@@ -178,10 +146,9 @@
         </ul>
     </section>
 
-    <!-- 방문자 리뷰 -->
+    <!-- ===== 방문자 리뷰 ===== -->
     <section class="cg-section">
         <div class="cg-section__head"><h3>방문자 리뷰</h3></div>
-
         <ul class="cg-feed">
             {{#reviews}}
                 <li class="cg-feed__item">
@@ -190,7 +157,8 @@
                     {{#photos}}
                         <div class="cg-feed__photos" data-review-photos>
                             {{#photos}}
-                                <img class="cg-feed__photo" src="{{.}}" alt="리뷰 사진" loading="lazy" onerror="this.style.display='none'"/>
+                                <img class="cg-feed__photo" src="{{.}}" alt="리뷰 사진" loading="lazy"
+                                     onerror="this.style.display='none'"/>
                             {{/photos}}
                             <span class="cg-feed__photo-count" hidden></span>
                         </div>
@@ -207,75 +175,61 @@
         </ul>
     </section>
 
+    <!-- ===== 사진 갤러리 (옵션: 모델에 cafePhotos 있을 때) ===== -->
+    <section class="cg-section">
+        <div class="cg-section__head"><h3>사진</h3></div>
+        <ul class="cg-card-grid">
+            {{#cafePhotos}}
+                <li class="cg-card">
+                    <div class="cg-card__imgwrap">
+                        <img class="cg-card__img" src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}"
+                             onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');" />
+                    </div>
+                </li>
+            {{/cafePhotos}}
+            {{^cafePhotos}}<li class="cg-empty">등록된 사진이 없어요.</li>{{/cafePhotos}}
+        </ul>
+    </section>
+
+    <!-- ===== 모바일 플로팅 액션 ===== -->
+    <div class="cg-fab">
+        {{#cafe}}
+            <a class="cg-fab__btn" href="tel:{{number}}">전화</a>
+            <a class="cg-fab__btn" target="_blank" href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">길찾기</a>
+            <a class="cg-fab__btn" href="#" data-review-modal data-cafe-id="{{id}}">후기</a>
+        {{/cafe}}
+    </div>
 </main>
 
 <!-- ===========================
-     모달 (리뷰 작성)
+     모달 (리뷰 작성) – 기존 유지
      =========================== -->
 <style>
     /* 모달: 기본 숨김, is-open 때만 표시 */
-    .cg-modal{
-      position: fixed; inset: 0;
-      display: none;
-      z-index: 1000;
-    }
-    .cg-modal.is-open{ display: grid; }
-
-    /* 오버레이(전체 클릭 영역) */
-    .cg-modal__backdrop{
-      position: absolute; inset: 0;
-      background: rgba(0,0,0,.45);
-    }
-
-    /* 다이얼로그 래퍼(시트를 가운데 정렬) */
-    .cg-modal__dialog{
-      position: relative;
-      width: 100%; height: 100%;
-      display: grid; place-items: center;
-      padding: 20px;
-      pointer-events: none; /* 바깥쪽 클릭 판정 쉽게 */
-    }
-
-    /* 실제 시트(내용) */
-    .cg-modal__sheet{
-      width: min(720px, 96vw);
-      max-height: 88vh;
-      background: #fff;
-      border-radius: 16px;
-      overflow: auto;
-      pointer-events: auto; /* 시트 내부만 상호작용 */
-    }
-
-    .cg-modal__header,
-    .cg-modal__footer{ padding: 16px 20px; }
-    .cg-modal__content{ padding: 0 20px 16px; }
-    .cg-modal__title{ margin: 0; font-size: 20px; }
-    .cg-modal__close{
-      border: 0; background: transparent; font-size: 28px; line-height: 1;
-      cursor: pointer; margin-left: auto;
-    }
-
-    /* 모달 오픈 시 배경 스크롤 잠금 */
-    body.cg-modal-open{ overflow: hidden; }
+    .cg-modal{position:fixed;inset:0;display:none;z-index:1000}
+    .cg-modal.is-open{display:grid}
+    .cg-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+    .cg-modal__dialog{position:relative;width:100%;height:100%;display:grid;place-items:center;padding:20px;pointer-events:none}
+    .cg-modal__sheet{width:min(720px,96vw);max-height:88vh;background:#fff;border-radius:16px;overflow:auto;pointer-events:auto}
+    .cg-modal__header,.cg-modal__footer{padding:16px 20px}
+    .cg-modal__content{padding:0 20px 16px}
+    .cg-modal__title{margin:0;font-size:20px}
+    .cg-modal__close{border:0;background:transparent;font-size:28px;line-height:1;cursor:pointer;margin-left:auto}
+    body.cg-modal-open{overflow:hidden}
 </style>
 
 <div id="reviewModal" class="cg-modal" aria-hidden="true" role="dialog" aria-labelledby="reviewModalTitle">
-    <!-- 오버레이: 클릭 시 닫힘 -->
     <div class="cg-modal__backdrop" data-close-modal></div>
-
     <div class="cg-modal__dialog">
         <form id="reviewForm" class="cg-modal__sheet" method="post" action="/reviews/new" enctype="multipart/form-data" novalidate>
-            <input type="hidden" name="cafeId" id="modalCafeId"/>
             {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
             <input type="hidden" name="cafeId" id="modalCafeId"/>
 
-            <!-- 헤더 -->
-            <div class="cg-modal__header" style="display:flex; gap:8px; align-items:center">
+            <div class="cg-modal__header" style="display:flex;gap:8px;align-items:center">
                 <h3 id="reviewModalTitle" class="cg-modal__title">리뷰 작성</h3>
                 <button type="button" class="cg-modal__close" aria-label="닫기" data-close-modal>&times;</button>
             </div>
 
-            <!-- 내용 -->
             <div class="cg-modal__content">
                 <label class="cg-label">내용</label>
                 <textarea name="reviewContent" class="cg-input" rows="4" placeholder="방문 후기를 남겨주세요." required maxlength="1000" autofocus></textarea>
@@ -337,8 +291,7 @@
                 <small class="cg-help">최대 5장, 이미지당 10MB 이하 권장</small>
             </div>
 
-            <!-- 푸터 -->
-            <div class="cg-modal__footer" style="display:flex; justify-content:flex-end; gap:8px">
+            <div class="cg-modal__footer" style="display:flex;justify-content:flex-end;gap:8px">
                 <button type="button" class="cg-btn-outline" data-close-modal>취소</button>
                 <button type="submit" class="cg-btn">등록</button>
             </div>
@@ -346,4 +299,4 @@
     </div>
 </div>
 
-{{>layout/footer}} <!-- ⬅ footer는 맨 마지막 -->
+{{>layout/footer}}

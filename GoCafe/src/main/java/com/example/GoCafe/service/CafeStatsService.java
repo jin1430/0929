@@ -15,8 +15,8 @@ public class CafeStatsService {
     private final ReviewTagRepository reviewTagRepository;
 
     public Map<String, Object> buildStats(Long cafeId, int topN) {
-        int good = reviewRepository.countByCafe_CafeIdAndSentiment(cafeId, "GOOD");
-        int bad  = reviewRepository.countByCafe_CafeIdAndSentiment(cafeId, "BAD");
+        int good = reviewRepository.countByCafe_IdAndSentiment(cafeId, "GOOD");
+        int bad  = reviewRepository.countByCafe_IdAndSentiment(cafeId, "BAD");
 
         List<Map<String, Object>> tags = new ArrayList<>();
         for (Object[] row : reviewTagRepository.findLikeTagCountsGood(cafeId)) {

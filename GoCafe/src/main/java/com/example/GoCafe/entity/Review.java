@@ -1,73 +1,92 @@
-// Review.java
 package com.example.GoCafe.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+import static jakarta.persistence.CascadeType.ALL;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
+@Table(name = "review")
 public class Review {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reviewId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "review_id", nullable = false, unique = true)
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cafe_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cafe cafe;
 
-    @Column(nullable = false, length = 1000)
-    private String reviewContent;
-
-    @Builder.Default
-    private int reviewGood = 0;
-
-    @Builder.Default
-    private int reviewBad = 0;
-
-    // ✅ Member 연관관계 (작성자)
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
-    // 메타 정보
-    private Integer waitingTime;   // 분
-    private String companionType;  // SOLO/FRIEND/DATE/FAMILY/BUSINESS
-    private Integer taste;         // 1~5
-    private String sentiment;      // "GOOD" or "BAD"
-    private String likedTagCsv;    // "맛있어요,친절해요" 등
+    @Column(name = "content", nullable = false, length = 1000)
+    private String content;
 
-    private LocalDateTime reviewDate;
+    @Builder.Default
+    @Column(name = "good", nullable = false)
+    private int good = 0;
+
+    @Builder.Default
+    @Column(name = "bad", nullable = false)
+    private int bad = 0;
+
+    @Column(name = "waiting_time")
+    private Integer waitingTime;
+
+    @Column(name = "companion_type")
+    private String companionType;
+
+    @Column(name = "taste")
+    private Integer taste;
+
+    @Column(name = "sentiment")
+    private String sentiment;
+
+    @Column(name = "liked_tag_csv")
+    private String likedTagCsv;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Transient
     private List<ReviewTag> tags = new ArrayList<>();
 
-
-    @Transient
-    @ElementCollection
-    @CollectionTable(name = "review_photos", joinColumns = @JoinColumn(name = "review_id"))
-    @Column(name = "photo_url")
     @Builder.Default
-    private List<String> photos = new ArrayList<>();
-
-    // ✅ 닉네임을 뷰에서 간단히 쓰고 싶을 때: review.memberNickname 처럼 호출 가능
-    @Transient
-    public String getMemberNickname() {
-        return (member != null ? member.getMemberNickname() : null);
-    }
+    @OneToMany(mappedBy = "review", cascade=ALL, orphanRemoval=true)
+    @OrderBy("sortIndex ASC")
+    private List<ReviewPhoto> photos = new ArrayList<>();
 
     @PrePersist
     void onCreate() {
-        if (reviewDate == null) reviewDate = LocalDateTime.now();
+        if (createdAt == null) createdAt = LocalDateTime.now();
     }
 
     @Transient
-    public String getReviewDateFmt() {
-        return reviewDate != null
-                ? reviewDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
+    public String getMemberNickname() {
+        return (member != null ? member.getNickname() : null);
+    }
+
+    @Transient
+    public String getCreatedAtFmt() {
+        return createdAt != null
+                ? createdAt.format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
                 : "";
     }
+
 }

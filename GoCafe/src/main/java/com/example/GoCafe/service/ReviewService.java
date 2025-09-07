@@ -58,12 +58,12 @@ public class ReviewService {
     // ✅ 추가: 카페 상세에서 사용할 리뷰 목록(최신순), member/cafe 페치
     @Transactional(readOnly = true)
     public List<Review> findByCafeIdWithMember(Long cafeId) {
-        return reviewRepository.findByCafe_CafeIdOrderByReviewDateDesc(cafeId);
+        return reviewRepository.findByCafe_IdOrderByCreatedAtDesc(cafeId);
     }
 
     // ✅ 추가: 홈에 “최근 올라온 후기”용 (원하면 사용)
     @Transactional(readOnly = true)
     public List<Review> findRecentTop10() {
-        return reviewRepository.findTop10ByOrderByReviewDateDesc();
+        return reviewRepository.findTop10ByOrderByCreatedAtDesc();
     }
 }

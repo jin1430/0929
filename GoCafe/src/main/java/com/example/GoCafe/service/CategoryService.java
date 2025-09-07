@@ -1,6 +1,6 @@
 package com.example.GoCafe.service;
 
-import com.example.GoCafe.entity.Category;
+import com.example.GoCafe.entity.MenuCategory;
 import com.example.GoCafe.repository.CategoryRepository;
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
@@ -17,24 +17,24 @@ public class CategoryService {
     private final CategoryRepository repository;
 
     @Transactional(readOnly = true)
-    public List<Category> findAll() {
+    public List<MenuCategory> findAll() {
         return repository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Category findById(Long id) {
+    public MenuCategory findById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category not found: " + id));
     }
 
     @Transactional
-    public Category create(Category entity) {
+    public MenuCategory create(MenuCategory entity) {
         EntityIdUtil.setId(entity, null);
         return repository.save(entity);
     }
 
     @Transactional
-    public Category update(Long id, Category entity) {
+    public MenuCategory update(Long id, MenuCategory entity) {
         if (!repository.existsById(id)) {
             throw new NotFoundException("Category not found: " + id);
         }

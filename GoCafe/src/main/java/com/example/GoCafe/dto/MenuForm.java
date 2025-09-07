@@ -1,12 +1,12 @@
 package com.example.GoCafe.dto;
 
+import com.example.GoCafe.entity.Cafe;
+import com.example.GoCafe.entity.MenuCategory;
 import com.example.GoCafe.entity.Menu;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -14,24 +14,24 @@ import java.util.ArrayList;
 public class MenuForm {
 
     private Long menuId;
-    private Long cafeId;
-    private Long categoryId;
+    private Cafe cafe;
+    private MenuCategory category;
     private String menuName;
-    private int menuPrice;      // 필요 시 BigDecimal로 교체 가능
-    private String menuNew;        // 'Y' / 'N'
-    private String menuRecommanded; // 'Y' / 'N'
+    private int menuPrice;
+    private boolean menuNew;         // 신메뉴 여부 : 'Y' / 'N'
+    private boolean menuRecommanded; // 추천 메뉴 여부 : 'Y' / 'N'
+    private String menuPhoto;       // 메뉴 url
 
     public Menu toEntity() {
         return new Menu(
                 menuId,
-                cafeId,
-                categoryId,
+                cafe,
+                category,
                 menuName,
                 menuPrice,
                 menuNew,
                 menuRecommanded,
-                null,                 // menuPhoto 기본 null
-                new ArrayList<>()     // images 기본 빈 리스트
+                menuPhoto
         );
     }
 }

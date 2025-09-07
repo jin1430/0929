@@ -2,6 +2,9 @@ package com.example.GoCafe.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,8 +12,11 @@ import java.time.LocalDateTime;
         name = "favorite",
         uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "cafe_id"})
 )
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Favorite {
 
     @Id
@@ -20,10 +26,12 @@ public class Favorite {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cafe_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cafe cafe;
 
     @Column(name = "created_at", nullable = false)

@@ -51,7 +51,7 @@ public class FavoriteService {
 
     @Transactional(readOnly = true)
     public boolean isFavoritedByEmail(String memberEmail, Long cafeId) {
-        return memberRepository.findByMemberEmail(memberEmail)
+        return memberRepository.findByEmail(memberEmail)
                 .map(me -> {
                     Cafe c = cafeRepository.getReferenceById(cafeId);
                     return favoriteRepository.existsByMemberAndCafe(me, c);

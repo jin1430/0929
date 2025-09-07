@@ -5,6 +5,7 @@ import com.example.GoCafe.repository.MemberRepository;
 import com.example.GoCafe.security.JwtTokenProvider;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,15 +18,15 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Controller
-public class AuthViewController {
+public class AuthController {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthViewController(MemberRepository memberRepository,
-                              PasswordEncoder passwordEncoder,
-                              JwtTokenProvider jwtTokenProvider) {
+    public AuthController(MemberRepository memberRepository,
+                          PasswordEncoder passwordEncoder,
+                          JwtTokenProvider jwtTokenProvider) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
@@ -41,34 +42,34 @@ public class AuthViewController {
     }
 
     @PostMapping("/login")
-    public String loginSubmit(@RequestParam String memberEmail,
-                              @RequestParam String memberPassword,
+    public String loginSubmit(@RequestParam String email,
+                              @RequestParam String password,
                               HttpServletResponse response,
                               RedirectAttributes ra,
                               Model model) {
-        Optional<Member> opt = memberRepository.findByMemberEmail(memberEmail);
-        if (opt.isEmpty()) {
+        Optional<Member> memberTryingLogin = memberRepository.findByEmail(email);
+        if (memberTryingLogin.isEmpty()) {
             ra.addFlashAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
             return "redirect:/login";
         }
-        Member member = opt.get();
+        Member member = memberTryingLogin.get();
         boolean matches = false;
-        if (member.getMemberPassword() != null) {
-            try { matches = passwordEncoder.matches(memberPassword, member.getMemberPassword()); } catch (Exception ignored) {}
-            if (!matches) matches = memberPassword.equals(member.getMemberPassword()); // dev only
+        if (member.getPassword() != null) {
+            try { matches = passwordEncoder.matches(password, member.getPassword()); } catch (Exception ignored) {}
+            if (!matches) matches = password.equals(member.getPassword()); // dev only
         }
         if (!matches) {
             ra.addFlashAttribute("error", "이메일 또는 비밀번호가 올바르지 않습니다.");
             return "redirect:/login";
         }
 
-        var ud = org.springframework.security.core.userdetails.User
-                .withUsername(member.getMemberEmail())
-                .password(member.getMemberPassword())
+        var ud = User
+                .withUsername(member.getEmail())
+                .password(member.getPassword())
                 .authorities(
-                        (member.getMemberRole()!=null && member.getMemberRole().startsWith("ROLE_"))
-                                ? member.getMemberRole()
-                                : "ROLE_" + (member.getMemberRole()==null ? "USER" : member.getMemberRole())
+                        (member.getRoleKind()!=null && member.getRoleKind().startsWith("ROLE_"))
+                                ? member.getRoleKind()
+                                : "ROLE_" + (member.getRoleKind()==null ? "USER" : member.getRoleKind())
                 )
                 .build();
 
@@ -100,26 +101,26 @@ public class AuthViewController {
         }
 
         // 이메일 중복 확인
-        if (memberRepository.findByMemberEmail(memberEmail).isPresent()) {
+        if (memberRepository.findByEmail(memberEmail).isPresent()) {
             model.addAttribute("error", "이미 사용 중인 이메일입니다.");
             return "signup";
         }
 
         // 닉네임 중복 확인 → 실패 처리
-        if (memberRepository.findByMemberNickname(memberNickname).isPresent()) {
+        if (memberRepository.findByNickname(memberNickname).isPresent()) {
             model.addAttribute("error", "이미 사용 중인 닉네임입니다.");
             return "signup";
         }
 
         Member m = new Member();
-        m.setMemberEmail(memberEmail);
-        m.setMemberPassword(passwordEncoder.encode(memberPassword));
-        m.setMemberNickname(memberNickname);
-        m.setMemberAge(memberAge);
-        m.setMemberGender("M".equalsIgnoreCase(memberGender) ? "M" :
+        m.setEmail(memberEmail);
+        m.setPassword(passwordEncoder.encode(memberPassword));
+        m.setNickname(memberNickname);
+        m.setAge(memberAge);
+        m.setGender("M".equalsIgnoreCase(memberGender) ? "M" :
                 "F".equalsIgnoreCase(memberGender) ? "F" : null);
-        m.setMemberRole("USER");
-        m.setMemberDate(LocalDateTime.now());
+        m.setRoleKind("USER");
+        m.setCreatedAt(LocalDateTime.now());
         m.setTokenVersion(0L);
 
         memberRepository.save(m);
@@ -129,7 +130,7 @@ public class AuthViewController {
     private String ensureUniqueNickname(String base) {
         String candidate = base;
         int counter = 1;
-        while (memberRepository.findByMemberNickname(candidate).isPresent()) {
+        while (memberRepository.findByNickname(candidate).isPresent()) {
             if (candidate.length() > 6) {
                 // 최대 8자 제약 있으므로 앞쪽 잘라줌
                 candidate = base.substring(0, 6) + counter;

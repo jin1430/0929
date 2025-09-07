@@ -21,14 +21,14 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member m = memberRepository.findByMemberEmail(email)
+        Member m = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
-        String role = (m.getMemberRole() == null || m.getMemberRole().isBlank()) ? "USER" : m.getMemberRole();
+        String role = (m.getRoleKind() == null || m.getRoleKind().isBlank()) ? "USER" : m.getRoleKind();
         if (!role.startsWith("ROLE_")) role = "ROLE_" + role;
 
-        return User.withUsername(m.getMemberEmail())
-                .password(m.getMemberPassword())
+        return User.withUsername(m.getEmail())
+                .password(m.getPassword())
                 .authorities(List.of(new SimpleGrantedAuthority(role)))
                 .build();
     }

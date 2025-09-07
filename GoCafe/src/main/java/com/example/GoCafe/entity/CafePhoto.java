@@ -8,27 +8,29 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-@NoArgsConstructor
 @Entity
-@Table(name = "cafe_tag")
-@Getter
-@Setter
+@Getter @Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class CafeTag {
+@Table(name = "cafe_photo")
+public class CafePhoto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cafe_tag_id", nullable = false, unique = true)
+    @Column(name = "cafe_photo_id", nullable = false, unique = true)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cafe_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Cafe cafe;
 
-    @Column(name = "category_code", length = 20)
-    private String categoryCode;
+    @Column(name = "url", nullable = false, unique = true, length = 1024)
+    private String url;
 
-    @Column(name = "code", length = 20)
-    private String code;
+    @Column(name = "sort_index", nullable = false)
+    private int sortIndex;
+
+    @Column(name = "is_main", nullable = false)
+    private boolean isMain;
 }

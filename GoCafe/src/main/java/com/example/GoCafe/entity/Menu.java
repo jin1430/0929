@@ -1,14 +1,9 @@
 package com.example.GoCafe.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor
 @Entity
@@ -20,29 +15,31 @@ public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "menu_id", nullable = false, unique = true)
-    private Long menuId;
+    private Long id;
 
-    @Column(name = "cafe_id", nullable = false)
-    private Long cafeId;
+    // 부모 Cafe 삭제 시 메뉴 삭제
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) // 연관관계
+    @JoinColumn(name = "cafe_id", nullable = false)      // FK
+    @OnDelete(action = OnDeleteAction.CASCADE)           // DB cascade
+    private Cafe cafe;
 
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
+    // MenuCategory는 OnDelete 제거 + nullable 허용
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "category_id", nullable = true)
+    private MenuCategory menuCategory;
 
-    @Column(name = "menu_name", nullable = false, length = 12)
-    private String menuName;
+    @Column(name = "name", nullable = false, length = 12)
+    private String name;
 
-    @Column(name = "menu_price", nullable = false)
-    private int menuPrice;
+    @Column(name = "price", nullable = false)
+    private int price;
 
-    @Column(name = "menu_new", length = 1)
-    private String menuNew;
+    @Column(name = "is_new", nullable = false)
+    private boolean isNew;
 
-    @Column(name = "menu_recommanded", length = 1)
-    private String menuRecommanded;
+    @Column(name = "is_recommended", nullable = false)
+    private boolean isRecommended;
 
-    @Column(name = "menu_photo", length = 255)
-    private String menuPhoto;
-
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MenuImage> images = new ArrayList<>();
+    @Column(name = "photo", length = 255)
+    private String photo;
 }

@@ -1,4 +1,3 @@
-// src/main/java/com/example/GoCafe/controller/AdminPageController.java
 package com.example.GoCafe.controller;
 
 import com.example.GoCafe.domain.CafeStatus;
@@ -10,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller                 // ✅ 여기!! (RestController 아님)
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")

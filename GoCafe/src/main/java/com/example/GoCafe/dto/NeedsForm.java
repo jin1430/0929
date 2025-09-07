@@ -1,6 +1,7 @@
 package com.example.GoCafe.dto;
 
-import com.example.GoCafe.entity.Needs;
+import com.example.GoCafe.entity.Member;
+import com.example.GoCafe.entity.UserNeeds;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,19 +12,19 @@ import lombok.Setter;
 @AllArgsConstructor
 public class NeedsForm {
 
-    private Long needsId;
-    private Long userId;
-    private String needsCategoryCode;
-    private String needsCode;
-    private String needsNecessary; // 'Y'/'N'
+    private Long id;
+    private Member member;
+    private String categoryCode;
+    private String code;
+    private boolean isNecessary;
 
-    public Needs toEntity() {
-        return new Needs(
-                needsId,
-                userId,
-                needsCategoryCode,
-                needsCode,
-                needsNecessary
+    public UserNeeds toEntity() {
+        return new UserNeeds(
+                id,
+                member,
+                categoryCode,
+                code,
+                isNecessary
         );
     }
 }

@@ -23,11 +23,10 @@ public class FavoriteController {
     private final MemberRepository memberRepository;
 
     private Long currentMemberId(Authentication authentication) {
-        // JWT 필터에서 setName(email) 형태라고 하셨으니 email로 조회
         String email = authentication.getName();
-        Member me = memberRepository.findByMemberEmail(email)
+        Member loginMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("로그인 사용자를 찾을 수 없습니다."));
-        return me.getMemberId();
+        return loginMember.getId();
     }
 
     @PostMapping("/{cafeId}/toggle")
@@ -45,7 +44,7 @@ public class FavoriteController {
     }
 
     @GetMapping("/cafes/{cafeId}/count")
-    public Map<String, Long> count(@PathVariable Long cafeId) {
+    public Map<String, Long> countFavorited(@PathVariable Long cafeId) {
         return Map.of("count", favoriteService.countForCafe(cafeId));
     }
 }

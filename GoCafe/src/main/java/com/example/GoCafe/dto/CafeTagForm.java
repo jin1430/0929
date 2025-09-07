@@ -1,5 +1,6 @@
 package com.example.GoCafe.dto;
 
+import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.CafeTag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,17 +12,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CafeTagForm {
 
-    private Long cafeTagId;
+    private Long id;
     private Long cafeId;
-    private String tagCategoryCode;
-    private String tagCode;
+    private String categoryCode;
+    private String code;
 
-    public CafeTag toEntity() {
-        return new CafeTag(
-                cafeTagId,
-                cafeId,
-                tagCategoryCode,
-                tagCode
-        );
+    public CafeTag toNewEntity(Cafe cafe) {
+        CafeTag entity = new CafeTag();
+        entity.setCafe(cafe);
+        entity.setCategoryCode(categoryCode);
+        entity.setCode(code);
+        return entity;
     }
 }

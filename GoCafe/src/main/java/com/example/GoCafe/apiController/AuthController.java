@@ -9,10 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.time.Duration;
 import java.util.Map;
 
@@ -34,24 +34,23 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody MemberForm body) {
-        String email = body.getMemberEmail();
-        String pw = body.getMemberPassword();
+        String email = body.getEmail();
+        String pw = body.getPassword();
         if (email == null || email.isBlank() || pw == null || pw.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("message", "email/password required"));
         }
-        if (memberRepository.findByMemberEmail(email).isPresent()) {
+        if (memberRepository.findByEmail(email).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "Email already exists"));
         }
 
         Member m = new Member();
-        m.setMemberEmail(email);
-        m.setMemberPassword(passwordEncoder.encode(pw)); // bcrypt
-        m.setMemberNickname(body.getMemberNickname());
-        m.setMemberAge(body.getMemberAge());
-        m.setMemberGender(body.getMemberGender());
-        m.setMemberRole((body.getMemberRole() == null || body.getMemberRole().isBlank()) ? "USER" : body.getMemberRole());
-        m.setMemberDate(body.getMemberDate() == null ? LocalDateTime.now() : body.getMemberDate());
-        m.setMemberPhoto(body.getMemberPhoto());
+        m.setEmail(email);
+        m.setPassword(passwordEncoder.encode(pw)); // bcrypt
+        m.setNickname(body.getNickname());
+        m.setAge(body.getAge());
+        m.setGender(body.getGender());
+        m.setRoleKind((body.getRoleKind() == null || body.getRoleKind().isBlank()) ? "USER" : body.getRoleKind());
+        m.setPhoto(body.getPhoto());
         m.setTokenVersion(0L);
 
         memberRepository.save(m);
@@ -60,34 +59,34 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody MemberForm body) {
-        String email = body.getMemberEmail();
-        String pw = body.getMemberPassword();
+        String email = body.getEmail();
+        String pw = body.getPassword();
         if (email == null || email.isBlank() || pw == null || pw.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("message", "email/password required"));
         }
 
-        return memberRepository.findByMemberEmail(email)
+        return memberRepository.findByEmail(email)
                 .map(member -> {
                     boolean matches = false;
-                    if (member.getMemberPassword() != null) {
+                    if (member.getPassword() != null) {
                         try {
-                            matches = passwordEncoder.matches(pw, member.getMemberPassword());
+                            matches = passwordEncoder.matches(pw, member.getPassword());
                         } catch (Exception ignored) {}
                         // 개발 편의: bcrypt가 아니면 평문 비교 한 번 허용(운영에서는 제거 권장)
-                        if (!matches) matches = pw.equals(member.getMemberPassword());
+                        if (!matches) matches = pw.equals(member.getPassword());
                     }
                     if (!matches) {
                         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                 .body(Map.of("message", "Invalid credentials"));
                     }
 
-                    var ud = org.springframework.security.core.userdetails.User
-                            .withUsername(member.getMemberEmail())
-                            .password(member.getMemberPassword())
+                    var ud = User
+                            .withUsername(member.getEmail())
+                            .password(member.getPassword())
                             .authorities(
-                                    (member.getMemberRole()!=null && member.getMemberRole().startsWith("ROLE_"))
-                                            ? member.getMemberRole()
-                                            : "ROLE_" + (member.getMemberRole()==null ? "USER" : member.getMemberRole())
+                                    (member.getRoleKind()!=null && member.getRoleKind().startsWith("ROLE_"))
+                                            ? member.getRoleKind()
+                                            : "ROLE_" + (member.getRoleKind()==null ? "USER" : member.getRoleKind())
                             )
                             .build();
 
@@ -130,7 +129,7 @@ public class AuthController {
 
         // 인증된 경우: 서버측 무효화를 위해 tokenVersion 증가
         String email = auth.getName();
-        return memberRepository.findByMemberEmail(email)
+        return memberRepository.findByEmail(email)
                 .map(m -> {
                     long nv = (m.getTokenVersion()==null?0L:m.getTokenVersion()) + 1L;
                     m.setTokenVersion(nv);
@@ -151,24 +150,24 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         String email = auth.getName();
-        return memberRepository.findByMemberEmail(email)
+        return memberRepository.findByEmail(email)
                 .<ResponseEntity<?>>map(m -> {
-                    MemberForm out = new MemberForm(
-                            m.getMemberId(),
-                            m.getMemberEmail(),
-                            null, // password는 응답에 내보내지 않을거면 null 유지
-                            m.getMemberNickname(),
-                            m.getMemberAge(),
-                            m.getMemberGender(),
-                            m.getMemberRole(),
-                            m.getMemberDate(),
-                            m.getMemberPhoto(),
-                            m.getTokenVersion(), // ✅ 빠졌던 10번째 인자 추가
-                            null // Cafe: 없으면 null
-                    );
+                    MemberForm out = new MemberForm();
+                    out.setId(m.getId());
+                    out.setEmail(m.getEmail());
+                    // 비밀번호는 응답에 노출하지 않음
+                    out.setNickname(m.getNickname());
+                    out.setAge(m.getAge());
+                    out.setGender(m.getGender());
+                    out.setRoleKind(m.getRoleKind());
+                    out.setCreatedAt(m.getCreatedAt()); // MemberForm에 createdAt 필드가 있을 때만 유지
+                    out.setPhoto(m.getPhoto());
+                    out.setTokenVersion(m.getTokenVersion());
                     return ResponseEntity.ok(out);
                 })
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("message", "User not found")));
     }
+
+
 }
