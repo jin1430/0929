@@ -152,21 +152,19 @@
         <ul class="cg-feed">
             {{#reviews}}
                 <li class="cg-feed__item">
-                    <p class="cg-feed__text">{{reviewContent}}</p>
+                    <p class="cg-feed__text">{{content}}</p>
 
-                    {{#photos}}
-                        <div class="cg-feed__photos" data-review-photos>
-                            {{#photos}}
-                                <img class="cg-feed__photo" src="{{.}}" alt="리뷰 사진" loading="lazy"
-                                     onerror="this.style.display='none'"/>
-                            {{/photos}}
-                            <span class="cg-feed__photo-count" hidden></span>
-                        </div>
-                    {{/photos}}
+                    <div class="cg-feed__photos" data-review-photos>
+                        {{#photos}}
+                            <img class="cg-feed__photo" src="{{photoUrl}}" alt="리뷰 사진" loading="lazy"
+                                 onerror="this.style.display='none'"/>
+                        {{/photos}}
+                        <span class="cg-feed__photo-count" hidden></span>
+                    </div>
 
                     <div class="cg-feed__meta">
-                        <span>{{reviewDate}}</span>
-                        <span>좋아요 {{reviewGood}} / 아쉬워요 {{reviewBad}}</span>
+                        <span>{{createdAtFmt}}</span>
+                        <span>좋아요 {{good}} / 아쉬워요 {{bad}}</span>
                         {{#memberNickname}}<span class="cg-dot">·</span><span>{{memberNickname}}</span>{{/memberNickname}}
                     </div>
                 </li>
@@ -174,6 +172,7 @@
             {{^reviews}}<li class="cg-empty">아직 리뷰가 없네요.</li>{{/reviews}}
         </ul>
     </section>
+
 
     <!-- ===== 사진 갤러리 (옵션: 모델에 cafePhotos 있을 때) ===== -->
     <section class="cg-section">

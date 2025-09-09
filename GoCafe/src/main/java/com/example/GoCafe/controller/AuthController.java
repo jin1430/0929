@@ -42,8 +42,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String loginSubmit(@RequestParam String email,
-                              @RequestParam String password,
+    public String loginSubmit(@RequestParam("memberEmail") String email,
+                              @RequestParam("memberPassword") String password,
                               HttpServletResponse response,
                               RedirectAttributes ra,
                               Model model) {

@@ -1,6 +1,7 @@
 package com.example.GoCafe.dto;
 
 import com.example.GoCafe.entity.Member;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,29 +14,46 @@ import java.time.LocalDateTime;
 public class MemberForm {
 
     // 업데이트 시에만 사용; 생성 시 null
+    @JsonAlias({"memberId"})
     private Long id;
 
+    @JsonAlias({"memberEmail"})
     private String email;
+
+    @JsonAlias({"memberPassword"})
     private String password;
+
+    @JsonAlias({"memberNickname"})
     private String nickname;
+
+    @JsonAlias({"memberAge"})
     private Long age;
+
+    @JsonAlias({"memberGender"})
     private String gender;
+
+    @JsonAlias({"memberRoleKind"})
     private String roleKind;
+
     private LocalDateTime createdAt;
+
+    @JsonAlias({"memberPhoto"})
     private String photo;
+
+    @JsonAlias({"memberTokenVersion"})
     private Long tokenVersion;
 
     public Member toEntity() {
         Member m = new Member();
-        m.setId(id);                           // null이면 새로 생성
+        m.setId(id); // null이면 새로 생성
         m.setEmail(email);
         m.setPassword(password);
         m.setNickname(nickname);
         m.setAge(age);
-        m.setGender(gender);
-        m.setRoleKind(roleKind);               // @Column(name="role_kind")
+        m.setGender("M".equalsIgnoreCase(gender) ? "M" : ("F".equalsIgnoreCase(gender) ? "F" : null));
+        m.setRoleKind(roleKind);
         m.setPhoto(photo);
-        if (tokenVersion != null) m.setTokenVersion(tokenVersion); // 엔티티 기본 0L이면 생략 가능
+        if (tokenVersion != null) m.setTokenVersion(tokenVersion);
         return m;
     }
 }
