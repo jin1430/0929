@@ -30,11 +30,15 @@ public class ReviewForm {
                 .cafe(cafe)
                 .member(member)
                 .content(reviewContent)
+                .good(0) // int 기본값 보장
+                .bad(0)  // int 기본값 보장
                 .waitingTime(waitingTime)
                 .companionType(companionType)
                 .taste(taste)
-                .sentiment(sentiment)
+                .sentiment(sentiment) // Enum이면 컨트롤러에서 변환해서 넘겨줄 것
                 .likedTagCsv(likedTagCodes != null ? String.join(",", likedTagCodes) : null)
+                .createdAt(reviewDate) // null이면 @PrePersist에서 세팅되도록 둠
                 .build();
     }
+
 }

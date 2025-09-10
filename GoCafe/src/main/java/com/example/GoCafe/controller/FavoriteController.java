@@ -32,7 +32,7 @@ public class FavoriteController {
     @PostMapping("/{cafeId}/toggle")
     public Map<String, Object> toggle(@PathVariable Long cafeId, Authentication auth) {
         boolean favorited = favoriteService.toggle(currentMemberId(auth), cafeId);
-        long count = favoriteService.countForCafe(cafeId);
+        long count = favoriteService.countFavoriteForCafe(cafeId);
         return Map.of("favorited", favorited, "count", count);
     }
 
@@ -45,6 +45,6 @@ public class FavoriteController {
 
     @GetMapping("/cafes/{cafeId}/count")
     public Map<String, Long> countFavorited(@PathVariable Long cafeId) {
-        return Map.of("count", favoriteService.countForCafe(cafeId));
+        return Map.of("count", favoriteService.countFavoriteForCafe(cafeId));
     }
 }

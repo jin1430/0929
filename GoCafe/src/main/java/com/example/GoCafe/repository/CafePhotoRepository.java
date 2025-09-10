@@ -44,4 +44,14 @@ public interface CafePhotoRepository extends JpaRepository<CafePhoto, Long> {
             "order by p.cafe.id asc, p.isMain desc, p.sortIndex asc")
     List<CafePhoto> findForCafeIdsOrderByMainThenSort(@Param("cafeIds") Collection<Long> cafeIds);
 
+    @Query(value = """
+        SELECT p.*
+          FROM cafe_photo p
+         WHERE p.cafe_id = :cafeId
+         ORDER BY CASE WHEN p.is_main = TRUE THEN 0 ELSE 1 END,
+                  p.sort_index ASC
+         LIMIT 1
+    """, nativeQuery = true)
+    CafePhoto findMainPhoto(@Param("cafeId") Long cafeId);
+
 }

@@ -35,7 +35,7 @@ public class Member {
     @Column(name = "gender", length = 1)
     private String gender;
 
-    @Column(name = "role_kind", nullable = false, length = 20)
+    @Column(name = "role_kind", nullable = false, length = 1024)
     private String roleKind;
 
     @Column(name = "created_at", nullable = false)

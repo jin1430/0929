@@ -10,7 +10,7 @@
                 <div class="cg-hero__left">
                     <div class="cg-hero__imgwrap">
                         {{#mainPhoto}}
-                            <img class="cg-card__img" src="{{mainPhoto}}" alt="{{name}}"
+                            <img class="cg-card__img" src="{{url}}" alt="{{cafe.name}}"
                                  onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');">
                         {{/mainPhoto}}
                         {{^mainPhoto}}
@@ -36,7 +36,6 @@
                         <dl class="cg-dl">
                             <div class="cg-dl__row"><dt>주소</dt><dd>{{address}}</dd></div>
                             <div class="cg-dl__row"><dt>전화번호</dt><dd>{{number}}</dd></div>
-                            <div class="cg-dl__row"><dt>좌표</dt><dd>{{lat}}, {{lon}}</dd></div>
                         </dl>
                     </div>
 
@@ -55,11 +54,10 @@
                         <a class="cg-btn-outline" href="tel:{{number}}">전화하기</a>
                         <a class="cg-btn-outline" target="_blank"
                            href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">길찾기</a>
-
                         <a class="cg-btn"
                            href="#"
                            data-review-modal
-                           data-cafe-id="{{id}}">후기 작성</a>
+                           data-cafe-id="{{id}}">리뷰 작성</a>
 
                         <button id="favBtn"
                                 class="cg-btn-outline"
@@ -195,7 +193,7 @@
         {{#cafe}}
             <a class="cg-fab__btn" href="tel:{{number}}">전화</a>
             <a class="cg-fab__btn" target="_blank" href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">길찾기</a>
-            <a class="cg-fab__btn" href="#" data-review-modal data-cafe-id="{{id}}">후기</a>
+            <a class="cg-fab__btn" href="#" data-review-modal data-cafe-id="{{id}}">리뷰</a>
         {{/cafe}}
     </div>
 </main>
@@ -231,34 +229,7 @@
 
             <div class="cg-modal__content">
                 <label class="cg-label">내용</label>
-                <textarea name="reviewContent" class="cg-input" rows="4" placeholder="방문 후기를 남겨주세요." required maxlength="1000" autofocus></textarea>
-
-                <div class="cg-grid2" style="margin-top:12px">
-                    <div>
-                        <label class="cg-label">웨이팅 시간(분)</label>
-                        <input type="number" name="waitingTime" class="cg-input" min="0" placeholder="예: 15"/>
-                    </div>
-                    <div>
-                        <label class="cg-label">누구와 갔나요?</label>
-                        <select name="companionType" class="cg-input">
-                            <option value="">선택</option>
-                            <option value="SOLO">혼자</option>
-                            <option value="FRIEND">친구</option>
-                            <option value="DATE">연인</option>
-                            <option value="FAMILY">가족</option>
-                            <option value="BUSINESS">비즈니스</option>
-                        </select>
-                    </div>
-                </div>
-
-                <label class="cg-label" style="margin-top:12px">음식의 맛</label>
-                <div class="cg-rating">
-                    <label><input type="radio" name="taste" value="1">1</label>
-                    <label><input type="radio" name="taste" value="2">2</label>
-                    <label><input type="radio" name="taste" value="3" checked>3</label>
-                    <label><input type="radio" name="taste" value="4">4</label>
-                    <label><input type="radio" name="taste" value="5">5</label>
-                </div>
+                <textarea name="reviewContent" class="cg-input" rows="8" style="min-height:160px" placeholder="방문 후기를 남겨주세요." required maxlength="1000" autofocus></textarea>
 
                 <label class="cg-label" style="margin-top:12px">전반적 만족도</label>
                 <div class="cg-toggle2" role="group" aria-label="전반적 만족도">
@@ -286,7 +257,8 @@
                 </div>
 
                 <label class="cg-label" style="margin-top:12px">사진 (선택)</label>
-                <input type="file" id="photoInput" name="photos" accept="image/*" multiple>
+                <input id="photoInput" class="cg-sr-only" type="file" name="photos" accept="image/*" multiple>
+                <label for="photoInput" class="cg-btn-outline">파일 선택</label>
                 <small class="cg-help">최대 5장, 이미지당 10MB 이하 권장</small>
             </div>
 

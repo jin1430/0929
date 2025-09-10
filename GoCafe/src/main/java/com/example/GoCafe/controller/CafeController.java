@@ -4,9 +4,8 @@ package com.example.GoCafe.controller;
 import com.example.GoCafe.domain.CafeStatus;
 import com.example.GoCafe.dto.CafeForm;
 import com.example.GoCafe.entity.Cafe;
+import com.example.GoCafe.entity.CafePhoto;
 import com.example.GoCafe.entity.Member;
-import com.example.GoCafe.entity.ReviewPhoto;
-import com.example.GoCafe.repository.ReviewTagRepository;
 import com.example.GoCafe.service.*;
 import com.example.GoCafe.support.NotFoundException;
 import jakarta.validation.Valid;
@@ -30,10 +29,8 @@ public class CafeController {
     private final ReviewService reviewService;
     private final CafeStatsService cafeStatsService;
     private final ReviewPhotoService reviewPhotoService;
-    private final ReviewTagRepository reviewTagRepository;
     private final FavoriteService favoriteService;
-    // 🔹 더 이상 FavoriteRepository 직접 호출 안 함
-    // private final FavoriteRepository favoriteRepository;
+    private final CafePhotoService cafePhotoService;
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/new")
@@ -72,8 +69,9 @@ public class CafeController {
                            Authentication auth,
                            Model model) {
 
-        // 1) 카페 조회
+        // 1) 카페/사진 조회
         Cafe cafe = cafeService.findById(cafeId);
+        CafePhoto mainPhoto = cafePhotoService.getMainPhoto(cafeId);
 
         // 2) 로그인 사용자 정보/권한
         String email = (auth != null ? auth.getName() : null);
@@ -96,8 +94,9 @@ public class CafeController {
             throw new NotFoundException("승인되지 않은 카페입니다.");
         }
 
-        // 4) 모델—카페 본문
+        // 4) 모델 카페+사진 등록
         model.addAttribute("cafe", cafe);
+        model.addAttribute("mainPhoto", mainPhoto);
 
         // 5) 리뷰 목록 + 사진 주입
         var reviews = reviewService.findByCafeIdWithMember(cafeId);  // member는 fetch join 가정
@@ -119,7 +118,7 @@ public class CafeController {
         if (email != null) {
             isFavorited = favoriteService.isFavoritedByEmail(email, cafeId);
         }
-        long favoriteCount = favoriteService.countForCafe(cafeId);
+        long favoriteCount = favoriteService.countFavoriteForCafe(cafeId);
         model.addAttribute("isFavorited", isFavorited);
         model.addAttribute("favoriteCount", favoriteCount);
 

@@ -1,21 +1,29 @@
 package com.example.GoCafe.controller;
 
 import com.example.GoCafe.dto.MemberForm;
-import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.service.MemberService;
+import com.example.GoCafe.service.ReviewService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,6 +31,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ReviewService reviewService;
 
     @GetMapping("/me")
     public String myPage(@AuthenticationPrincipal org.springframework.security.core.userdetails.User principal,
@@ -164,5 +173,46 @@ public class MemberController {
 
         // PRG
         return "redirect:/?withdraw=success";
+    }
+
+    @GetMapping("/reviews")
+    public String myReviews(@AuthenticationPrincipal User principal,
+                            @RequestParam(value = "page", defaultValue = "0") int page,
+                            Model model) {
+        if (principal == null) return "redirect:/login";
+
+        var me = memberService.findByEmail(principal.getUsername());
+        var pageable = PageRequest.of(page, 10); // 기본 10개
+        var myReviews = reviewService.findMyReviews(me.getId(), pageable);
+
+        model.addAttribute("items", myReviews.getContent());
+        model.addAttribute("hasContent", !myReviews.isEmpty());
+        model.addAttribute("totalElements", myReviews.getTotalElements());
+
+        // 페이지네이션 데이터
+        int current = myReviews.getNumber();
+        int totalPages = Math.max(myReviews.getTotalPages(), 1);
+        int start = Math.max(0, current - 2);
+        int end = Math.min(totalPages - 1, current + 2);
+
+        List<Map<String, Object>> pages = new ArrayList<>();
+        for (int i = start; i <= end; i++) {
+            var m = new HashMap<String, Object>();
+            m.put("index", i);
+            m.put("display", i + 1);
+            m.put("active", i == current);
+            pages.add(m);
+        }
+
+        model.addAttribute("pages", pages);
+        model.addAttribute("hasPrev", myReviews.hasPrevious());
+        model.addAttribute("hasNext", myReviews.hasNext());
+        model.addAttribute("prevPage", Math.max(0, current - 1));
+        model.addAttribute("nextPage", Math.min(totalPages - 1, current + 1));
+
+        // 좌측 네비 활성화
+        model.addAttribute("nav_reviews", true);
+
+        return "member/reviews";
     }
 }

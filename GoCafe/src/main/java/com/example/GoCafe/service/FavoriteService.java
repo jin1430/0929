@@ -31,7 +31,7 @@ public class FavoriteService {
     }
 
     @Transactional(readOnly = true)
-    public long countForCafe(Long cafeId) {
+    public long countFavoriteForCafe(Long cafeId) {
         Cafe c = cafeRepository.getReferenceById(cafeId);
         return favoriteRepository.countByCafe(c);
     }

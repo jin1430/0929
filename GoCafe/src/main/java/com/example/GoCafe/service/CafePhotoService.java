@@ -21,4 +21,9 @@ public class CafePhotoService {
     public List<CafePhoto> findForCafeIdsOrderByMainThenSort(Set<Long> topIds) {
         return cafePhotoRepository.findForCafeIdsOrderByMainThenSort(topIds);
     }
+
+    // 메인 사진 URL만 반환
+    public CafePhoto getMainPhoto(Long cafeId) {
+        return cafePhotoRepository.findMainPhoto(cafeId);
+    }
 }

@@ -9,7 +9,7 @@
             <nav class="cg-sidenav">
                 <a href="/member/me"       class="{{#nav_me}}is-active{{/nav_me}}">내 정보</a>
                 <a href="/member/edit"     class="{{#nav_edit}}is-active{{/nav_edit}}">내 정보 수정</a>
-                <a href="/reviews/mine"    class="{{#nav_reviews}}is-active{{/nav_reviews}}">내가 쓴 리뷰</a>
+                <a href="/member/reviews"    class="{{#nav_reviews}}is-active{{/nav_reviews}}">내가 쓴 리뷰</a>
                 <a href="/favorites"       class="{{#nav_favorites}}is-active{{/nav_favorites}}">즐겨찾기 목록 확인</a>
                 <a href="/member/withdraw" class="is-danger {{#nav_withdraw}}is-active{{/nav_withdraw}}">회원 탈퇴</a>
             </nav>
@@ -29,7 +29,7 @@
                     <div class="cg-panel__body">
                         <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
                             {{#hasPhoto}}
-                                <img src="{{photoUrl}}" alt="프로필" class="cg-avatar-lg cg-avatar-ring">
+                                <img src="{{photo}}" alt="프로필" class="cg-avatar-lg cg-avatar-ring">
                             {{/hasPhoto}}
                             {{^hasPhoto}}
                                 <div class="cg-avatar-lg cg-avatar-ring" style="background:#e5e7eb;display:flex;align-items:center;justify-content:center;">
@@ -38,18 +38,18 @@
                             {{/hasPhoto}}
 
                             <div class="cg-badges" style="display:flex;gap:8px;flex-wrap:wrap;">
-                                <span class="cg-badge">{{memberNickname}}</span>
-                                <span class="cg-badge" title="역할">{{memberRole}}</span>
+                                <span class="cg-badge">{{nickname}}</span>
+                                <span class="cg-badge" title="역할">{{roleKind}}</span>
                             </div>
                         </div>
 
                         <div class="cg-divider"></div>
 
                         <dl class="cg-kv">
-                            <dt>이메일</dt><dd>{{memberEmail}}</dd>
-                            <dt>성별</dt><dd>{{memberGender}}</dd>
-                            <dt>나이</dt><dd>{{memberAge}}</dd>
-                            <dt>가입일</dt><dd>{{memberDate}}</dd>
+                            <dt>이메일</dt><dd>{{email}}</dd>
+                            <dt>성별</dt><dd>{{gender}}</dd>
+                            <dt>나이</dt><dd>{{age}}</dd>
+                            <dt>가입일</dt><dd>{{createdAt}}</dd>
                         </dl>
                     </div>
                 </article>
