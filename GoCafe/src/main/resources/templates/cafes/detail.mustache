@@ -1,5 +1,48 @@
 {{>layout/header}}
+<style>
+    /* 안내 패널을 위한 간단한 스타일 */
+    .cg-notice-panel {
+        margin: 24px 0 0 0;
+        padding: 16px 20px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background-color: #f8fafc;
+    }
+    .cg-notice-panel strong {
+        font-size: 16px;
+    }
+    .cg-notice-panel p {
+        margin: 4px 0 0 0;
+        font-size: 14px;
+        color: #64748b;
+    }
+    /* 거절 상태일 때를 위한 스타일 */
+    .cg-notice-panel.is-danger {
+        border-color: #fecaca;
+        background-color: #fef2f2;
+        color: #991b1b;
+    }
+    .cg-notice-panel.is-danger p {
+        color: #b91c1c;
+    }
+</style>
 
+<main class="cg-container" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
+
+    {{#cafe}}
+        {{#isPending}}
+            <div class="cg-notice-panel">
+                <strong>⏳ 승인 대기 중인 카페입니다.</strong>
+                <p>이 페이지는 관리자의 승인 후 사이트에 정식으로 노출됩니다. 승인까지는 1~2 영업일이 소요될 수 있습니다.</p>
+            </div>
+        {{/isPending}}
+        {{#isRejected}}
+            <div class="cg-notice-panel is-danger">
+                <strong>🚫 반려된 카페 등록 요청입니다.</strong>
+                <p>이 페이지는 외부에 노출되지 않습니다. 등록 정보를 수정하시거나 관리자에게 문의해주세요.</p>
+            </div>
+        {{/isRejected}}
+    {{/cafe}}
 <main class="cg-container" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
 
     <!-- ===== Hero (좌: 메인 사진 / 우: 정보) ===== -->
@@ -42,7 +85,7 @@
                     <!-- 태그 칩 -->
                     <div class="cg-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
                         {{#cafeTags}}
-                            <button class="cg-chip" data-category="{{categoryCode}}" data-tag="{{code}}">
+                            <button class="cg-chip" data-category="{{cafe.code}}" data-tag="{{code}}">
                                 {{code}}{{#count}}<small class="cg-badge">{{count}}</small>{{/count}}
                             </button>
                         {{/cafeTags}}

@@ -12,6 +12,7 @@ import com.example.GoCafe.repository.MemberRepository;
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,9 @@ public class CafeService {
     private final FileStorageService fileStorageService;
 
     @Transactional(readOnly = true)
-    public List<Cafe> findAll() { return cafeRepository.findAll(); }
+    public List<Cafe> findAll() {
+        return cafeRepository.findAll();
+    }
 
     public List<Cafe> findTop8ByViews() {
         return cafeRepository.findTop8ByOrderByViewsDesc(); // DB에서 정렬+TOP8
@@ -42,7 +45,9 @@ public class CafeService {
     }
 
     @Transactional(readOnly = true)
-    public List<Cafe> findByStatus(CafeStatus status) { return cafeRepository.findByStatus(status); }
+    public List<Cafe> findByStatus(CafeStatus status) {
+        return cafeRepository.findByStatus(status);
+    }
 
     // 생성/수정/삭제
     @Transactional
@@ -57,13 +62,16 @@ public class CafeService {
         Cafe c = cafeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cafe not found: " + id));
 
-        if (patch.getName() != null)     c.setName(patch.getName());
-        if (patch.getAddress() != null)  c.setAddress(patch.getAddress());
-        if (patch.getLat() != null)      c.setLat(patch.getLat());
-        if (patch.getLon() != null)      c.setLon(patch.getLon());
-        if (patch.getNumber() != null)   c.setNumber(patch.getNumber());
-        if (patch.getCode() != null)     c.setCode(patch.getCode());
-        try { if (patch.getBizDoc() != null) c.setBizDoc(patch.getBizDoc()); } catch (Throwable ignored) {}
+        if (patch.getName() != null) c.setName(patch.getName());
+        if (patch.getAddress() != null) c.setAddress(patch.getAddress());
+        if (patch.getLat() != null) c.setLat(patch.getLat());
+        if (patch.getLon() != null) c.setLon(patch.getLon());
+        if (patch.getNumber() != null) c.setNumber(patch.getNumber());
+        if (patch.getCode() != null) c.setCode(patch.getCode());
+        try {
+            if (patch.getBizDoc() != null) c.setBizDoc(patch.getBizDoc());
+        } catch (Throwable ignored) {
+        }
         return c;
     }
 
@@ -122,7 +130,10 @@ public class CafeService {
         // 5) 사업자 증빙 파일 업로드(선택)
         if (bizDocFile != null && !bizDocFile.isEmpty()) {
             String docUrl = fileStorageService.save(bizDocFile, "cafes/" + saved.getId() + "/docs");
-            try { saved.setBizDoc(docUrl); } catch (Throwable ignored) {}
+            try {
+                saved.setBizDoc(docUrl);
+            } catch (Throwable ignored) {
+            }
         }
 
         // 6) 역할 승격(owner)
@@ -159,17 +170,50 @@ public class CafeService {
     public void updateCafeBizDoc(Long cafeId, String docUrl) {
         Cafe c = cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new NotFoundException("Cafe not found: " + cafeId));
-        try { c.setBizDoc(docUrl); } catch (Throwable e) {
+        try {
+            c.setBizDoc(docUrl);
+        } catch (Throwable e) {
             throw new IllegalStateException("Cafe 엔티티에 setBizDoc(String)이 없습니다.", e);
         }
     }
 
     // 상태 변경
-    @Transactional public void changeStatus(Long cafeId, CafeStatus status) {
+    @Transactional
+    public void changeStatus(Long cafeId, CafeStatus status) {
         Cafe c = cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new IllegalArgumentException("Cafe not found: " + cafeId));
         c.setStatus(status);
     }
-    @Transactional public void approve(Long cafeId) { changeStatus(cafeId, CafeStatus.APPROVED); }
-    @Transactional public void reject(Long cafeId)  { changeStatus(cafeId, CafeStatus.REJECTED); }
+
+    @Transactional
+    public void approve(Long cafeId) {
+        changeStatus(cafeId, CafeStatus.APPROVED);
+    }
+
+    @Transactional
+    public void reject(Long cafeId) {
+        changeStatus(cafeId, CafeStatus.REJECTED);
+    }
+
+    public List<Cafe> findApprovedTopByViews(int limit) {
+        return cafeRepository.findByStatusOrderByViewsDesc(
+                CafeStatus.APPROVED, PageRequest.of(0, limit));
+    }
+
+    @Transactional(readOnly = true)
+    public Cafe getOrThrow(Long id) {
+        return cafeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("카페가 없습니다. id=" + id));
+    }
+    public List<Cafe> searchApproved(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            // 검색어가 없으면 승인된 카페 40개를 조회수 순으로 반환
+            return cafeRepository.findByStatusOrderByViewsDesc(
+                    CafeStatus.APPROVED, PageRequest.of(0, 40));
+        }
+        // 검색어가 있으면 이름/주소에서 검색
+        return cafeRepository.findByStatusAndNameContainingOrStatusAndAddressContaining(
+                CafeStatus.APPROVED, keyword, CafeStatus.APPROVED, keyword);
+    }
 }
+

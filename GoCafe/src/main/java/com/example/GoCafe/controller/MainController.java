@@ -30,7 +30,7 @@ public class MainController {
     @GetMapping({"/", "/main"})
     public String home(Model model) {
         // top 8 카페 + 메인 사진 매핑
-        List<Cafe> cafes = cafeService.findTop8ByViews();
+        List<Cafe> cafes = cafeService.findApprovedTopByViews(8);
         Set<Long> topIds = cafes.stream().map(Cafe::getId).collect(Collectors.toSet());
         List<CafePhoto> mainPhotos = cafePhotoService.findForCafeIdsOrderByMainThenSort(topIds);
 
@@ -76,20 +76,8 @@ public class MainController {
                          @RequestParam(value = "category", required = false) String category,
                          Model model) {
 
-        List<Cafe> results = cafeService.findAll().stream()
-                .filter(c -> {
-                    boolean ok = true;
-                    if (q != null && !q.isBlank()) {
-                        String qq = q.toLowerCase();
-                        ok &= (c.getName() != null && c.getName().toLowerCase().contains(qq))
-                                || (c.getAddress() != null && c.getAddress().toLowerCase().contains(qq));
-                    }
-                    if (tag != null && !tag.isBlank()) ok &= true;      // 확장 포인트
-                    if (category != null && !category.isBlank()) ok &= true;
-                    return ok;
-                })
-                .limit(40)
-                .collect(Collectors.toList());
+
+        List<Cafe> results = cafeService.searchApproved(q);
 
         List<CafeTag> tags = cafeTagService.findAll().stream().limit(24).collect(Collectors.toList());
         List<Review> recent = reviewService.findAll().stream()

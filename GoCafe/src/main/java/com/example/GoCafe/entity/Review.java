@@ -89,5 +89,24 @@ public class Review {
                 ? createdAt.format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
                 : "";
     }
+    private void applySentimentCountsOnCreate() {
+        String s = normalizeSentiment(this.sentiment);
 
+        // 신규 생성 시 good/bad가 아직 0이면 라디오 선택을 숫자 칼럼에 1로 반영
+        if (this.good == 0 && this.bad == 0) {
+            if ("GOOD".equals(s)) {
+                this.good = 1;
+                this.bad = 0;
+            } else if ("BAD".equals(s)) {
+                this.good = 0;
+                this.bad = 1;
+            }
+        }
+
+        // 저장되는 sentiment는 GOOD/BAD만 허용, 그 외는 null
+        this.sentiment = ("GOOD".equals(s) || "BAD".equals(s)) ? s : null;
+    }
+    private String normalizeSentiment(String raw) {
+        return raw == null ? null : raw.trim().toUpperCase();
+    }
 }

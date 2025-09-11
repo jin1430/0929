@@ -33,12 +33,12 @@ public class ReviewService {
         return reviewRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Review not found: " + id));
     }
-
     @Transactional
     public Review create(Review entity) {
         EntityIdUtil.setId(entity, null);
         return reviewRepository.save(entity);
     }
+
 
     @Transactional
     public Review update(Long id, Review entity) {

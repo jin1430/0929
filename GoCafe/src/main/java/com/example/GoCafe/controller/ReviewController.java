@@ -45,7 +45,7 @@ public class ReviewController {
 
     @PostMapping("/new")
     public String create(@ModelAttribute ReviewForm form,
-                         @RequestParam(value = "photos", required = false) MultipartFile[] photos, // 파일 인풋이 있어도 안전하게 받기
+                         @RequestParam(value = "photos", required = false) MultipartFile[] photos,
                          RedirectAttributes ra,
                          Authentication authentication,
                          HttpServletRequest request) {
@@ -59,7 +59,7 @@ public class ReviewController {
 
         // 1) cafeId 보정
         if (form.getCafeId() == null) {
-            String fromMain = request.getParameter("cafeId"); // hidden이나 쿼리스트링 보정
+            String fromMain = request.getParameter("cafeId");
             if (fromMain != null && !fromMain.isBlank()) {
                 form.setCafeId(Long.valueOf(fromMain));
             } else {
@@ -76,7 +76,7 @@ public class ReviewController {
         }
 
         // 2) 로그인 사용자 조회
-        String email = authentication.getName(); // Jwt나 세션에서 가져온 사용자 식별자
+        String email = authentication.getName();
         Member me = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("로그인 사용자 정보를 찾을 수 없습니다."));
 
@@ -84,9 +84,25 @@ public class ReviewController {
         Cafe cafe = cafeRepository.findById(form.getCafeId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카페입니다."));
 
-        // 4) 엔티티 생성 및 저장
-        Review review = form.toEntity(cafe, me); // DTO→엔티티 변환
-        if (review.getCreatedAt() == null) review.setCreatedAt(LocalDateTime.now()); // @PrePersist가 있다면 생략 가능
+        // 4) 엔티티 생성
+        Review review = form.toEntity(cafe, me);
+        if (review.getCreatedAt() == null) review.setCreatedAt(LocalDateTime.now());
+
+        // 4-1) sentiment → good/bad 치환 (컨트롤러에서 처리)
+        // form 우선, 없으면 raw 파라미터도 보조로 확인
+        String s = (form.getSentiment() != null) ? form.getSentiment() : request.getParameter("sentiment");
+        if (s != null) s = s.trim().toUpperCase();
+        // 저장되는 문자열은 GOOD/BAD만 허용
+        if (!"GOOD".equals(s) && !"BAD".equals(s)) s = null;
+        review.setSentiment(s);
+
+        // 신규 저장 시 초기값 세팅(이미 값이 들어있다면 덮어쓰지 않음)
+        if (review.getGood() == 0 && review.getBad() == 0) {
+            if ("GOOD".equals(s)) { review.setGood(1); review.setBad(0); }
+            else if ("BAD".equals(s)) { review.setGood(0); review.setBad(1); }
+        }
+
+        // 4-2) 저장
         reviewRepository.save(review);
 
         // 5) 설문/태그 개별 저장
@@ -99,13 +115,15 @@ public class ReviewController {
         if (form.getLikedTagCodes() != null)
             for (String code : form.getLikedTagCodes())
                 reviewTagRepository.save(new ReviewTag(null, review, "LIKE", code));
-        if (form.getSentiment() != null && !form.getSentiment().isBlank())
-            reviewTagRepository.save(new ReviewTag(null, review, "SENTIMENT", form.getSentiment()));
+        // sentiment 태그도 정규화된 s로 저장(폼 원본 대신)
+        if (s != null)
+            reviewTagRepository.save(new ReviewTag(null, review, "SENTIMENT", s));
 
         // TODO: photos 저장은 기존 업로더 모듈 연결
         ra.addFlashAttribute("message", "리뷰가 등록되었습니다.");
         return "redirect:/cafes/" + form.getCafeId();
     }
+
 
     @GetMapping("/cafes/{cafeId}/reviews")
     public String list(@PathVariable Long cafeId, Model model) {

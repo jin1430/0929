@@ -67,10 +67,16 @@ public class CafeController {
     @GetMapping("/{cafeId}")
     public String viewCafe(@PathVariable Long cafeId,
                            Authentication auth,
-                           Model model) {
+                           Model model,
+                           org.springframework.web.servlet.mvc.support.RedirectAttributes ra) {
 
-        // 1) 카페/사진 조회
+        // 0) 방어: 카페 존재 확인
         Cafe cafe = cafeService.findById(cafeId);
+        if (cafe == null) {
+            throw new NotFoundException("카페가 없습니다.");
+        }
+
+        // 1) 대표 사진
         CafePhoto mainPhoto = cafePhotoService.getMainPhoto(cafeId);
 
         // 2) 로그인 사용자 정보/권한
@@ -86,12 +92,20 @@ public class CafeController {
             Member me = memberService.findByEmail(email);
             meId = (me != null ? me.getId() : null);
         }
+        // ✅ 버그 수정: 소유자 비교는 ID로
         boolean isOwner = (meId != null && cafe.getOwner() != null
-                && meId.equals(cafe.getOwner()));
+                && meId.equals(cafe.getOwner().getId()));
 
-        // 3) 승인 전 카페 접근 제한
+        // 3) 승인 전 접근 제한: 대기(PENDING)면 메인으로 리다이렉트 + 안내
         if (cafe.getStatus() != CafeStatus.APPROVED && !(isOwner || isAdmin)) {
-            throw new NotFoundException("승인되지 않은 카페입니다.");
+            if (cafe.getStatus() == CafeStatus.PENDING) {
+                ra.addFlashAttribute("flashInfo",
+                        "카페가 현재 검토 중입니다. 승인 후 열람할 수 있어요. (보통 수 분 소요)");
+                return "redirect:/";
+            } else {
+                // 반려 등은 기존처럼 404 처리
+                throw new NotFoundException("승인되지 않은 카페입니다.");
+            }
         }
 
         // 4) 모델 카페+사진 등록
@@ -99,9 +113,8 @@ public class CafeController {
         model.addAttribute("mainPhoto", mainPhoto);
 
         // 5) 리뷰 목록 + 사진 주입
-        var reviews = reviewService.findByCafeIdWithMember(cafeId);  // member는 fetch join 가정
+        var reviews = reviewService.findByCafeIdWithMember(cafeId);
         for (var r : reviews) {
-            // 사진 엔티티 목록을 그대로 주입 (정렬은 sortIndex ASC)
             var photos = reviewPhotoService.findByReviewIdOrderBySortIndexAsc(r.getId());
             r.setPhotos(photos);
         }
@@ -124,5 +137,7 @@ public class CafeController {
 
         return "cafes/detail";
     }
+
+
 
 }
