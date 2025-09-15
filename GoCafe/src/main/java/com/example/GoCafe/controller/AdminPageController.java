@@ -20,6 +20,10 @@ public class AdminPageController {
     @GetMapping
     public String main(Model model) {
         model.addAttribute("pendingCafes", cafeService.findByStatus(CafeStatus.PENDING));
-        return "admin/main"; // ✅ 파일명과 정확히 맞추기 (templates/admin/index.mustache)
+        model.addAttribute("statTotalCafes", cafeService.countAll());
+        model.addAttribute("statApprovedCafes", cafeService.countByStatus(CafeStatus.APPROVED));
+        model.addAttribute("statPendingCafes", cafeService.countByStatus(CafeStatus.PENDING));
+        model.addAttribute("statRejectedCafes", cafeService.countByStatus(CafeStatus.REJECTED));
+        return "admin/main";
     }
 }

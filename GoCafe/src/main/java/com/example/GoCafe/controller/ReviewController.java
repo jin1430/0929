@@ -9,6 +9,7 @@ import com.example.GoCafe.repository.CafeRepository;
 import com.example.GoCafe.repository.MemberRepository;
 import com.example.GoCafe.repository.ReviewRepository;
 import com.example.GoCafe.repository.ReviewTagRepository;
+import com.example.GoCafe.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -34,6 +35,7 @@ public class ReviewController {
     private final ReviewTagRepository reviewTagRepository;
     private final MemberRepository memberRepository;
     private final CafeRepository cafeRepository;
+    private final NotificationService notificationService;
 
 
     // 폴백 페이지(팝업이 안 뜰 때만 노출). view name은 절대 슬래시 X
@@ -105,6 +107,12 @@ public class ReviewController {
         // 4-2) 저장
         reviewRepository.save(review);
 
+
+        if (cafe.getOwner() != null &&
+                (review.getMember() == null ||
+                        !cafe.getOwner().getId().equals(review.getMember().getId()))) {
+            notificationService.notifyReviewCreated(review);
+        }
         // 5) 설문/태그 개별 저장
         if (form.getWaitingTime() != null)
             reviewTagRepository.save(new ReviewTag(null, review, "WAIT", String.valueOf(form.getWaitingTime())));

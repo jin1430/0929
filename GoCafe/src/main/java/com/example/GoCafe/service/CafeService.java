@@ -28,6 +28,7 @@ public class CafeService {
     private final CafePhotoRepository cafePhotoRepository;
     private final MemberRepository memberRepository;
     private final FileStorageService fileStorageService;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public List<Cafe> findAll() {
@@ -183,6 +184,8 @@ public class CafeService {
         Cafe c = cafeRepository.findById(cafeId)
                 .orElseThrow(() -> new IllegalArgumentException("Cafe not found: " + cafeId));
         c.setStatus(status);
+        // ✅ 승인/거절 알림
+        try { notificationService.notifyCafeStatus(c, status); } catch (Exception ignore) {}
     }
 
     @Transactional
@@ -215,5 +218,10 @@ public class CafeService {
         return cafeRepository.findByStatusAndNameContainingOrStatusAndAddressContaining(
                 CafeStatus.APPROVED, keyword, CafeStatus.APPROVED, keyword);
     }
+    @Transactional(readOnly = true)
+    public long countByStatus(CafeStatus status) { return cafeRepository.countByStatus(status); }
+
+    @Transactional(readOnly = true)
+    public long countAll() { return cafeRepository.count(); }
 }
 

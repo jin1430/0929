@@ -33,7 +33,7 @@
         @Column(name = "name", nullable = false, unique = true, length = 10)
         private String name;
 
-        @Column(name = "address", nullable = false, unique = true, length = 60)
+        @Column(name = "address", nullable = false, length = 60)
         private String address;
 
         @Column(name = "lat", nullable = false)

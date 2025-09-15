@@ -231,14 +231,6 @@
         </ul>
     </section>
 
-    <!-- ===== 모바일 플로팅 액션 ===== -->
-    <div class="cg-fab">
-        {{#cafe}}
-            <a class="cg-fab__btn" href="tel:{{number}}">전화</a>
-            <a class="cg-fab__btn" target="_blank" href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">길찾기</a>
-            <a class="cg-fab__btn" href="#" data-review-modal data-cafe-id="{{id}}">리뷰</a>
-        {{/cafe}}
-    </div>
 </main>
 
 <!-- ===========================
@@ -272,7 +264,7 @@
 
             <div class="cg-modal__content">
                 <label class="cg-label">내용</label>
-                <textarea name="reviewContent" class="cg-input" rows="8" style="min-height:160px" placeholder="방문 후기를 남겨주세요." required maxlength="1000" autofocus></textarea>
+                <textarea name="reviewContent" class="cg-input" rows="8" style="min-height:160px" placeholder="방문 후기를 남겨주세요." required maxlength="1000" autofocus aria-required="true"></textarea>
 
                 <label class="cg-label" style="margin-top:12px">전반적 만족도</label>
                 <div class="cg-toggle2" role="group" aria-label="전반적 만족도">

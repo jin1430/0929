@@ -22,6 +22,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final CafePhotoRepository cafePhotoRepository;
+    private final NotificationService notificationService;
 
     @Transactional(readOnly = true)
     public List<Review> findAll() {
@@ -36,7 +37,10 @@ public class ReviewService {
     @Transactional
     public Review create(Review entity) {
         EntityIdUtil.setId(entity, null);
-        return reviewRepository.save(entity);
+        Review saved = reviewRepository.save(entity);
+        // ✅ 리뷰가 달리면 소유자에게 알림
+        try { notificationService.notifyReviewCreated(saved); } catch (Exception ignore) {}
+        return saved;
     }
 
 

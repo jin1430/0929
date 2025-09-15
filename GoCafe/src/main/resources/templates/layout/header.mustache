@@ -27,13 +27,24 @@
 
             {{#isLoggedIn}}
                 안녕하세요,<span class="cg-me-email">{{currentUserNickname}}</span>님!
+                <div class="cg-noti" style="position:relative;display:inline-block;margin:0 8px">
+                    <button id="notiBtn" class="cg-btn-outline" type="button" aria-haspopup="true" aria-expanded="false">
+                        🔔 <span id="notiCount">{{notificationCount}}</span>
+                    </button>
+                    <div id="notiDropdown" class="cg-dropdown" style="display:none;position:absolute;right:0;top:40px;width:360px;max-height:420px;overflow:auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:8px;box-shadow:0 10px 25px rgba(0,0,0,.08)">
+                        <ul id="notiList" style="list-style:none;margin:0;padding:0"></ul>
+                        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+                            <button id="notiReadAll" class="cg-btn-outline" type="button">모두 읽음</button>
+                        </div>
+                    </div>
+                </div>
                 <a href="/member/me" class="cg-btn-outline" aria-label="마이페이지">마이페이지</a>
                 {{#isAdmin}}<a href="/admin" class="cg-btn-outline">관리자 페이지</a>{{/isAdmin}}
-                <!-- JS가 이 폼 submit 가로채서 로그아웃 처리 -->
                 <form id="logoutForm" action="/api/auth/logout" method="post" style="display:inline">
                     <button class="cg-btn-outline" type="submit">로그아웃</button>
                 </form>
             {{/isLoggedIn}}
+
 
         </div>
     </div>
@@ -43,4 +54,62 @@
         {{flashInfo}}
     </div>
 {{/flashInfo}}
+<script>
+    (function(){
+      const btn = document.getElementById('notiBtn');
+      const dd  = document.getElementById('notiDropdown');
+      const list= document.getElementById('notiList');
+      const countEl = document.getElementById('notiCount');
+
+      if (!btn) return; // 비로그인
+
+      btn.addEventListener('click', ()=>{
+        const opened = dd.style.display === 'block';
+        dd.style.display = opened ? 'none' : 'block';
+        if (!opened) fetchList();
+      });
+
+      function fmt(ts){
+        try { return new Date(ts).toLocaleString(); } catch(e){ return ts; }
+      }
+      function render(items){
+        if (!Array.isArray(items) || items.length===0){
+          list.innerHTML = '<li style="padding:8px 10px;color:#64748b">알림이 없습니다.</li>';
+          countEl.textContent = '0';
+          return;
+        }
+        const unread = items.filter(it=>it.read===false).length;
+        countEl.textContent = String(unread);
+        list.innerHTML = items.map(it => `
+          <li style="padding:10px;border-bottom:1px solid #f1f5f9">
+            <div style="font-size:14px">${it.message || '(알림)'}</div>
+            <div style="font-size:12px;color:#94a3b8">${fmt(it.createdAt)}</div>
+            ${it.read ? '' : `<button data-id="${it.id}" class="markRead" style="margin-top:6px" type="button">읽음</button>`}
+          </li>
+        `).join('');
+        list.querySelectorAll('.markRead').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            fetch('/api/notifications/'+btn.dataset.id+'/read', {method:'POST'}).then(fetchList);
+          });
+        });
+      }
+
+      function fetchList(){
+        fetch('/api/notifications',{credentials:'same-origin'})
+          .then(r=>r.json()).then(render).catch(()=>{});
+      }
+      function fetchCount(){
+        fetch('/api/notifications/unread-count',{credentials:'same-origin'})
+          .then(r=>r.text()).then(n=>{ countEl.textContent = n; }).catch(()=>{});
+      }
+
+      document.getElementById('notiReadAll')?.addEventListener('click', ()=>{
+        fetch('/api/notifications/read-all',{method:'POST',credentials:'same-origin'}).then(fetchList);
+      });
+
+      // 초기/주기 갱신
+      fetchCount();
+      setInterval(fetchCount, 10000);
+    })();
+</script>
 

@@ -24,4 +24,8 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
     // ✅ [추가] 상태(status)와 검색어(keyword)를 기준으로 카페를 찾는 메소드
     List<Cafe> findByStatusAndNameContainingOrStatusAndAddressContaining(
             CafeStatus status1, String name, CafeStatus status2, String address);
+
+    // 추가
+    long countByStatus(CafeStatus status);
+    boolean existsByAddress(String address);
 }
