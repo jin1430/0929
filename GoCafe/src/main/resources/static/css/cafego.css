@@ -475,16 +475,3 @@ body.cg-modal-open { overflow: hidden; }
   .cg-hero__right{margin-top:12px}
 }
 
-<style>
-/* ✅ 모달 최소 스타일 */
-.cg-modal { position: fixed; inset: 0; display: none; z-index: 1000; }
-.cg-modal.is-open { display: block; }
-.cg-modal__backdrop { position:absolute; inset:0; background:rgba(0,0,0,.4); }
-.cg-modal__dialog {
-  position: relative; margin: 5vh auto; max-width: 720px; background: #fff;
-  border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.2); padding: 16px 16px 12px;
-}
-.cg-modal__header { display:flex; justify-content:space-between; align-items:center; padding: 4px 4px 8px; }
-.cg-modal__body { padding: 4px; max-height: 60vh; overflow:auto; }
-.cg-modal__close { background: none; border: 0; font-size: 28px; line-height: 1; cursor: pointer; }
-</style>

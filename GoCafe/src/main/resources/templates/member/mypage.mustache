@@ -57,7 +57,7 @@
                     </div>
                 </article>
 
-                <!-- ✅ 리뷰어 등급 / 미션 -->
+                <!-- 리뷰어 등급 / 진행도 -->
                 <article class="cg-panel">
                     <header class="cg-panel__head">
                         <div>
@@ -71,52 +71,49 @@
                     </header>
 
                     <div class="cg-panel__body">
-
-                        <!-- PRO 안내 -->
                         {{#isPro}}
                             <div class="cg-notice-panel">
                                 <strong>PRO 등급</strong>입니다. <span class="cg-badge is-warning">협찬</span> 미션에 지원할 수 있어요.
                             </div>
                         {{/isPro}}
 
-                        <!-- PRO 진행도(일반일 때) -->
                         {{^isPro}}
-                            <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
-                                <div class="cg-kpi">
-                                    <div class="cg-kpi__value">{{proProgress.totalReviews}}</div>
-                                    <div class="cg-kpi__label">승인 리뷰</div>
+                            <!-- ✅ 진행도는 값이 있을 때만 렌더 -->
+                            {{#proProgress}}
+                                <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">{{totalReviews}}</div>
+                                        <div class="cg-kpi__label">승인 리뷰</div>
+                                    </div>
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">{{goodReviews}}</div>
+                                        <div class="cg-kpi__label">GOOD 리뷰</div>
+                                    </div>
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">10</div>
+                                        <div class="cg-kpi__label">필요 총수</div>
+                                    </div>
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">6</div>
+                                        <div class="cg-kpi__label">필요 GOOD</div>
+                                    </div>
                                 </div>
-                                <div class="cg-kpi">
-                                    <div class="cg-kpi__value">{{proProgress.goodReviews}}</div>
-                                    <div class="cg-kpi__label">GOOD 리뷰</div>
-                                </div>
-                                <div class="cg-kpi">
-                                    <div class="cg-kpi__value">10</div>
-                                    <div class="cg-kpi__label">필요 총수</div>
-                                </div>
-                                <div class="cg-kpi">
-                                    <div class="cg-kpi__value">6</div>
-                                    <div class="cg-kpi__label">필요 GOOD</div>
-                                </div>
-                            </div>
 
-                            <div class="cg-progress" style="margin-top:12px">
-                                <!-- 단순 퍼센트 표현: (good/6, total/10) 중 낮은 값 -->
-                                <div class="cg-progress__bar" style="width: {{proProgress.percent}}%"></div>
-                            </div>
+                                <div class="cg-progress" style="margin-top:12px">
+                                    <div class="cg-progress__bar" style="width: {{percent}}%"></div>
+                                </div>
+                                <p class="cg-note" style="margin-top:8px">
+                                    Pro 기준: 최근 승인 리뷰 10건 이상 & 그중 GOOD 6건 이상.
+                                </p>
+                            {{/proProgress}}
 
-                            <p class="cg-note" style="margin-top:8px">
-                                Pro 기준: 최근 승인 리뷰 10건 이상 & 그중 GOOD 6건 이상.
-                            </p>
+                            <!-- 값이 없으면 안내만 -->
+                            {{^proProgress}}
+                                <p class="cg-note" style="margin-top:8px;color:#6b7280">
+                                    진행도는 리뷰가 등록되면 표시됩니다.
+                                </p>
+                            {{/proProgress}}
                         {{/isPro}}
-
-                        <!-- 안전한 기본값 안내(서버에서 proProgress 안 내려줄 때) -->
-                        {{^proProgress}}
-                            <p class="cg-note" style="margin-top:8px;color:#6b7280">
-                                * 진행도 계산을 위해 <code>proProgress</code> 모델(총 리뷰/GOOD 리뷰/퍼센트)을 내려주세요.
-                            </p>
-                        {{/proProgress}}
-
                     </div>
                 </article>
             {{/member}}
@@ -130,7 +127,7 @@
 
 {{>layout/footer}}
 
-<!-- ✅ 전문 리뷰어 안내 모달 -->
+<!-- 안내 모달 (선택) -->
 <div id="pro-info-modal" class="cg-modal" aria-hidden="true">
     <div class="cg-modal__backdrop" data-close></div>
     <div class="cg-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pro-info-title">
@@ -144,7 +141,7 @@
                 <div class="cg-panel__body">
                     <ul class="cg-list">
                         <li>플랫폼 미션 신청/수행</li>
-                        <li>승인 시 포인트/레벨(간단 규칙)</li>
+                        <li>승인 시 포인트/레벨</li>
                         <li><strong>Pro</strong> 달성 후 <span class="cg-badge is-warning">협찬</span> 미션 참여</li>
                     </ul>
                 </div>
@@ -155,10 +152,10 @@
                     <ul class="cg-list">
                         <li>Pro 전용 협찬 미션 지원 자격</li>
                         <li>프로필 Pro 뱃지</li>
-                        <li>추천 미션 우선 초대(차등)</li>
+                        <li>추천 미션 우선 초대</li>
                     </ul>
                     <p class="cg-note" style="margin-top:8px">
-                        Pro 기준(예시): 승인 리뷰 10건 이상 & GOOD 6건 이상.
+                        Pro 기준: 승인 리뷰 10건 이상 & GOOD 6건 이상.
                     </p>
                 </div>
             </section>
@@ -170,16 +167,15 @@
     </div>
 </div>
 
-<!-- 모달 & 진행도 보조 스타일/JS -->
 <style>
     .cg-modal{position:fixed;inset:0;display:none;z-index:1000}
     .cg-modal.is-open{display:block}
     .cg-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4)}
-    .cg-modal__dialog{position:relative;margin:5vh auto;max-width:720px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:16px}
+    .cg-modal__dialog{position:relative;margin:6vh auto;max-width:760px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:16px}
     .cg-modal__header{display:flex;justify-content:space-between;align-items:center}
     .cg-modal__close{background:none;border:0;font-size:28px;line-height:1;cursor:pointer}
     .cg-progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
-    .cg-progress__bar{height:100%;background:#10b981}
+    .cg-progress__bar{height:100%}
     .cg-kpi{min-width:96px}
     .cg-kpi__value{font-size:20px;font-weight:700}
     .cg-kpi__label{font-size:12px;color:#6b7280}
@@ -187,13 +183,13 @@
 <script>
     (function(){
       const modal = document.getElementById('pro-info-modal');
-      const btn = document.getElementById('btn-open-pro-info');
+      const btn   = document.getElementById('btn-open-pro-info');
       if (modal && btn) {
         const open = ()=>modal.classList.add('is-open');
-        const close = ()=>modal.classList.remove('is-open');
+        const close= ()=>modal.classList.remove('is-open');
         btn.addEventListener('click', open);
         modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click', close));
-        document.addEventListener('keydown', e=>{ if(e.key==='Escape') close(); });
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
       }
     })();
 </script>

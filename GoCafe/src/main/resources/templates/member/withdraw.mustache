@@ -33,7 +33,7 @@
     document.getElementById('btnWithdraw')?.addEventListener('click', async () => {
       if(!confirm('정말 탈퇴하시겠습니까? 되돌릴 수 없습니다.')) return;
       const token = localStorage.getItem('accessToken'); // 저장 키 이름 맞게 조정
-      const res = await fetch('/member/withdraw', {
+      const res = await fetch('api/members/${id}', {
         method: 'DELETE', // 서버에 맞게 POST로 바꿔도 됨
         headers: {
           'Authorization': token ? `Bearer ${token}` : '',

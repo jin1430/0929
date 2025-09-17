@@ -239,76 +239,81 @@
 
 <!-- 모달 동작 JS -->
 <script>
-    // 전문 리뷰어 안내 모달
-    (function() {
-      const modal = document.getElementById('pro-modal');
-      const openBtn = document.getElementById('btn-open-pro-modal');
-      if (!modal || !openBtn) return;
+    .cg-modal{position:fixed;inset:0;display:none;z-index:1000}
+    .cg-modal.is-open{display:block}
+    .cg-modal__backdrop{...}
+    .cg-modal__dialog{...}
+    .cg-modal__close{...}
+  // 전문 리뷰어 안내 모달
+  (function() {
+    const modal = document.getElementById('pro-modal');
+    const openBtn = document.getElementById('btn-open-pro-modal');
+    if (!modal || !openBtn) return;
 
-      const open = () => modal.classList.add('is-open');
-      const close = () => modal.classList.remove('is-open');
+    const open = () => modal.classList.add('is-open');
+    const close = () => modal.classList.remove('is-open');
 
-      openBtn.addEventListener('click', open);
-      modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', close));
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-    })();
+    openBtn.addEventListener('click', open);
+    modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  })();
 
-    // 미션 상세 모달
-    (function(){
-      const modal = document.getElementById('mission-modal');
-      if(!modal) return;
+  // 미션 상세 모달
+  (function(){
+    const modal = document.getElementById('mission-modal');
+    if(!modal) return;
 
-      const ctx = document.getElementById('home-mission-context');
-      const loggedIn = (ctx?.dataset.loggedIn === 'true');
-      const isPro    = (ctx?.dataset.isPro === 'true');
+    const ctx = document.getElementById('home-mission-context');
+    const loggedIn = (ctx?.dataset.loggedIn === 'true');
+    const isPro    = (ctx?.dataset.isPro === 'true');
 
-      const elName   = document.getElementById('mission-cafe-name');
-      const elDue    = document.getElementById('mission-due');
-      const elNotice = document.getElementById('mission-notice');
-      const elBadge  = document.getElementById('mission-badge-sponsored');
-      const form     = document.getElementById('mission-accept-form');
-      const btnAccept= document.getElementById('mission-accept-btn');
+    const elName   = document.getElementById('mission-cafe-name');
+    const elDue    = document.getElementById('mission-due');
+    const elNotice = document.getElementById('mission-notice');
+    const elBadge  = document.getElementById('mission-badge-sponsored');
+    const form     = document.getElementById('mission-accept-form');
+    const btnAccept= document.getElementById('mission-accept-btn');
 
-      function openModal(data){
-        elName.textContent = data.cafeName || '';
-        elDue.textContent  = data.due && data.due !== '-' ? ('마감: ' + data.due) : '';
-        elBadge.style.display = data.sponsored ? '' : 'none';
-        elNotice.textContent = data.notice || '';
-        form.action = '/missions/' + data.cafeId + '/accept';
+    function openModal(data){
+      elName.textContent = data.cafeName || '';
+      elDue.textContent  = data.due && data.due !== '-' ? ('마감: ' + data.due) : '';
+      elBadge.style.display = data.sponsored ? '' : 'none';
+      elNotice.textContent = data.notice || '';
+      form.action = '/missions/' + data.cafeId + '/accept';
 
-        if(!loggedIn){
-          btnAccept.textContent = '로그인하고 수락';
-          form.action = '/login';
-        } else if (data.sponsored && !isPro){
-          btnAccept.textContent = 'Pro 전용';
-          btnAccept.disabled = true;
-        } else {
-          btnAccept.textContent = '미션 수락';
-          btnAccept.disabled = false;
-        }
-        modal.classList.add('is-open');
+      if(!loggedIn){
+        btnAccept.textContent = '로그인하고 수락';
+        form.action = '/login';
+      } else if (data.sponsored && !isPro){
+        btnAccept.textContent = 'Pro 전용';
+        btnAccept.disabled = true;
+      } else {
+        btnAccept.textContent = '미션 수락';
+        btnAccept.disabled = false;
       }
-      function closeModal(){ modal.classList.remove('is-open'); }
+      modal.classList.add('is-open');
+    }
+    function closeModal(){ modal.classList.remove('is-open'); }
 
-      document.addEventListener('click', (e)=>{
-        const btn = e.target.closest('.js-open-mission');
-        if(!btn) return;
+    document.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.js-open-mission');
+      if(!btn) return;
 
-        const cafeId   = btn.dataset.cafeId;
-        const noticeEl = document.getElementById('notice-'+cafeId);
-        const data = {
-          cafeId,
-          cafeName: btn.dataset.cafeName || '',
-          due: btn.dataset.due || '',
-          sponsored: btn.dataset.sponsored === 'true',
-          notice: noticeEl ? noticeEl.innerText : ''
-        };
-        openModal(data);
-      });
+      const cafeId   = btn.dataset.cafeId;
+      const noticeEl = document.getElementById('notice-'+cafeId);
+      const data = {
+        cafeId,
+        cafeName: btn.dataset.cafeName || '',
+        due: btn.dataset.due || '',
+        sponsored: btn.dataset.sponsored === 'true',
+        notice: noticeEl ? noticeEl.innerText : ''
+      };
+      openModal(data);
+    });
 
-      modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click', closeModal));
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
-    })();
+    modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click', closeModal));
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+  })();
 </script>
 
 {{>layout/footer}}
