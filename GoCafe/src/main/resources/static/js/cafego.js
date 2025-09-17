@@ -13,6 +13,48 @@
   }
   function getToken(){ return localStorage.getItem('cafego_token') || null; }
   function getAuthHeaders(){ const t=getToken(); return t?{Authorization:`Bearer ${t}`}:{ }; }
+  /* ---------- 즐겨찾기 토글 (JWT) ---------- */
+  (() => {
+    const btn = document.getElementById('favBtn');
+    if (!btn) return;
+
+    const cafeId  = btn.dataset.cafeId;
+    const countEl = document.getElementById('favCount');
+
+    function setUI(favorited, count) {
+      btn.dataset.favorited = favorited ? 'true' : 'false';
+      btn.textContent = favorited ? '즐겨찾기 해제' : '즐겨찾기';
+      if (typeof count === 'number' && countEl) countEl.textContent = `즐겨찾기 ${count}`;
+    }
+
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      btn.disabled = true;
+      try {
+        const res = await fetch(`/api/favorites/${cafeId}/favorite`, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json', ...getAuthHeaders() }
+        });
+        if (res.status === 401 || res.status === 403) {
+        sessionStorage.setItem('returnTo', location.href);
+         alert('로그인이 필요합니다.');
+         location.href = '/login';
+         return;
+        }
+        // { favorited: true/false, favoriteCount: number }
+        const data = await res.json();
+        setUI(!!(data.favorited ?? data.favorite ?? data.isFavorited),
+              typeof data.favoriteCount === 'number' ? data.favoriteCount : undefined);
+
+      } catch (err) {
+        alert(err.message || '네트워크 오류');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  })();
+
 
   /* ---------- Header/Login state ---------- */
   const loginFormHeader = document.getElementById('loginFormHeader');
@@ -60,7 +102,9 @@
       const data = await res.json(); // {tokenType:"Bearer", token:"..."}
       setToken(data.token);
       await fetchMe();
-      const details = form.closest('details'); if(details) details.open=false;
+      const next = sessionStorage.getItem('returnTo')
+      || new URLSearchParams(location.search).get('next')
+      || '/';
     }else{
       const err = await res.json().catch(()=>({message:'로그인 실패'}));
       alert(err.message || '로그인 실패');
@@ -229,45 +273,49 @@ document.addEventListener('click', (e) => {
       });
     }
   });
-
   /* ---------- Auth 페이지 폼 (login/signup 템플릿) ---------- */
+  // 기본은 서버사이드(MVC) 네이티브 제출을 사용.
+  // AJAX가 꼭 필요하면 <form data-ajax="true"> 로 명시적으로 opt-in 하세요.
+
   const loginPageForm  = document.getElementById('loginPageForm');
   const signupPageForm = document.getElementById('signupPageForm');
 
-  if (loginPageForm){
-    loginPageForm.addEventListener('submit', async (e)=>{
+  // (옵션) 로그인 폼을 AJAX로 처리하고 싶을 때만 data-ajax="true" 사용
+  if (loginPageForm && loginPageForm.dataset.ajax === 'true') {
+    loginPageForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(loginPageForm);
-      const payload = { memberEmail: fd.get('memberEmail'), memberPassword: fd.get('memberPassword') };
-      const res = await fetch('/api/auth/login', {
-        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+
+      // CSRF 토큰이 hidden input에 있다면 자동 포함됨(FormData)
+      const res = await fetch('/login', {
+        method: 'POST',
+        body: new URLSearchParams(fd) // x-www-form-urlencoded로 전송
       });
-      if(res.ok){ location.href = '/'; }
-      else{
-        const err = await res.json().catch(()=>({message:'로그인 실패'}));
-        alert(err.message || '로그인 실패');
-      }
+
+      if (res.redirected) location.href = res.url; else location.reload();
     });
   }
 
-  if (signupPageForm){
-    signupPageForm.addEventListener('submit', async (e)=>{
+  // (옵션) 회원가입 폼도 필요할 때만 AJAX. 기본은 네이티브 제출 권장.
+  if (signupPageForm && signupPageForm.dataset.ajax === 'true') {
+    signupPageForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const fd  = new FormData(signupPageForm);
-      const pw  = fd.get('memberPassword');
-      const pw2 = fd.get('memberPasswordConfirm');
-      if(pw !== pw2){ alert('비밀번호가 일치하지 않습니다.'); return; }
-      const payload = { memberEmail: fd.get('memberEmail'), memberPassword: pw };
-      const res = await fetch('/api/auth/signup', {
-        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+      const fd = new FormData(signupPageForm);
+
+      const pw  = fd.get('password');
+      const pw2 = fd.get('passwordConfirm');
+      if (pw !== pw2) { alert('비밀번호가 일치하지 않습니다.'); return; }
+
+      const res = await fetch('/signup', {
+        method: 'POST',
+        body: new URLSearchParams(fd) // 필드명: email, password, passwordConfirm, nickname, age, gender
       });
-      if(res.ok){ alert('회원가입이 완료되었습니다. 로그인해 주세요.'); location.href='/login'; }
-      else{
-        const err = await res.json().catch(()=>({message:'회원가입 실패'}));
-        alert(err.message || '회원가입 실패');
-      }
+
+      if (res.redirected) { location.href = res.url; }
+      else { location.reload(); } // 실패 시 서버가 에러 포함한 뷰를 다시 렌더링
     });
   }
+
 
   /* ---------- 초기화 ---------- */
   fetchMe();

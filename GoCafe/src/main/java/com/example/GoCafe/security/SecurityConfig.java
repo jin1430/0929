@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer; // ✅ 추가
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,6 +44,18 @@ public class SecurityConfig {
         this.xssSanitizingFilter = xssSanitizingFilter;
     }
 
+    // ✅ 최소수정 ②: 정적 리소스는 보안 필터 체인 자체에서 제외 (JWT/XSS도 안탐)
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(
+                "/favicon.ico",
+                "/webjars/**",
+                "/css/**", "/js/**",
+                "/images/**", "/img/**",
+                "/uploads/**", "/files/**"
+        );
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -55,13 +68,13 @@ public class SecurityConfig {
                                 "default-src 'self'; " +
                                         // JS SDK
                                         "script-src 'self' https://dapi.kakao.com https://t1.daumcdn.net 'unsafe-inline'; " +
-                                        // ✅ 타일/마커/클러스터 이미지: mts, map0~n, t1 등 전부 커버
-                                        "img-src 'self' data: blob: https://*.daumcdn.net; " +
+                                        // ✅ 최소수정 ①: 모든 https 이미지 허용 (self/data/blob 포함)
+                                        "img-src 'self' data: blob: https:; " +
                                         // 지오코딩/클러스터 등 XHR 대비
                                         "connect-src 'self' https://dapi.kakao.com https://*.daumcdn.net; " +
                                         // (필요 시) 폰트/스타일
                                         "style-src 'self' 'unsafe-inline'; " +
-                                        "font-src 'self' https://*.daumcdn.net; " +
+                                        "font-src 'self' https:; " +
                                         "base-uri 'self'; frame-ancestors 'self'; object-src 'none'; " +
                                         "upgrade-insecure-requests;"
                         ))

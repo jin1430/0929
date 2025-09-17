@@ -1,17 +1,22 @@
 package com.example.GoCafe.apiController;
 
 import com.example.GoCafe.entity.Menu;
+import com.example.GoCafe.service.FileStorageService;
 import com.example.GoCafe.service.MenuService;
 import com.example.GoCafe.support.EntityIdUtil;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/menus")
@@ -19,6 +24,7 @@ import java.util.List;
 public class MenuApiController {
 
     private final MenuService service;
+    private final FileStorageService storage;
 
     @GetMapping
     public List<Menu> getAll() {
@@ -47,5 +53,22 @@ public class MenuApiController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
+    }
+
+    @GetMapping("/by-cafe/{cafeId}")
+    public List<Menu> listByCafe(@PathVariable Long cafeId) {
+        return service.findByCafeId(cafeId);
+    }
+
+    @PostMapping(value = "/{menuId}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Transactional
+    public Map<String, String> uploadPhoto(@PathVariable Long menuId,
+                                           @RequestParam("file") MultipartFile file) throws Exception {
+        Menu menu = service.findById(menuId);
+        // 원하는 경로 규칙으로 저장
+        String url = storage.save(file, "menus/" + menu.getCafe().getId() + "/" + menuId);
+        menu.setPhoto(url);
+        // JPA dirty checking 으로 update, 혹은 menuService.update(menuId, menu)
+        return Map.of("url", url);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,4 +50,21 @@ public class CafeInfoService {
         }
         repository.deleteById(id);
     }
+    @Transactional(readOnly = true)
+    public Optional<CafeInfo> findByCafeId(Long cafeId) {
+        return repository.findByCafe_Id(cafeId);
+    }
+
+    @Transactional
+    public CafeInfo upsertByCafeId(Long cafeId, CafeInfo entity) {
+        Optional<CafeInfo> cur = repository.findByCafe_Id(cafeId);
+        if (cur.isPresent()) {
+            // 기존 행이 있으면 id를 복사해 update로 전환
+            com.example.GoCafe.support.EntityIdUtil.setId(entity,
+                    com.example.GoCafe.support.EntityIdUtil.getId(cur.get()));
+        }
+        return repository.save(entity);
+    }
+
+
 }

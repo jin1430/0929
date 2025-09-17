@@ -1,9 +1,12 @@
 package com.example.GoCafe.service;
 
+import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.CafePhoto;
 import com.example.GoCafe.repository.CafePhotoRepository;
+import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -26,4 +29,46 @@ public class CafePhotoService {
     public CafePhoto getMainPhoto(Long cafeId) {
         return cafePhotoRepository.findMainPhoto(cafeId);
     }
+
+
+    @Transactional(readOnly = true)
+    public List<CafePhoto> list(Long cafeId) {
+        return cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafeId);
+    }
+
+    @Transactional
+    public CafePhoto add(Cafe cafe, FileStorageService.StoredFile stored) {
+        CafePhoto photo = new CafePhoto();
+        photo.setCafe(cafe);
+        photo.setUrl(stored.url());
+        photo.setOriginalName(stored.originalName());
+        photo.setContentType(stored.contentType());
+        photo.setSizeBytes(stored.sizeBytes());
+        int next = cafePhotoRepository.findFirstByCafe_IdOrderBySortIndexDesc(cafe.getId())
+                .map(p -> (p.getSortIndex() == null ? 0 : p.getSortIndex()) + 1)
+                .orElse(0);
+        photo.setSortIndex(next);
+        return cafePhotoRepository.save(photo);
+    }
+
+    @Transactional
+    public void delete(Long photoId) {
+        if (!cafePhotoRepository.existsById(photoId)) throw new NotFoundException("사진 없음");
+        cafePhotoRepository.deleteById(photoId);
+    }
+
+    @Transactional
+    public void setMain(Long cafeId, Long photoId) {
+        // 기존 대표 해제
+        cafePhotoRepository.findByCafe_IdAndMainTrue(cafeId).ifPresent(p -> {
+            p.setMain(false);
+            cafePhotoRepository.save(p);
+        });
+        // 새 대표 설정
+        CafePhoto p = cafePhotoRepository.findById(photoId).orElseThrow(() -> new NotFoundException("사진 없음"));
+        p.setMain(true);
+        cafePhotoRepository.save(p);
+    }
+
+
 }

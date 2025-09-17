@@ -21,4 +21,8 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     long countByCafe(@Param("cafe") Cafe cafe);
 
     Page<Favorite> findByMember(Member member, Pageable pageable);
+
+    Optional<Favorite> findByMember_IdAndCafe_Id(Long memberId, Long cafeId);
+    boolean existsByMember_IdAndCafe_Id(Long memberId, Long cafeId);
+    long countByCafe_Id(Long cafeId);
 }

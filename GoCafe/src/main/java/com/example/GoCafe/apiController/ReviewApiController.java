@@ -30,13 +30,13 @@ public class ReviewApiController {
         return service.findById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<Review> create(@RequestBody @Valid Review body, UriComponentsBuilder uriBuilder) {
-        Review saved = service.create(body);
-        Object id = EntityIdUtil.getId(saved);
-        URI location = uriBuilder.path("/api/reviews/{id}").buildAndExpand(id).toUri();
-        return ResponseEntity.created(location).body(saved);
-    }
+//    @PostMapping
+//    public ResponseEntity<Review> create(@RequestBody @Valid Review body, UriComponentsBuilder uriBuilder) {
+//        Review saved = service.create(body);
+//        Object id = EntityIdUtil.getId(saved);
+//        URI location = uriBuilder.path("/api/reviews/{id}").buildAndExpand(id).toUri();
+//        return ResponseEntity.created(location).body(saved);
+//    }
 
     @PutMapping("/{id}")
     public Review update(@PathVariable Long id, @RequestBody @Valid Review body) {

@@ -37,4 +37,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @EntityGraph(attributePaths = {"cafe"})
     Page<Review> findByMember_IdOrderByCreatedAtDesc(Long memberId, Pageable pageable);
+
+    long countByMember_Id(Long memberId);
+    long countByMember_IdAndSentiment(Long memberId, String sentiment);
 }

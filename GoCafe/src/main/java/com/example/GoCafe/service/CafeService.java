@@ -116,7 +116,7 @@ public class CafeService {
         if (cafePhotoFile != null && !cafePhotoFile.isEmpty()) {
             String photoUrl = fileStorageService.save(cafePhotoFile, "cafes/" + saved.getId());
 
-            boolean hasMain = cafePhotoRepository.existsByCafe_IdAndIsMainTrue(saved.getId()); // 첫 업로드면 자동 메인
+            boolean hasMain = cafePhotoRepository.existsByCafe_IdAndMainTrue(saved.getId()); // 첫 업로드면 자동 메인
             int nextOrder = (int) cafePhotoRepository.countByCafe_Id(saved.getId());                // 정렬값
 
             CafePhoto photo = new CafePhoto();

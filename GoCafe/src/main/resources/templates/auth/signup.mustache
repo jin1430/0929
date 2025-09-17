@@ -7,31 +7,31 @@
 
         <form id="signupPageForm" class="cg-authform" method="post" action="/signup">
             <label class="cg-label">이메일</label>
-            <input class="cg-input" name="memberEmail" type="email" placeholder="you@example.com" required/>
+            <input class="cg-input" name="email" type="email" placeholder="you@example.com" required/>
 
             <label class="cg-label">닉네임 (최대 8자)</label>
-            <input class="cg-input" name="memberNickname" type="text" maxlength="8" required/>
+            <input class="cg-input" name="nickname" type="text" maxlength="8" required/>
 
             <label class="cg-label">나이</label>
-            <input class="cg-input" name="memberAge" type="number" min="1" max="120" placeholder="예: 26" required/>
+            <input class="cg-input" name="age" type="number" min="1" max="120" placeholder="예: 26" required/>
 
             <label class="cg-label">성별</label>
             <div style="display:flex; gap:12px; align-items:center;">
                 <label style="display:flex; gap:6px; align-items:center;">
-                    <input type="radio" name="memberGender" value="M" required/>
+                    <input type="radio" name="gender" value="M" required/>
                     <span>남자</span>
                 </label>
                 <label style="display:flex; gap:6px; align-items:center;">
-                    <input type="radio" name="memberGender" value="F" required/>
+                    <input type="radio" name="gender" value="F" required/>
                     <span>여자</span>
                 </label>
             </div>
 
             <label class="cg-label">비밀번호</label>
-            <input class="cg-input" name="memberPassword" type="password" placeholder="8자 이상" minlength="8" required/>
+            <input class="cg-input" name="password" type="password" placeholder="8자 이상" minlength="8" required/>
 
             <label class="cg-label">비밀번호 확인</label>
-            <input class="cg-input" name="memberPasswordConfirm" type="password" minlength="8" required/>
+            <input class="cg-input" name="passwordConfirm" type="password" minlength="8" required/>
 
             <button class="cg-btn cg-auth-submit" type="submit">회원가입</button>
         </form>

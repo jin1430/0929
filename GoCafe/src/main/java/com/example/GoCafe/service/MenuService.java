@@ -49,4 +49,8 @@ public class MenuService {
         }
         repository.deleteById(id);
     }
+    @Transactional(readOnly = true)
+    public List<Menu> findByCafeId(Long cafeId) {
+        return repository.findByCafe_Id(cafeId);
+    }
 }

@@ -1,36 +1,39 @@
 package com.example.GoCafe.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.*;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "cafe_photo")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class CafePhoto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cafe_photo_id", nullable = false, unique = true)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cafe_photo_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cafe_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private Cafe cafe;
 
-    @Column(name = "url", nullable = false, unique = true, length = 1024)
+    @Column(name = "url", nullable = false, length = 255)
     private String url;
 
-    @Column(name = "sort_index", nullable = false)
-    private int sortIndex;
+    @Column(name = "original_name", length = 120)
+    private String originalName;
 
-    @Column(name = "is_main", nullable = false)
-    private boolean isMain;
+    @Column(name = "content_type", length = 60)
+    private String contentType;
+
+    @Column(name = "size_bytes")
+    private Long sizeBytes;
+
+    @Column(name = "sort_index")
+    private Integer sortIndex = 0;
+
+    @Column(name = "is_main")
+    private Boolean main = Boolean.FALSE;
 }

@@ -87,45 +87,43 @@ public class AuthController {
     public String signupPage() { return "auth/signup"; }
 
     @PostMapping("/signup")
-    public String signupSubmit(@RequestParam String memberEmail,
-                               @RequestParam String memberPassword,
-                               @RequestParam String memberPasswordConfirm,
-                               @RequestParam String memberNickname,
-                               @RequestParam(required = false) Long memberAge,
-                               @RequestParam(required = false) String memberGender,
-                               Model model) {
+    public String signupSubmit(
+            @RequestParam("email") String memberEmail,
+            @RequestParam("password") String memberPassword,
+            @RequestParam("passwordConfirm") String memberPasswordConfirm,
+            @RequestParam("nickname") String memberNickname,
+            @RequestParam("age") Integer memberAge,
+            @RequestParam("gender") String memberGender,
+            Model model) {
 
         if (!memberPassword.equals(memberPasswordConfirm)) {
             model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
-            return "signup";
+            return "auth/signup";
         }
-
-        // 이메일 중복 확인
         if (memberRepository.findByEmail(memberEmail).isPresent()) {
             model.addAttribute("error", "이미 사용 중인 이메일입니다.");
-            return "signup";
+            return "auth/signup";
         }
-
-        // 닉네임 중복 확인 → 실패 처리
         if (memberRepository.findByNickname(memberNickname).isPresent()) {
             model.addAttribute("error", "이미 사용 중인 닉네임입니다.");
-            return "signup";
+            return "auth/signup";
         }
+
 
         Member m = new Member();
         m.setEmail(memberEmail);
         m.setPassword(passwordEncoder.encode(memberPassword));
         m.setNickname(memberNickname);
-        m.setAge(memberAge);
-        m.setGender("M".equalsIgnoreCase(memberGender) ? "M" :
-                "F".equalsIgnoreCase(memberGender) ? "F" : null);
+        m.setAge(memberAge == null ? null : memberAge.longValue()); // 엔티티 타입에 맞춰 조정
+        m.setGender(("M".equalsIgnoreCase(memberGender) || "F".equalsIgnoreCase(memberGender)) ? memberGender.toUpperCase() : null);
         m.setRoleKind("USER");
-        m.setCreatedAt(LocalDateTime.now());
+        m.setCreatedAt(LocalDateTime.now()); // DB가 NOT NULL이면 필수
         m.setTokenVersion(0L);
 
         memberRepository.save(m);
-        return "redirect:/login"; // 성공 시 로그인 페이지로 이동
+        return "redirect:/login";
     }
+
 
     private String ensureUniqueNickname(String base) {
         String candidate = base;

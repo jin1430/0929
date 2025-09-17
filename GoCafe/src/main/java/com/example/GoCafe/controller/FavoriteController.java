@@ -29,11 +29,14 @@ public class FavoriteController {
         return loginMember.getId();
     }
 
-    @PostMapping("/{cafeId}/toggle")
+    @PostMapping("/{cafeId}/favorite")
     public Map<String, Object> toggle(@PathVariable Long cafeId, Authentication auth) {
-        boolean favorited = favoriteService.toggle(currentMemberId(auth), cafeId);
-        long count = favoriteService.countFavoriteForCafe(cafeId);
-        return Map.of("favorited", favorited, "count", count);
+        // JWT의 subject(email) 사용
+        Member me = memberRepository.findByEmail(auth.getName())
+                .orElseThrow(() -> new RuntimeException("member not found"));
+        boolean favorited = favoriteService.toggle(me.getId(), cafeId);
+        long count = favoriteService.countByCafe(cafeId);
+        return Map.of("favorited", favorited, "favoriteCount", count);
     }
 
     @GetMapping

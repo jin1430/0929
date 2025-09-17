@@ -21,13 +21,23 @@ public class FavoriteService {
     private final MemberRepository memberRepository;
     private final CafeRepository cafeRepository;
 
+    @Transactional
     public boolean toggle(Long memberId, Long cafeId) {
-        Member m = memberRepository.getReferenceById(memberId);
-        Cafe c = cafeRepository.getReferenceById(cafeId);
-
-        return favoriteRepository.findByMemberAndCafe(m, c)
+        return favoriteRepository.findByMember_IdAndCafe_Id(memberId, cafeId)
                 .map(f -> { favoriteRepository.delete(f); return false; })
-                .orElseGet(() -> { favoriteRepository.save(Favorite.builder().member(m).cafe(c).build()); return true; });
+                .orElseGet(() -> {
+                    Favorite f = new Favorite();
+                    f.setMember(memberRepository.getReferenceById(memberId));
+                    f.setCafe(cafeRepository.getReferenceById(cafeId));
+                    favoriteRepository.save(f);
+                    return true;
+                });
+    }
+
+    public long countByCafe(Long cafeId) { return favoriteRepository.countByCafe_Id(cafeId); }
+
+    public boolean exists(Long memberId, Long cafeId) {
+        return favoriteRepository.existsByMember_IdAndCafe_Id(memberId, cafeId);
     }
 
     @Transactional(readOnly = true)

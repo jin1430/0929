@@ -1,12 +1,14 @@
+// src/main/java/com/example/GoCafe/controller/MenuController.java
 package com.example.GoCafe.controller;
 
+import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.Menu;
-import com.example.GoCafe.repository.MenuRepository;
+import com.example.GoCafe.service.CafeService;
 import com.example.GoCafe.service.FileStorageService;
+import com.example.GoCafe.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,43 +19,43 @@ import java.util.Map;
 @RequestMapping("/api/menus")
 public class MenuController {
 
-    private final MenuRepository menuRepository;
-    private final FileStorageService storage;
+    private final MenuService menuService;
+    private final CafeService cafeService;              // Cafe 주입 필요
+    private final FileStorageService storage;           // LocalFileStorageService
 
-    //메뉴 사진 업로드
-    @PostMapping(value = "/{menuId}/photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Transactional
-    public ResponseEntity<?> uploadMenuPhoto(@PathVariable Long menuId,
-                                             @RequestParam("file") MultipartFile file) throws Exception {
-
+    // 사진 필수: multipart/form-data
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createWithPhoto(
+            @RequestParam("cafeId") Long cafeId,
+            @RequestParam("name") String name,
+            @RequestParam("price") int price,
+            @RequestParam(value = "isNew", defaultValue = "false") boolean isNew,
+            @RequestParam(value = "isRecommended", defaultValue = "false") boolean isRecommended,
+            @RequestParam("file") MultipartFile file
+    ) {
         if (file == null || file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 없습니다.");
+            return ResponseEntity.badRequest().body(Map.of("error", "menu photo is required"));
         }
 
-        Menu menu = menuRepository.findById(menuId).orElseThrow();
-        var sf = storage.store(file, "menus/" + menuId);
-        menu.setPhoto(sf.url());
+        Cafe cafe = cafeService.findById(cafeId); // 없으면 내부에서 예외
+        String url = storage.save(file, "menus"); // /uploads/menus/uuid.jpg
 
-        return ResponseEntity.ok(Map.of("menuId", menu.getId(), "photoUrl", sf.url()));
-    }
+        Menu m = new Menu();
+        m.setCafe(cafe);
+        m.setName(name);
+        m.setPrice(price);
+        m.setNew(isNew);
+        m.setRecommended(isRecommended);
+        m.setPhoto(url);                             // ✅ 필수
 
-    // 메뉴 사진 URL 조회
-    @GetMapping("/{menuId}/photos")
-    public ResponseEntity<?> getPhoto(@PathVariable Long menuId) {
-        Menu menu = menuRepository.findById(menuId).orElseThrow();
+        Menu saved = menuService.create(m);
         return ResponseEntity.ok(Map.of(
-                "menuId", menu.getId(),
-                "photoUrl", menu.getPhoto()
+                "id", saved.getId(),
+                "name", saved.getName(),
+                "price", saved.getPrice(),
+                "isNew", saved.isNew(),
+                "isRecommended", saved.isRecommended(),
+                "photo", saved.getPhoto()
         ));
-    }
-
-    // 메뉴 사진 제거
-    @DeleteMapping("/{menuId}/photos")
-    @Transactional
-    public ResponseEntity<?> clearPhoto(@PathVariable Long menuId) {
-        Menu menu = menuRepository.findById(menuId).orElseThrow();
-        // 기존 업로드 파일을 스토리지에서 지우고 싶다면 storage.delete(...)를 여기에 추가하세요.
-        menu.setPhoto(null);
-        return ResponseEntity.noContent().build();
     }
 }

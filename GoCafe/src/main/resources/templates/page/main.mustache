@@ -3,24 +3,114 @@
 <main class="cg-container">
 
     <!-- ✅ 히어로 섹션만 연민트 배경 -->
+    <!-- ✅ 히어로 섹션: 전문 리뷰어 도전 -->
     <section class="cg-hero cg-hero--one">
         <div>
-            <h1 class="cg-title">당신의 무드를 담은 카페,<br/>오늘은 어디일까요?</h1>
+            <h1 class="cg-title">전문 리뷰어 도전?</h1>
+            <p class="cg-subtitle" style="margin-top:8px">
+                미션을 수행해 레벨업하고, <strong>Pro</strong>가 되면 <span class="cg-badge is-warning">협찬</span> 미션에 참여할 수 있어요.
+            </p>
 
-            <form class="cg-search" method="get" action="/search">
-                <input class="cg-input" type="text" name="q"
-                       placeholder="지대, 키워드 (감성, 브런치, 보드게임, 라떼 맛집 등)"/>
-                <button class="cg-btn" type="submit">검색</button>
-            </form>
+            <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap">
+                <button id="btn-open-pro-modal" class="cg-btn" type="button">전문 리뷰어 되기</button>
+                <a class="cg-btn-outline" href="/missions">미션 보러가기</a>
+            </div>
 
-            <div class="cg-chips">
+            <!-- (선택) 기존 카테고리 칩 유지 -->
+            <div class="cg-chips" style="margin-top:16px">
                 {{#cafeTags}}
                     <button class="cg-chip" data-category="{{categoryCode}}" data-tag="{{code}}">
                         {{code}}
                     </button>
                 {{/cafeTags}}
             </div>
+
+            <!-- (선택) 검색 유지하려면 아래 폼을 남겨두세요 -->
+            <form class="cg-search" method="get" action="/search" style="margin-top:16px">
+                <input class="cg-input" type="text" name="q"
+                       placeholder="지대, 키워드 (감성, 브런치, 보드게임, 라떼 맛집 등)"/>
+                <button class="cg-btn" type="submit">검색</button>
+            </form>
         </div>
+    </section>
+
+    <!-- ✅ 홈: 미션 섹션 (히어로 아래, 기존 섹션들 위에) -->
+    <section id="home-missions" class="cg-section" style="padding:28px 0">
+        <div class="cg-section__head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px">
+            <div>
+                <div class="cg-eyebrow">플랫폼 미션</div>
+                <h2 class="cg-panel__title">요즘 뜨는 미션</h2>
+            </div>
+            <a class="cg-btn-outline" href="/missions">모두 보기</a>
+        </div>
+
+        <!-- 로그인/Pro 컨텍스트 데이터 (없으면 false 기본) -->
+        <div id="home-mission-context"
+             data-logged-in="{{isLoggedIn}}{{^isLoggedIn}}false{{/isLoggedIn}}"
+             data-is-pro="{{isPro}}{{^isPro}}false{{/isPro}}">
+        </div>
+
+        <ul class="cg-card-grid">
+            {{#missionsHome}}
+                <li class="cg-card">
+                    <div class="cg-card__body">
+                        <div class="cg-badges" style="margin-bottom:6px">
+                            <span class="cg-badge">미션</span>
+                            {{#sponsored}}<span class="cg-badge is-warning">협찬</span>{{/sponsored}}
+                        </div>
+
+                        <h3 class="cg-card__title">{{cafeName}}</h3>
+                        <p class="cg-card__desc">{{summary}}</p>
+                        <div class="cg-meta">마감: {{due}}</div>
+
+                        <div class="cg-card__actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+                            <button class="cg-btn-outline js-open-mission"
+                                    data-cafe-id="{{cafeId}}"
+                                    data-cafe-name="{{cafeName}}"
+                                    data-due="{{due}}"
+                                    data-sponsored="{{sponsored}}">
+                                자세히
+                            </button>
+
+                            <!-- UX 보조 (최종 권한은 서버에서 검사) -->
+                            {{#isLoggedIn}}
+                                {{#sponsored}}
+                                    {{#isPro}}
+                                        <form method="post" action="/missions/{{cafeId}}/accept">
+                                            <button class="cg-btn" type="submit">수락</button>
+                                        </form>
+                                    {{/isPro}}
+                                    {{^isPro}}
+                                        <button class="cg-btn" type="button" disabled title="Pro 전용">Pro 전용</button>
+                                    {{/isPro}}
+                                {{/sponsored}}
+                                {{^sponsored}}
+                                    <form method="post" action="/missions/{{cafeId}}/accept">
+                                        <button class="cg-btn" type="submit">수락</button>
+                                    </form>
+                                {{/sponsored}}
+                            {{/isLoggedIn}}
+
+                            {{^isLoggedIn}}
+                                <a class="cg-btn" href="/login">로그인하고 수락</a>
+                            {{/isLoggedIn}}
+                        </div>
+                    </div>
+
+                    <!-- notice 원문은 숨김 div로 보관 (개행/따옴표 안전) -->
+                    <div id="notice-{{cafeId}}" class="js-mission-notice" style="display:none;white-space:pre-wrap">{{notice}}</div>
+                </li>
+            {{/missionsHome}}
+
+            {{^missionsHome}}
+                <li class="cg-card">
+                    <div class="cg-card__body">
+                        <h3 class="cg-card__title">진행 중인 미션이 없습니다</h3>
+                        <p class="cg-card__desc">조금 뒤에 다시 확인해 주세요.</p>
+                    </div>
+                </li>
+            {{/missionsHome}}
+        </ul>
     </section>
 
     <!-- 지금 뜨는 카페 -->
@@ -71,5 +161,154 @@
     {{/isLoggedIn}}
 
 </main>
+
+<!-- ✅ 전문 리뷰어 안내 모달 -->
+<div id="pro-modal" class="cg-modal" aria-hidden="true">
+    <div class="cg-modal__backdrop" data-close></div>
+    <div class="cg-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pro-modal-title">
+        <header class="cg-modal__header">
+            <h2 id="pro-modal-title">전문 리뷰어 안내</h2>
+            <button class="cg-modal__close" type="button" aria-label="닫기" data-close>&times;</button>
+        </header>
+
+        <div class="cg-modal__body">
+            <section class="cg-panel">
+                <header class="cg-panel__head"><h3 class="cg-panel__title">할 수 있는 일</h3></header>
+                <div class="cg-panel__body">
+                    <ul class="cg-list">
+                        <li>플랫폼이 제공하는 리뷰 <strong>미션</strong> 신청/수행</li>
+                        <li>승인 시 포인트·레벨 획득</li>
+                        <li><strong>Pro</strong> 달성 후 <span class="cg-badge is-warning">협찬</span> 미션 참여</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="cg-panel">
+                <header class="cg-panel__head"><h3 class="cg-panel__title">혜택</h3></header>
+                <div class="cg-panel__body">
+                    <ul class="cg-list">
+                        <li>Pro 전용 협찬 미션 지원 자격</li>
+                        <li>프로필에 Pro 뱃지 노출</li>
+                        <li>추천 미션 우선 초대(차등 적용)</li>
+                    </ul>
+                    <p class="cg-note" style="margin-top:8px">
+                        Pro 기준(예시): 최근 승인 리뷰 10건 이상 & 그중 GOOD 6건 이상.
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <footer class="cg-modal__footer" style="display:flex; gap:8px; justify-content:flex-end">
+            <a class="cg-btn" href="/missions">전문 리뷰어 되기</a>
+            <button class="cg-btn-outline" type="button" data-close>닫기</button>
+        </footer>
+    </div>
+</div>
+
+<!-- ✅ 미션 상세 모달 -->
+<div id="mission-modal" class="cg-modal" aria-hidden="true">
+    <div class="cg-modal__backdrop" data-close></div>
+    <div class="cg-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="mission-modal-title">
+        <header class="cg-modal__header">
+            <h2 id="mission-modal-title">미션 상세</h2>
+            <button class="cg-modal__close" type="button" aria-label="닫기" data-close>&times;</button>
+        </header>
+
+        <div class="cg-modal__body">
+            <div class="cg-badges" style="margin-bottom:8px">
+                <span class="cg-badge">미션</span>
+                <span id="mission-badge-sponsored" class="cg-badge is-warning" style="display:none">협찬</span>
+            </div>
+            <h3 id="mission-cafe-name" class="cg-card__title"></h3>
+            <div id="mission-due" class="cg-meta" style="margin:6px 0 10px"></div>
+
+            <article class="cg-panel">
+                <header class="cg-panel__head"><h3 class="cg-panel__title">안내</h3></header>
+                <div id="mission-notice" class="cg-panel__body" style="white-space:pre-wrap"></div>
+            </article>
+        </div>
+
+        <footer class="cg-modal__footer" style="display:flex;gap:8px;justify-content:flex-end">
+            <form id="mission-accept-form" method="post" action="#">
+                <button id="mission-accept-btn" class="cg-btn" type="submit">미션 수락</button>
+            </form>
+            <button class="cg-btn-outline" type="button" data-close>닫기</button>
+        </footer>
+    </div>
+</div>
+
+<!-- 모달 동작 JS -->
+<script>
+    // 전문 리뷰어 안내 모달
+    (function() {
+      const modal = document.getElementById('pro-modal');
+      const openBtn = document.getElementById('btn-open-pro-modal');
+      if (!modal || !openBtn) return;
+
+      const open = () => modal.classList.add('is-open');
+      const close = () => modal.classList.remove('is-open');
+
+      openBtn.addEventListener('click', open);
+      modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', close));
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    })();
+
+    // 미션 상세 모달
+    (function(){
+      const modal = document.getElementById('mission-modal');
+      if(!modal) return;
+
+      const ctx = document.getElementById('home-mission-context');
+      const loggedIn = (ctx?.dataset.loggedIn === 'true');
+      const isPro    = (ctx?.dataset.isPro === 'true');
+
+      const elName   = document.getElementById('mission-cafe-name');
+      const elDue    = document.getElementById('mission-due');
+      const elNotice = document.getElementById('mission-notice');
+      const elBadge  = document.getElementById('mission-badge-sponsored');
+      const form     = document.getElementById('mission-accept-form');
+      const btnAccept= document.getElementById('mission-accept-btn');
+
+      function openModal(data){
+        elName.textContent = data.cafeName || '';
+        elDue.textContent  = data.due && data.due !== '-' ? ('마감: ' + data.due) : '';
+        elBadge.style.display = data.sponsored ? '' : 'none';
+        elNotice.textContent = data.notice || '';
+        form.action = '/missions/' + data.cafeId + '/accept';
+
+        if(!loggedIn){
+          btnAccept.textContent = '로그인하고 수락';
+          form.action = '/login';
+        } else if (data.sponsored && !isPro){
+          btnAccept.textContent = 'Pro 전용';
+          btnAccept.disabled = true;
+        } else {
+          btnAccept.textContent = '미션 수락';
+          btnAccept.disabled = false;
+        }
+        modal.classList.add('is-open');
+      }
+      function closeModal(){ modal.classList.remove('is-open'); }
+
+      document.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.js-open-mission');
+        if(!btn) return;
+
+        const cafeId   = btn.dataset.cafeId;
+        const noticeEl = document.getElementById('notice-'+cafeId);
+        const data = {
+          cafeId,
+          cafeName: btn.dataset.cafeName || '',
+          due: btn.dataset.due || '',
+          sponsored: btn.dataset.sponsored === 'true',
+          notice: noticeEl ? noticeEl.innerText : ''
+        };
+        openModal(data);
+      });
+
+      modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click', closeModal));
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+    })();
+</script>
 
 {{>layout/footer}}
