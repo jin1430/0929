@@ -40,7 +40,7 @@ public class MainController {
     private final MemberRepository memberRepository;
     private final ProGateService proGateService;
 
-    @GetMapping({"/", "/main"})
+    @GetMapping({"/main"})
     public String home(Model model, Authentication auth) {
         // ------ 기존: Top 8 카페 + 메인 사진 매핑 ------
         List<Cafe> cafes = cafeService.findApprovedTopByViews(8);
@@ -129,7 +129,7 @@ public class MainController {
                 Member me = opt.get();
                 // 리뷰 저장 후 등급 변동이 있을 수 있으니 최신화
                 proGateService.refreshRoleKind(me.getId());
-                isPro = "PRO".equalsIgnoreCase(me.getRoleKind());
+                isPro = "PRO".equalsIgnoreCase(String.valueOf(me.getRoleKind()));
             }
         }
 

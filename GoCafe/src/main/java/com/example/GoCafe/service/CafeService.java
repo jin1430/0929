@@ -2,6 +2,7 @@
 package com.example.GoCafe.service;
 
 import com.example.GoCafe.domain.CafeStatus;
+import com.example.GoCafe.domain.RoleKind;
 import com.example.GoCafe.dto.CafeForm;
 import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.CafePhoto;
@@ -138,9 +139,9 @@ public class CafeService {
         }
 
         // 6) 역할 승격(owner)
-        String role = cafeOwner.getRoleKind();
+        String role = String.valueOf(cafeOwner.getRoleKind());
         if (role == null || !"owner".equalsIgnoreCase(role)) {
-            cafeOwner.setRoleKind("owner");
+            cafeOwner.setRoleKind(RoleKind.valueOf("owner"));
             memberRepository.save(cafeOwner);
         }
 

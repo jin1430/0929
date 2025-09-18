@@ -1,5 +1,6 @@
 package com.example.GoCafe.dto;
 
+import com.example.GoCafe.domain.RoleKind;
 import com.example.GoCafe.entity.Member;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AllArgsConstructor;
@@ -51,7 +52,7 @@ public class MemberForm {
         m.setNickname(nickname);
         m.setAge(age);
         m.setGender("M".equalsIgnoreCase(gender) ? "M" : ("F".equalsIgnoreCase(gender) ? "F" : null));
-        m.setRoleKind(roleKind);
+        m.setRoleKind(RoleKind.valueOf(roleKind));
         m.setPhoto(photo);
         if (tokenVersion != null) m.setTokenVersion(tokenVersion);
         return m;

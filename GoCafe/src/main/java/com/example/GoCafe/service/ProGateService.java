@@ -1,6 +1,7 @@
 // src/main/java/com/example/GoCafe/service/ProGateService.java
 package com.example.GoCafe.service;
 
+import com.example.GoCafe.domain.RoleKind;
 import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.repository.MemberRepository;
 import com.example.GoCafe.repository.ReviewRepository;
@@ -31,7 +32,7 @@ public class ProGateService {
         boolean eligible = isProEligible(memberId);
         String target = eligible ? "PRO" : "USER";
         if (!target.equals(m.getRoleKind())) {
-            m.setRoleKind(target);
+            m.setRoleKind(RoleKind.valueOf(target));
             memberRepository.save(m);
         }
     }

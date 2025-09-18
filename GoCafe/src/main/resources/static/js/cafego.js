@@ -320,3 +320,73 @@ document.addEventListener('click', (e) => {
   /* ---------- 초기화 ---------- */
   fetchMe();
 })();
+//intro
+document.addEventListener('DOMContentLoaded', function() {
+  // 샘플 DB (로컬 데모)
+  const cafeDB = [
+    {name:"달빛라떼", tags:["감성","라떼 맛집","인테리어"], desc:"감성적인 인테리어와 진한 라떼."},
+    {name:"모모브런치", tags:["브런치","넓은 좌석","주차 가능"], desc:"브런치 플레이팅이 예쁜 카페."},
+    {name:"코드카페", tags:["콘센트 있음","와이파이 빠름","작업 가능"], desc:"노트북 작업하기 좋은 카페."},
+    {name:"테라스하우스", tags:["테라스","데이트 코스","디저트"], desc:"테라스에서 쉬어가기 좋은 곳."}
+  ];
+
+  function computeTags(answers){
+    const mapping = {
+      "감성":["감성","인테리어","라떼 맛집"],
+      "활기":["모던","음악있음","테이블 多"],
+      "작업":["콘센트 있음","와이파이 빠름","작업 가능"],
+      "라떼":["라떼 맛집","핸드드립"],
+      "브런치":["브런치","브런치 세트"],
+      "디저트":["디저트","케이크"]
+    };
+    const scores = {};
+    answers.forEach(a => (mapping[a]||[]).forEach(tag => scores[tag] = (scores[tag]||0)+1));
+    return Object.entries(scores).sort((a,b)=>b[1]-a[1]).map(x=>x[0]);
+  }
+
+  function recommendLocal(tags){
+    return cafeDB
+      .map(c=>({...c, score: c.tags.filter(t=>tags.includes(t)).length}))
+      .filter(c=>c.score>0)
+      .sort((a,b)=>b.score-a.score);
+  }
+
+  function renderSampleCards(list){
+    const wrap = document.getElementById('sample-cards');
+    wrap.innerHTML = '';
+    if(list.length===0){
+      wrap.innerHTML = '<div class="card">추천 결과가 없습니다. 다른 선택으로 시도해보세요.</div>';
+      return;
+    }
+    list.forEach(r=>{
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = `
+        <strong>${r.name}</strong>
+        <div style="color:#6b7c74;font-size:13px">${r.desc}</div>
+        <div style="margin-top:8px">${r.tags.map(t=>`<span style="display:inline-block;background:#f3fff7;color:#2e8f6e;padding:4px 8px;border-radius:8px;margin-right:6px;font-size:12px">${t}</span>`).join('')}</div>
+      `;
+      wrap.appendChild(el);
+    });
+  }
+
+  // 초기 샘플 렌더
+  renderSampleCards(cafeDB.slice(0,3));
+
+  // 데모 폼
+  const demoBtn = document.getElementById('demo-btn');
+  const demoClear = document.getElementById('demo-clear');
+  const demoResult = document.getElementById('demo-result');
+
+  demoBtn && demoBtn.addEventListener('click', async (e)=>{
+    e.preventDefault();
+    const q1 = document.getElementById('q1').value;
+    const q2 = document.getElementById('q2').value;
+    const q3 = document.getElementById('q3').value;
+    const tags = computeTags([q1,q2,q3]);
+
+    // ① 로컬 데모 (기본)
+    let recs = recommendLocal(tags);
+
+    // ② 서버 API
+

@@ -223,7 +223,7 @@ public class MemberController {
         view.setNickname(member.getNickname());
         view.setAge(member.getAge());
         view.setGender(member.getGender());
-        view.setRoleKind(member.getRoleKind());
+        view.setRoleKind(String.valueOf(member.getRoleKind()));
         view.setCreatedAt(member.getCreatedAt());
         view.setPhoto(member.getPhoto());
         view.setTokenVersion(member.getTokenVersion());
@@ -249,7 +249,7 @@ public class MemberController {
     }
 
     private boolean isPro(Member m) {
-        return m != null && "PRO".equalsIgnoreCase(m.getRoleKind());
+        return m != null && "PRO".equalsIgnoreCase(String.valueOf(m.getRoleKind()));
     }
 
     /**

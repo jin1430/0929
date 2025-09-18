@@ -1,5 +1,6 @@
 package com.example.GoCafe.apiController;
 
+import com.example.GoCafe.domain.RoleKind;
 import com.example.GoCafe.dto.MemberForm;
 import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.repository.MemberRepository;
@@ -49,7 +50,7 @@ public class AuthApiController {
         m.setNickname(body.getNickname());
         m.setAge(body.getAge());
         m.setGender(body.getGender());
-        m.setRoleKind((body.getRoleKind() == null || body.getRoleKind().isBlank()) ? "USER" : body.getRoleKind());
+        m.setRoleKind(RoleKind.valueOf((body.getRoleKind() == null || body.getRoleKind().isBlank()) ? "USER" : body.getRoleKind()));
         m.setPhoto(body.getPhoto());
         m.setTokenVersion(0L);
 
@@ -80,15 +81,16 @@ public class AuthApiController {
                                 .body(Map.of("message", "Invalid credentials"));
                     }
 
-                    var ud = User
-                            .withUsername(member.getEmail())
+                    String roleName = (member.getRoleKind() == null) ? "USER" : member.getRoleKind().name();
+                    if (roleName.startsWith("ROLE_")) {
+                        roleName = roleName.substring(5); // "ROLE_USER" -> "USER"
+                    }
+
+                    var ud = User.withUsername(member.getEmail())
                             .password(member.getPassword())
-                            .authorities(
-                                    (member.getRoleKind()!=null && member.getRoleKind().startsWith("ROLE_"))
-                                            ? member.getRoleKind()
-                                            : "ROLE_" + (member.getRoleKind()==null ? "USER" : member.getRoleKind())
-                            )
+                            .roles(roleName)   // roles()는 내부에서 "ROLE_"를 붙임
                             .build();
+
 
                     String token = jwtTokenProvider.generateToken(ud, member.getTokenVersion());
 
@@ -159,7 +161,7 @@ public class AuthApiController {
                     out.setNickname(m.getNickname());
                     out.setAge(m.getAge());
                     out.setGender(m.getGender());
-                    out.setRoleKind(m.getRoleKind());
+                    out.setRoleKind(String.valueOf(m.getRoleKind()));
                     out.setCreatedAt(m.getCreatedAt()); // MemberForm에 createdAt 필드가 있을 때만 유지
                     out.setPhoto(m.getPhoto());
                     out.setTokenVersion(m.getTokenVersion());

@@ -45,7 +45,7 @@ public class MissionController {
             Member me = memberRepository.findByEmail(auth.getName()).orElseThrow();
             // 최신 등급 반영
             proGateService.refreshRoleKind(me.getId());
-            roleKind = me.getRoleKind();
+            roleKind = String.valueOf(me.getRoleKind());
             isPro = "PRO".equals(roleKind);
         }
 
@@ -86,7 +86,7 @@ public class MissionController {
         if (loggedIn) {
             Member me = memberRepository.findByEmail(auth.getName()).orElseThrow();
             proGateService.refreshRoleKind(me.getId());
-            roleKind = me.getRoleKind();
+            roleKind = String.valueOf(me.getRoleKind());
             isPro = "PRO".equals(roleKind);
             accepted = notificationRepository.latestMissionLog(me.getId(), cafeId)
                     .map(n -> n.getMessage().startsWith("MISSION:ACCEPTED")
