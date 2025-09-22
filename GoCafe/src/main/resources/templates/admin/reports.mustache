@@ -1,0 +1,30 @@
+{{< layout/base}}
+    {{#title}}신고 관리{{/title}}
+    {{#body}}
+        <section class="cg-section">
+            <div class="cg-container">
+                <h1 style="margin:0;font-weight:800">신고 관리</h1>
+
+                <div class="mt-6">
+                    {{#reports}}
+                        <div class="cg-card mt-3">
+                            <div class="small">ID: {{id}} · 리뷰: {{reviewId}} · 신고자: {{reporterId}}</div>
+                            <div class="small">사유: {{reason}} · 상태: {{status}}</div>
+                            <div class="mt-3">
+                                <form method="post" action="/admin/reports/{{id}}/approve" style="display:inline">
+                                    <button class="cg-btn cg-btn--primary" type="submit">승인</button>
+                                </form>
+                                <form method="post" action="/admin/reports/{{id}}/reject" style="display:inline">
+                                    <button class="cg-btn cg-btn--ghost" type="submit">반려</button>
+                                </form>
+                            </div>
+                        </div>
+                    {{/reports}}
+                    {{^reports}}
+                        <div class="small">대기중인 신고가 없습니다.</div>
+                    {{/reports}}
+                </div>
+            </div>
+        </section>
+    {{/body}}
+{{/ layout/base}}

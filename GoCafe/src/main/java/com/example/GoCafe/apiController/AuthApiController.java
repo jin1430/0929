@@ -50,7 +50,7 @@ public class AuthApiController {
         m.setNickname(body.getNickname());
         m.setAge(body.getAge());
         m.setGender(body.getGender());
-        m.setRoleKind(RoleKind.valueOf((body.getRoleKind() == null || body.getRoleKind().isBlank()) ? "USER" : body.getRoleKind()));
+        m.setRoleKind(RoleKind.valueOf((body.getRoleKind() == null || body.getRoleKind().isBlank()) ? "MEMBER" : body.getRoleKind()));
         m.setPhoto(body.getPhoto());
         m.setTokenVersion(0L);
 
@@ -81,7 +81,7 @@ public class AuthApiController {
                                 .body(Map.of("message", "Invalid credentials"));
                     }
 
-                    String roleName = (member.getRoleKind() == null) ? "USER" : member.getRoleKind().name();
+                    String roleName = (member.getRoleKind() == null) ? "MEMBER" : member.getRoleKind().name();
                     if (roleName.startsWith("ROLE_")) {
                         roleName = roleName.substring(5); // "ROLE_USER" -> "USER"
                     }
@@ -136,7 +136,8 @@ public class AuthApiController {
                     long nv = (m.getTokenVersion()==null?0L:m.getTokenVersion()) + 1L;
                     m.setTokenVersion(nv);
                     memberRepository.save(m);
-                    return ResponseEntity.noContent()
+                    return ResponseEntity.status(303) // See Other
+                            .header(HttpHeaders.LOCATION, "/")  // 홈으로 이동
                             .header(HttpHeaders.SET_COOKIE, del.toString())
                             .build();
                 })

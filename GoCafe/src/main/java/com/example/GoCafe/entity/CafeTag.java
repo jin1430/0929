@@ -29,6 +29,12 @@ public class CafeTag {
     @Column(name = "category_code", length = 20)
     private String categoryCode;
 
-    @Column(name = "code", length = 20)
-    private String code;
+    @Column(name = "tag_code", length = 20) // 필드 및 컬럼명 변경
+    private String tagCode;
+
+    @Column(name = "rank_no", nullable = false)
+    private Integer rankNo;
+
+    @Column(name = "score", nullable = false)
+    private Double score;
 }

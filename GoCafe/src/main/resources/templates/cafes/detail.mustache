@@ -1,583 +1,334 @@
 {{>layout/header}}
-<style>
-    /* 안내 패널을 위한 간단한 스타일 */
-    .cg-notice-panel {
-        margin: 24px 0 0 0;
-        padding: 16px 20px;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        background-color: #f8fafc;
-    }
-    .cg-notice-panel strong {
-        font-size: 16px;
-    }
-    .cg-notice-panel p {
-        margin: 4px 0 0 0;
-        font-size: 14px;
-        color: #64748b;
-    }
-    /* 거절 상태일 때를 위한 스타일 */
-    .cg-notice-panel.is-danger {
-        border-color: #fecaca;
-        background-color: #fef2f2;
-        color: #991b1b;
-    }
-    .cg-notice-panel.is-danger p {
-        color: #b91c1c;
-    }
-</style>
+<link rel="stylesheet" href="/css/detail.css">
+<main class="max-w-7xl mx-auto px-6 py-8" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
 
-<main class="cg-container" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
+    <!-- 카페 기본 카드 -->
+    <section class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 fade-in">
 
-    {{#cafe}}
-        {{#isPending}}
-            <div class="cg-notice-panel">
-                <strong>⏳ 승인 대기 중인 카페입니다.</strong>
-                <p>이 페이지는 관리자의 승인 후 사이트에 정식으로 노출됩니다. 승인까지는 1~2 영업일이 소요될 수 있습니다.</p>
+        <!-- 이미지 갤러리 -->
+        <div class="image-gallery p-4">
+            <!-- 메인 -->
+            <div class="main-image bg-gradient-to-br from-green-100 to-green-200 rounded-xl overflow-hidden flex items-center justify-center">
+                {{#mainPhoto}}
+                    <img src="{{url}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover">
+                {{/mainPhoto}}
+                {{^mainPhoto}}
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">☕</div>
+                        <p class="text-green-700 font-medium">{{#cafe}}{{name}}{{/cafe}}</p>
+                    </div>
+                {{/mainPhoto}}
             </div>
-        {{/isPending}}
-        {{#isRejected}}
-            <div class="cg-notice-panel is-danger">
-                <strong>🚫 반려된 카페 등록 요청입니다.</strong>
-                <p>이 페이지는 외부에 노출되지 않습니다. 등록 정보를 수정하시거나 관리자에게 문의해주세요.</p>
-            </div>
-        {{/isRejected}}
-    {{/cafe}}
-    <!-- ===== Hero (좌: 메인 사진 / 우: 정보) ===== -->
-    <section class="cg-hero">
-        {{#cafe}}
-            <div class="cg-hero__inner">
-                <!-- 좌측: 메인 사진 -->
-                <div class="cg-hero__left">
-                    <div class="cg-hero__imgwrap">
-                        {{#mainPhoto}}
-                            <img class="cg-card__img" src="{{url}}" alt="{{cafe.name}}"
-                                 onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');">
-                        {{/mainPhoto}}
-                        {{^mainPhoto}}
-                            <img class="cg-card__img" src="/images/placeholder-cafe.jpg" alt="이미지 없음"
-                                 onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');">
-                        {{/mainPhoto}}
+
+            <!-- 썸네일 4장 -->
+            {{#cafePhotos}}
+                {{#limit4}}
+                    <div class="rounded-xl overflow-hidden">
+                        <img src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                    </div>
+                {{/limit4}}
+            {{/cafePhotos}}
+
+            {{^cafePhotos}}
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">🌿</div>
+                        <p class="text-green-600 text-sm">인테리어</p>
                     </div>
                 </div>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">🥐</div>
+                        <p class="text-green-600 text-sm">디저트</p>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">☕</div>
+                        <p class="text-green-600 text-sm">커피</p>
+                    </div>
+                </div>
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="text-3xl mb-2">🪑</div>
+                        <p class="text-green-600 text-sm">좌석</p>
+                    </div>
+                </div>
+            {{/cafePhotos}}
+        </div>
 
-                <!-- 우측: 제목/메타/정보/태그/버튼 -->
-                <div class="cg-hero__right">
-                    <h1 class="cg-title" style="margin:0 0 8px 0">{{name}}</h1>
+        <!-- 상단 정보 -->
+        <div class="p-8">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800 mb-1">{{#cafe}}{{name}}{{/cafe}}</h1>
+                    <p class="text-gray-600 mb-4">{{#info}}{{cafeInfo}}{{/info}}{{^info}}자연 친화적인 분위기의 스페셜티 카페{{/info}}</p>
 
-                    <div class="cg-hero__meta" style="margin-bottom:12px;display:flex;gap:8px;color:#64748b">
-                        {{#views}}<span>조회수 {{views}}</span>{{/views}}{{^views}}<span>조회수 0</span>{{/views}}
-                        <span class="cg-dot">·</span>
-                        {{#dateFmt}}<span>등록 {{dateFmt}}</span>{{/dateFmt}}{{^dateFmt}}<span>등록 {{date}}</span>{{/dateFmt}}
-                        <span class="cg-dot">·</span>
+                    <div class="flex items-center flex-wrap gap-3 text-sm text-gray-600">
+                        <span>조회수 {{#views}}{{views}}{{/views}}{{^views}}0{{/views}}</span>
+                        <span>·</span>
+                        <span>등록 {{#creationDateFmt}}{{creationDateFmt}}{{/creationDateFmt}}{{^creationDateFmt}}{{creationDate}}{{/creationDateFmt}}</span>
+                        <span>·</span>
                         <span>좋아요 {{cafeGood}} / 아쉬워요 {{cafeBad}}</span>
                     </div>
+                </div>
 
-                    <div class="cg-info-plain">
-                        <dl class="cg-dl">
-                            <div class="cg-dl__row"><dt>주소</dt><dd>{{address}}</dd></div>
-                            <div class="cg-dl__row"><dt>전화번호</dt><dd>{{number}}</dd></div>
-                        </dl>
-                    </div>
-
-                    <!-- 태그 칩 -->
-                    <div class="cg-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
-                        {{#cafeTags}}
-                            <button class="cg-chip" data-category="{{cafe.code}}" data-tag="{{code}}">
-                                {{code}}{{#count}}<small class="cg-badge">{{count}}</small>{{/count}}
-                            </button>
-                        {{/cafeTags}}
-                        {{^cafeTags}}<span class="cg-empty">등록된 태그가 없어요.</span>{{/cafeTags}}
-                    </div>
-
-                    <!-- 주요 액션 -->
-                    <div class="cg-actions" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
-                        <a class="cg-btn-outline" href="tel:{{number}}">전화하기</a>
-                        <a class="cg-btn-outline" target="_blank"
-                           href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">길찾기</a>
-                        <a class="cg-btn"
-                           href="#"
-                           data-review-modal
-                           data-cafe-id="{{id}}">리뷰 작성</a>
-
-                        <button type="button" id="favBtn"
-                                class="cg-btn-outline"
-                                data-cafe-id="{{id}}"
-                                data-favorited="{{isFavorited}}">
-                            {{#isFavorited}}즐겨찾기 해제{{/isFavorited}}{{^isFavorited}}즐겨찾기{{/isFavorited}}
+                <div class="flex space-x-3">
+                    <!-- 즐겨찾기 -->
+                    <form method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/favorite/toggle">
+                        {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+                        <button class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors" type="submit">
+                            {{#isFavorited}}❤️ 즐겨찾기 해제{{/isFavorited}}{{^isFavorited}}🤍 즐겨찾기{{/isFavorited}}
                         </button>
-                        {{#isOwner}}
-                            <button class="cg-btn-outline" type="button" id="ownerEditToggle">점주 편집</button>
-                        {{/isOwner}}
+                    </form>
+                    {{#cafe}}
+                        <a class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
+                           target="_blank"
+                           href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">
+                            📍 길찾기
+                        </a>
+                        {{#phoneNumber}}
+                            <a class="bg-white text-green-600 px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors border border-green-200"
+                               href="tel:{{phoneNumber}}">
+                                ☎️ 전화
+                            </a>
+                        {{/phoneNumber}}
+                    {{/cafe}}
+                </div>
+            </div>
 
-                        <span id="favCount" style="margin-left:6px">
-  {{#favoriteCount}}즐겨찾기 {{favoriteCount}}{{/favoriteCount}}{{^favoriteCount}}즐겨찾기 0{{/favoriteCount}}
-</span>
-                        {{#isOwner}}
-                            <a class="cg-btn-outline" href="/cafes/{{id}}/edit">정보 수정</a>
-                            <form method="post" action="/cafes/{{id}}/delete" style="display:inline">
-                                {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                                <button class="cg-btn-outline" type="submit" onclick="return confirm('삭제하시겠어요?')">삭제</button>
-                            </form>
-                        {{/isOwner}}
+            <!-- 핵심 정보 카드 -->
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 grid grid-cols-2 gap-6">
+                    <div class="bg-green-50 p-4 rounded-xl">
+                        <h3 class="font-semibold text-green-800 mb-2">📍 위치</h3>
+                        <p class="text-gray-700">{{#cafe}}{{address}}{{/cafe}}</p>
+                        {{#info}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1">{{cafeNotice}}</p>{{/cafeNotice}}{{/info}}
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-xl">
+                        <h3 class="font-semibold text-green-800 mb-2">⏰ 영업시간</h3>
+                        {{#info}}
+                            <p class="text-gray-700">오픈: {{cafeOpenTime}}</p>
+                            <p class="text-gray-700">마감: {{cafeCloseTime}}</p>
+                            {{#cafeHoliday}}<p class="text-sm text-gray-500">휴무: {{cafeHoliday}}</p>{{/cafeHoliday}}
+                        {{/info}}
+                        {{^info}}
+                            <p class="text-gray-500">영업정보가 아직 없어요.</p>
+                        {{/info}}
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-xl">
+                        <h3 class="font-semibold text-green-800 mb-2">🏷️ 태그</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {{#cafeTags}}
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
+                  {{tagCode}}{{#count}} <small>({{count}})</small>{{/count}}
+                </span>
+                            {{/cafeTags}}
+                            {{^cafeTags}}<span class="text-gray-500">등록된 태그가 없어요.</span>{{/cafeTags}}
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-xl">
+                        <h3 class="font-semibold text-green-800 mb-2">📞 연락처</h3>
+                        <p class="text-gray-700">{{#cafe}}{{phoneNumber}}{{/cafe}}</p>
+                    </div>
+                </div>
+
+                <!-- 실시간/요약 위젯 (더미) -->
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl">
+                        <h3 class="font-semibold mb-3">🔥 실시간 정보</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between"><span>혼잡도</span><span class="font-medium">보통</span></div>
+                            <div class="w-full bg-green-400 rounded-full h-2"><div class="bg-white h-2 rounded-full" style="width:60%"></div></div>
+                            <p class="text-sm text-green-100 mt-2">현재 좌석의 60%가 사용중입니다</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        {{/cafe}}
-    </section>
-
-    <!-- ===== 영업 정보 / 소개 ===== -->
-    <section class="cg-section">
-        <div class="cg-section__head"><h3>영업 정보</h3></div>
-        <div class="cg-grid2">
-            <div class="cg-card"><div class="cg-card__body">
-                {{#info}}
-                    <dl class="cg-dl">
-                        <div class="cg-dl__row"><dt>오픈</dt><dd>{{cafeOpenTime}}</dd></div>
-                        <div class="cg-dl__row"><dt>마감</dt><dd>{{cafeCloseTime}}</dd></div>
-                        <div class="cg-dl__row"><dt>휴무일</dt><dd>{{cafeHoliday}}</dd></div>
-                    </dl>
-                {{/info}}
-                {{^info}}<div class="cg-empty">영업 정보가 아직 없어요.</div>{{/info}}
-            </div></div>
-
-            <div class="cg-card"><div class="cg-card__body">
-                {{#info}}
-                    {{#cafeNotice}}<div class="cg-note"><strong>공지</strong> {{cafeNotice}}</div>{{/cafeNotice}}
-                    {{#cafeInfo}}<p class="cg-desc">{{cafeInfo}}</p>{{/cafeInfo}}
-                    {{^cafeNotice}}{{^cafeInfo}}<div class="cg-empty">소개/공지 정보가 아직 없어요.</div>{{/cafeInfo}}{{/cafeNotice}}
-                {{/info}}
-                {{^info}}<div class="cg-empty">소개/공지 정보가 아직 없어요.</div>{{/info}}
-            </div></div>
         </div>
     </section>
 
-    <!-- ===== 위치(지도) ===== -->
-    <section class="cg-section">
-        <div class="cg-section__head"><h3>위치</h3></div>
-        <div class="cg-card"><div class="cg-card__body">
-            {{#cafe}}
-                <div id="map" class="cg-map" data-lat="{{lat}}" data-lon="{{lon}}" data-name="{{name}}">
-                    <div class="cg-empty">지도가 여기에 표시됩니다.</div>
-                </div>
-            {{/cafe}}
-        </div></div>
-    </section>
+    <!-- 탭 -->
+    <section class="bg-white rounded-2xl shadow-lg mb-8 fade-in">
+        <div class="border-b border-gray-200">
+            <nav class="flex space-x-8 px-8">
+                <button class="tab-button py-4 px-2 border-b-2 font-medium text-sm tab-active" data-tab="menu">메뉴</button>
+                <button class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="reviews">
+                    리뷰 ({{reviewsCount}})
+                </button>
+                <button class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="photos">사진</button>
+                <button class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="map">지도</button>
+                {{#isOwner}}<button type="button" id="ownerEditToggle" class="px-4 py-2 rounded-xl border">점주 편집</button>{{/isOwner}}
+            </nav>
+        </div>
 
-    <!-- ===== 메뉴 ===== -->
-        <style>
-            .cg-menu-list{display:grid;gap:12px}
-            .cg-menu-item{display:grid;grid-template-columns:1fr 120px;align-items:center;
-                          padding:12px 16px;border:1px solid #e2e8f0;border-radius:12px;background:#fff}
-            .cg-menu-thumb img{width:120px;height:120px;object-fit:cover;border-radius:12px}
-            .cg-menu-name{font-weight:700;font-size:18px;margin-bottom:6px}
-            .cg-menu-price{color:#334155}
-        </style>
-
-        <section class="cg-section">
-            <div class="cg-section__head">
-                <h3>메뉴</h3>
-                {{#cafe}}<a class="cg-link" href="/cafes/{{id}}/menu">전체 메뉴</a>{{/cafe}}
-            </div>
-
-            <ul class="cg-menu-list">
+        <!-- 메뉴 탭 -->
+        <div id="menu-tab" class="tab-content p-8">
+            <ul class="grid md:grid-cols-2 gap-6">
                 {{#menus}}
-                    <li class="cg-menu-item">
+                    <li class="flex justify-between items-center p-4 bg-green-50 rounded-xl">
                         <div>
-                            <div class="cg-menu-name">{{menuName}}</div>
-                            <div class="cg-menu-price">{{menuPrice}}</div>
+                            <h4 class="font-medium text-gray-800">{{menuName}}</h4>
+                            {{#menuPrice}}<p class="text-sm text-gray-600">{{menuPrice}}</p>{{/menuPrice}}
                         </div>
-                        <div class="cg-menu-thumb">
-                            <img src="{{menuPhoto}}" alt="{{menuName}}"
-                                 onerror="this.onerror=null; this.src='/images/placeholder-cafe.jpg';">
-                        </div>
+                        <img src="{{menuPhoto}}" alt="{{menuName}}" class="w-20 h-20 object-cover rounded-lg" onerror="this.onerror=null;this.src='/images/placeholder-cafe.jpg'">
                     </li>
                 {{/menus}}
-                {{^menus}}<li class="cg-empty">등록된 메뉴가 없어요.</li>{{/menus}}
+                {{^menus}}
+                    <li class="text-gray-500">등록된 메뉴가 없어요.</li>
+                {{/menus}}
             </ul>
-        </section>
-    </section>
+        </div>
 
-    <!-- ===== 방문자 리뷰 ===== -->
-    <section class="cg-section">
-        <div class="cg-section__head"><h3>방문자 리뷰</h3></div>
-        <ul class="cg-feed">
+        <!-- 리뷰 탭 -->
+        <div id="reviews-tab" class="tab-content p-8 hidden">
+
+            {{#isLoggedIn}}
+                <div class="mb-4 flex justify-end">
+                    <button id="openReviewModal" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700">
+                        ✍️ 리뷰 작성하기
+                    </button>
+                </div>
+            {{/isLoggedIn}}
+
             {{#reviews}}
-                <li class="cg-feed__item">
-                    <p class="cg-feed__text">{{content}}</p>
-
-                    <div class="cg-feed__photos" data-review-photos>
-                        {{#photos}}
-                            <img class="cg-feed__photo" src="{{photoUrl}}" alt="리뷰 사진" loading="lazy"
-                                 onerror="this.style.display='none'"/>
-                        {{/photos}}
-                        <span class="cg-feed__photo-count" hidden></span>
-                    </div>
-
-                    <div class="cg-feed__meta">
-                        <span>{{createdAtFmt}}</span>
-                        <span>좋아요 {{good}} / 아쉬워요 {{bad}}</span>
-                        {{#memberNickname}}<span class="cg-dot">·</span><span>{{memberNickname}}</span>{{/memberNickname}}
-                    </div>
-                </li>
+                <article class="review-card bg-white border border-gray-200 p-6 rounded-xl mb-4">
+                    <header class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <span class="text-green-600 font-medium">{{memberInitial}}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-800">{{memberName}}</h4>
+                                <p class="text-sm text-gray-500">{{createdDate}}</p>
+                            </div>
+                        </div>
+                        <div class="text-yellow-400">{{ratingStars}}</div>
+                    </header>
+                    <p class="text-gray-700 leading-relaxed">{{content}}</p>
+                    {{#photos}}
+                        <ul class="grid grid-cols-3 gap-2 mt-3">
+                            {{#.}}<li><img src="{{url}}" class="w-full h-28 object-cover rounded-md"></li>{{/.}}
+                        </ul>
+                    {{/photos}}
+                </article>
             {{/reviews}}
-            {{^reviews}}<li class="cg-empty">아직 리뷰가 없네요.</li>{{/reviews}}
-        </ul>
-    </section>
+            {{^reviews}}<p class="text-gray-500">아직 리뷰가 없어요.</p>{{/reviews}}
+        </div>
 
-
-    <!-- ===== 사진 갤러리 (옵션: 모델에 cafePhotos 있을 때) ===== -->
-    <section class="cg-section">
-        <div class="cg-section__head"><h3>사진</h3></div>
-        <ul class="cg-card-grid">
-            {{#cafePhotos}}
-                <li class="cg-card">
-                    <div class="cg-card__imgwrap">
-                        <img class="cg-card__img" src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}"
-                             onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');" />
+        <!-- 사진 탭 -->
+        <div id="photos-tab" class="tab-content p-8 hidden">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {{#cafePhotos}}
+                    <div class="bg-gradient-to-br from-green-100 to-green-200 aspect-square rounded-xl overflow-hidden">
+                        <img src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover">
                     </div>
-                </li>
-            {{/cafePhotos}}
-            {{^cafePhotos}}<li class="cg-empty">등록된 사진이 없어요.</li>{{/cafePhotos}}
-        </ul>
+                {{/cafePhotos}}
+                {{^cafePhotos}}
+                    <div class="bg-gradient-to-br from-green-100 to-green-200 aspect-square rounded-xl flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-4xl mb-2">☕</div>
+                            <p class="text-green-700 text-sm">사진이 없어요</p>
+                        </div>
+                    </div>
+                {{/cafePhotos}}
+            </div>
+        </div>
+
+        <!-- 지도 탭 -->
+        <div id="map-tab" class="tab-content p-8 hidden">
+            <div class="bg-green-50 h-96 rounded-xl flex items-center justify-center">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🗺️</div>
+                    <h3 class="text-xl font-bold text-green-800 mb-2">{{#cafe}}{{name}}{{/cafe}} 위치</h3>
+                    <p class="text-green-600">{{#cafe}}{{address}}{{/cafe}}</p>
+                </div>
+            </div>
+        </div>
     </section>
 
+    <!-- 비슷한 카페 추천 -->
+    <section id="similar-section" class="fade-in hidden">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">비슷한 카페 추천</h2>
+        <div id="similar-grid" class="grid md:grid-cols-3 gap-6"></div>
+    </section>
+
+    {{#isLoggedIn}}
+        <!-- 리뷰 작성 모달 -->
+        <div id="reviewModal" class="cg-modal hidden" aria-hidden="true">
+            <div class="cg-modal__backdrop"></div>
+            <div class="cg-modal__panel" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+                <div class="cg-modal__header">
+                    <h3 id="reviewModalTitle" class="text-lg font-semibold">리뷰 작성</h3>
+                    <button type="button" id="closeReviewModal" class="cg-modal__close" aria-label="닫기">✕</button>
+                </div>
+
+                <!-- 리뷰 작성 모달 내부 form (교체/추가) -->
+                <form id="reviewForm" class="space-y-4"
+                      action="/cafes/{{#cafe}}{{id}}{{/cafe}}/reviews"
+                      method="post" enctype="multipart/form-data">
+
+                    <!-- 카페 ID (DTO 매핑용) -->
+                    <input type="hidden" name="cafeId" value="{{#cafe}}{{id}}{{/cafe}}"/>
+
+                    <!-- 평점: DTO.rating 으로 바인딩 -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">평점</label>
+                        <div id="ratingStars" class="flex gap-1 text-2xl cursor-pointer" aria-label="평점 선택">
+                            <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" value="5"/>
+                    </div>
+
+                    <!-- 내용: DTO.reviewContent 로 바인딩 -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1" for="reviewContent">내용</label>
+                        <textarea id="reviewContent" name="reviewContent" rows="5" required
+                                  class="w-full border rounded-xl p-3"
+                                  placeholder="카페 분위기, 메뉴, 좌석, 소음 등 경험을 들려주세요."></textarea>
+                    </div>
+
+                    <!-- 대기시간(선택): DTO.waitingTime -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1" for="waitingTime">대기시간(분)</label>
+                        <input id="waitingTime" name="waitingTime" type="number" min="0" step="1" class="w-40 border rounded-xl p-2" />
+                    </div>
+
+                    <!-- 동반자 유형(선택): DTO.companionType -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1" for="companionType">동반자</label>
+                        <select id="companionType" name="companionType" class="border rounded-xl p-2">
+                            <option value="">선택 안 함</option>
+                            <option value="ALONE">혼자</option>
+                            <option value="FRIEND">친구</option>
+                            <option value="DATE">연인</option>
+                            <option value="WORK">업무</option>
+                        </select>
+                    </div>
+
+                    <!-- 방문일(선택): DTO.reviewDate (HTML5 datetime-local) -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1" for="reviewDate">방문일시</label>
+                        <input id="reviewDate" name="reviewDate" type="datetime-local" class="border rounded-xl p-2"/>
+                    </div>
+
+                    <!-- 사진: files -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1" for="photos">사진 (최대 6장)</label>
+                        <input id="photos" name="photos" type="file" accept="image/*" multiple class="w-full"/>
+                        <div id="photoPreview" class="grid grid-cols-3 gap-2 mt-2"></div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" id="cancelReview" class="px-4 py-2 rounded-xl border">취소</button>
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700">등록</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    {{/isLoggedIn}}
 </main>
 
-<!-- ===========================
-     모달 (리뷰 작성) – 기존 유지
-     =========================== -->
-<style>
-    /* 모달: 기본 숨김, is-open 때만 표시 */
-    .cg-modal{position:fixed;inset:0;display:none;z-index:1000}
-    .cg-modal.is-open{display:grid}
-    .cg-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.45)}
-    .cg-modal__dialog{position:relative;width:100%;height:100%;display:grid;place-items:center;padding:20px;pointer-events:none}
-    .cg-modal__sheet{width:min(720px,96vw);max-height:88vh;background:#fff;border-radius:16px;overflow:auto;pointer-events:auto}
-    .cg-modal__header,.cg-modal__footer{padding:16px 20px}
-    .cg-modal__content{padding:0 20px 16px}
-    .cg-modal__title{margin:0;font-size:20px}
-    .cg-modal__close{border:0;background:transparent;font-size:28px;line-height:1;cursor:pointer;margin-left:auto}
-    body.cg-modal-open{overflow:hidden}
-</style>
-
-<div id="reviewModal" class="cg-modal" aria-hidden="true" role="dialog" aria-labelledby="reviewModalTitle">
-    <div class="cg-modal__backdrop" data-close-modal></div>
-    <div class="cg-modal__dialog">
-        <form id="reviewForm" class="cg-modal__sheet" method="post" action="/reviews/new" enctype="multipart/form-data" novalidate>
-            {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-            <input type="hidden" name="cafeId" id="modalCafeId"/>
-
-            <div class="cg-modal__header" style="display:flex;gap:8px;align-items:center">
-                <h3 id="reviewModalTitle" class="cg-modal__title">리뷰 작성</h3>
-                <button type="button" class="cg-modal__close" aria-label="닫기" data-close-modal>&times;</button>
-            </div>
-
-            <div class="cg-modal__content">
-                <label class="cg-label">내용</label>
-                <textarea name="reviewContent" class="cg-input" rows="8" style="min-height:160px" placeholder="방문 후기를 남겨주세요." required maxlength="1000" autofocus aria-required="true"></textarea>
-
-                <label class="cg-label" style="margin-top:12px">전반적 만족도</label>
-                <div class="cg-toggle2" role="group" aria-label="전반적 만족도">
-                    <label class="cg-toggle2__btn">
-                        <input type="radio" name="sentiment" value="GOOD" checked>
-                        <span>좋아요</span>
-                    </label>
-                    <label class="cg-toggle2__btn">
-                        <input type="radio" name="sentiment" value="BAD">
-                        <span>아쉬워요</span>
-                    </label>
-                </div>
-
-                <label class="cg-label" style="margin-top:12px">이런 점이 좋았어요 (복수선택)</label>
-                <div class="cg-chips">
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="맛있어요"> 음식이 맛있어요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="친절해요"> 친절해요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="인테리어"> 인테리어가 멋져요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="신선한재료"> 재료가 신선해요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="특별한메뉴"> 특별한 메뉴가 있어요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="기본안주"> 기본 안주가 좋아요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="음악"> 음악이 좋아요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="혼술"> 혼술하기 좋아요</label>
-                    <label class="cg-chip"><input type="checkbox" name="likedTagCodes" value="가성비"> 가성비가 좋아요</label>
-                </div>
-
-                <label class="cg-label" style="margin-top:12px">사진 (선택)</label>
-                <input id="photoInput" class="cg-sr-only" type="file" name="photos" accept="image/*" multiple>
-                <label for="photoInput" class="cg-btn-outline">파일 선택</label>
-                <small class="cg-help">최대 5장, 이미지당 10MB 이하 권장</small>
-            </div>
-
-            <div class="cg-modal__footer" style="display:flex;justify-content:flex-end;gap:8px">
-                <button type="button" class="cg-btn-outline" data-close-modal>취소</button>
-                <button type="submit" class="cg-btn">등록</button>
-            </div>
-        </form>
-    </div>
-</div>
-<!-- ===== 점주 편집 모달 ===== -->
-<div id="ownerModal" class="cg-modal" aria-hidden="true" role="dialog" aria-labelledby="ownerModalTitle">
-    <div class="cg-modal__backdrop" data-close-modal></div>
-    <div class="cg-modal__dialog">
-        <div class="cg-modal__sheet">
-            <div class="cg-modal__header" style="display:flex;gap:8px;align-items:center">
-                <h3 id="ownerModalTitle" class="cg-modal__title">점주 편집</h3>
-                <button type="button" class="cg-modal__close" aria-label="닫기" data-close-modal>&times;</button>
-            </div>
-
-            <div class="cg-modal__content">
-                <!-- A. 카페 소개/공지/영업정보 -->
-                <div class="cg-card" style="margin:0 0 16px 0">
-                    <div class="cg-card__head"><h4>카페 소개/공지 · 영업정보</h4></div>
-                    <div class="cg-card__body">
-                        <form id="cafeInfoFormModal" class="space-y">
-                            <input type="hidden" name="id" id="cafeInfoIdModal">
-                            <div class="cg-grid3">
-                                <label class="field"><div class="field__label">오픈</div><input class="cg-input" name="openTime" placeholder="09:00"></label>
-                                <label class="field"><div class="field__label">마감</div><input class="cg-input" name="closeTime" placeholder="21:00"></label>
-                                <label class="field"><div class="field__label">휴무일</div><input class="cg-input" name="holiday" placeholder="월"></label>
-                            </div>
-                            <label class="field"><div class="field__label">공지</div><input class="cg-input" name="notice" maxlength="20"></label>
-                            <label class="field"><div class="field__label">소개</div><textarea class="cg-input" name="info" rows="4" maxlength="500"></textarea></label>
-                            <div class="cg-actions end" style="gap:8px">
-                                <button type="button" class="cg-btn" id="cafeInfoSaveBtnModal">저장</button>
-                                <button type="button" class="cg-btn-outline" id="cafeInfoDeleteBtnModal">삭제</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- B. 사진 관리 -->
-                <div class="cg-card">
-                    <div class="cg-card__head"><h4>사진 관리</h4></div>
-                    <div class="cg-card__body">
-                        <form id="photoUploadFormModal" class="space-y" enctype="multipart/form-data">
-                            <input class="cg-input" type="file" name="files" accept="image/*" multiple required>
-                            <div class="cg-actions end"><button type="submit" class="cg-btn">업로드</button></div>
-                        </form>
-                        <ul id="cafePhotoListModal" class="cg-feed" style="margin-top:12px"></ul>
-                    </div>
-                </div>
-                <!-- C. 메뉴 관리 -->
-                <div class="cg-card" style="margin-top:16px">
-                    <div class="cg-card__head"><h4>메뉴 관리</h4></div>
-                    <div class="cg-card__body">
-                        <!-- 새 메뉴 추가 -->
-                        <form id="menuCreateFormModal" class="space-y">
-                            <div class="cg-grid2">
-                                <input class="cg-input" name="name" placeholder="메뉴명" required maxlength="30">
-                                <input class="cg-input" type="number" name="price" placeholder="가격(원)" min="0" step="100" required>
-                            </div>
-                            <div class="cg-grid2">
-                                <label class="cg-checkbox"><input type="checkbox" name="isNew">신규</label>
-                                <label class="cg-checkbox"><input type="checkbox" name="isRecommended">추천</label>
-                            </div>
-                            <!-- (선택) 메뉴 사진 업로드 -->
-                            <input class="cg-input" type="file" name="menuPhoto" accept="image/*">
-                            <div class="cg-actions end"><button type="submit" class="cg-btn">메뉴 추가</button></div>
-                        </form>
-
-                        <hr style="margin:16px 0">
-                        <!-- 메뉴 목록/수정/삭제 -->
-                        <ul id="ownerMenuListModal" class="cg-feed"></ul>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="cg-modal__footer" style="display:flex;justify-content:flex-end;gap:8px">
-                <button type="button" class="cg-btn" id="ownerSaveAllBtn">저장</button>
-                <button type="button" class="cg-btn-outline" data-close-modal>닫기</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    (function(){
-      // --- JWT ---
-      const AUTH = (() => {
-        function token(){ return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken') || ''; }
-        function withJwt(init){ init=init||{}; const t=token();
-          init.headers = Object.assign({ 'Accept':'application/json' }, init.headers||{}, t?{ 'Authorization':'Bearer '+t }:{} );
-          init.credentials='same-origin'; return init; }
-        return { withJwt };
-      })();
-
-      const cafeId = document.querySelector('main.cg-container')?.dataset.cafeId || "{{#cafe}}{{id}}{{/cafe}}";
-
-  // --- 모달 열고 닫기 ---
-  const ownerBtn   = document.getElementById('ownerEditToggle');
-  const ownerModal = document.getElementById('ownerModal');
-  ownerBtn?.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
-
-  function openModal(){
-    ownerModal.classList.add('is-open'); document.body.classList.add('cg-modal-open');
-    loadCafeInfo(); loadPhotos(); loadMenus();
-  }
-  function closeModal(){
-    ownerModal.classList.remove('is-open'); document.body.classList.remove('cg-modal-open');
-  }
-  ownerModal?.querySelectorAll('[data-close-modal]').forEach(el=>el.addEventListener('click', closeModal));
-  ownerModal?.addEventListener('click', e=>{ if(e.target.classList.contains('cg-modal__backdrop')) closeModal(); });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape' && ownerModal?.classList.contains('is-open')) closeModal(); });
-
-  // --- A. CafeInfo ---
-  async function fetchCafeInfo(){
-    const r = await fetch(`/api/cafe-infos/by-cafe/${cafeId}`, AUTH.withJwt());
-    if (r.status === 404) return null; return r.json();
-  }
-  async function loadCafeInfo(){
-    const f = document.getElementById('cafeInfoFormModal');
-    const data = await fetchCafeInfo();
-    document.getElementById('cafeInfoIdModal').value = data?.id || '';
-    f.openTime.value  = data?.openTime  || '';
-    f.closeTime.value = data?.closeTime || '';
-    f.holiday.value   = data?.holiday   || '';
-    f.notice.value    = data?.notice    || '';
-    f.info.value      = data?.info      || '';
-  }
-
-  async function saveCafeInfo(){
-    const f = document.getElementById('cafeInfoFormModal');
-    const payload = {
-      cafe: { id: Number(cafeId) },
-      openTime: f.openTime.value, closeTime: f.closeTime.value,
-      holiday: f.holiday.value,   notice: f.notice.value, info: f.info.value
-    };
-    const id = document.getElementById('cafeInfoIdModal').value;
-    const url = id ? `/api/cafe-infos/${id}` : `/api/cafe-infos/upsert/${cafeId}`;
-    const method = id ? 'PUT' : 'POST';
-    const res = await fetch(url, AUTH.withJwt({ method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }));
-    return res.ok;
-  }
-
-  document.getElementById('ownerSaveAllBtn')?.addEventListener('click', async ()=>{
-    const ok = await saveCafeInfo();
-    if (ok) { alert('저장했습니다.'); location.reload(); } else { alert('저장 실패'); }
-  });
-
-  // --- B. Photos ---
-  async function fetchPhotos(){ const r = await fetch(`/api/cafes/${cafeId}/photos`, AUTH.withJwt()); return r.json(); }
-  function photoItemTpl(p){ return `
-    <li class="cg-feed__item" data-id="${p.id}">
-      <div style="display:flex;gap:12px;align-items:center">
-        <img src="${p.url}" style="width:96px;height:96px;object-fit:cover;border-radius:8px">
-        <div style="flex:1">
-          <div style="font-weight:600">${p.originalName||'사진'}</div>
-          ${p.main ? '<span class="cg-badge">대표</span>' : ''}
-        </div>
-        <div style="display:flex;gap:6px">
-          ${p.main ? '' : '<button type="button" class="cg-btn-outline" data-act="main">대표설정</button>'}
-          <button type="button" class="cg-btn-outline" data-act="del">삭제</button>
-        </div>
-      </div>
-    </li>`; }
-  async function loadPhotos(){
-    const list = document.getElementById('cafePhotoListModal'); if (!list) return;
-    const items = await fetchPhotos(); list.innerHTML = items.map(photoItemTpl).join('');
-    list.querySelectorAll('button[data-act]').forEach(btn=>{
-      const id = btn.closest('[data-id]').dataset.id;
-      if (btn.dataset.act==='del'){
-        btn.addEventListener('click', async ()=>{
-          if (!confirm('삭제할까요?')) return;
-          const r = await fetch(`/api/cafes/photos/${id}`, AUTH.withJwt({ method:'DELETE' }));
-          if (r.ok) loadPhotos(); else alert('삭제 실패');
-        });
-      }else if(btn.dataset.act==='main'){
-        btn.addEventListener('click', async ()=>{
-          const r = await fetch(`/api/cafes/photos/${id}/main`, AUTH.withJwt({ method:'PATCH' }));
-          if (r.ok) loadPhotos(); else alert('변경 실패');
-        });
-      }
-    });
-  }
-  document.getElementById('photoUploadFormModal')?.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const r = await fetch(`/api/cafes/${cafeId}/photos`, AUTH.withJwt({ method:'POST', body: fd }));
-    if (r.ok){ e.currentTarget.reset(); loadPhotos(); } else alert('업로드 실패');
-  });
-
-  // --- C. Menus ---
-  async function fetchMenus(){ const r = await fetch(`/api/menus/by-cafe/${cafeId}`, AUTH.withJwt()); return r.json(); }
-  function menuItemTpl(m){ return `
-    <li class="cg-feed__item" data-id="${m.id}">
-      <div style="display:flex;gap:12px;align-items:center">
-        <img src="${m.photo}" style="width:64px;height:64px;object-fit:cover;border-radius:8px"
-            onerror="this.style.display='none'">
-        <div style="flex:1">
-          <div style="font-weight:600">${m.name} <small>${m.price}원</small></div>
-          <div class="muted">${m.isNew?'New':''} ${m.isRecommended?'· 추천':''}</div>
-        </div>
-        <div style="display:flex;gap:6px">
-          <button type="button" class="cg-btn-outline" data-act="edit">수정</button>
-          <button type="button" class="cg-btn-outline" data-act="del">삭제</button>
-          <button type="button" class="cg-btn-outline" data-act="photo">사진</button>
-        </div>
-      </div>
-    </li>`; }
-  async function loadMenus(){
-    const list = document.getElementById('ownerMenuListModal'); if (!list) return;
-    const items = await fetchMenus(); list.innerHTML = items.map(menuItemTpl).join('');
-    list.querySelectorAll('button[data-act]').forEach(btn=>{
-      const id = btn.closest('[data-id]').dataset.id;
-      if (btn.dataset.act==='del'){
-        btn.addEventListener('click', async ()=>{
-          if(!confirm('삭제할까요?')) return;
-          const r = await fetch('/api/menus/'+id, AUTH.withJwt({ method:'DELETE' }));
-          if (r.ok) loadMenus(); else alert('삭제 실패');
-        });
-      } else if (btn.dataset.act==='edit'){
-        btn.addEventListener('click', async ()=>{
-          const name = prompt('메뉴명?'); if (name===null) return;
-          const price = Number(prompt('가격(원)?')); if (Number.isNaN(price)) return alert('가격을 숫자로 입력하세요.');
-          const isNew = confirm('신규로 표시할까요?');
-          const isRecommended = confirm('추천으로 표시할까요?');
-          const payload = { name, price, isNew, isRecommended };
-          const r = await fetch('/api/menus/'+id, AUTH.withJwt({ method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }));
-          if (r.ok) loadMenus(); else alert('수정 실패');
-        });
-      } else if (btn.dataset.act==='photo'){
-        btn.addEventListener('click', async ()=>{
-          const input = document.createElement('input'); input.type='file'; input.accept='image/*';
-          input.onchange = async ()=>{
-            const fd = new FormData(); fd.append('file', input.files[0]);
-            const r = await fetch('/api/menus/'+id+'/photo', AUTH.withJwt({ method:'POST', body: fd }));
-            if (r.ok) loadMenus(); else alert('업로드 실패');
-          };
-          input.click();
-        });
-      }
-    });
-  }
-  document.getElementById('menuCreateFormModal')?.addEventListener('submit', async (e)=>{
-    e.preventDefault();
-    const f = e.currentTarget;
-
-     if (!f.menuPhoto.files[0]) {
-   alert('메뉴 사진은 필수입니다.');
-   return;
-        }
-
-    const fd = new FormData();
-    fd.append('cafeId', Number(cafeId));
-    fd.append('name', f.name.value.trim());
-    fd.append('price', Number(f.price.value));
-    fd.append('isNew', f.isNew.checked);
-    fd.append('isRecommended', f.isRecommended.checked);
-    fd.append('file', f.menuPhoto.files[0]);
-
-     const r = await fetch('/api/menus', AUTH.withJwt({ method:'POST', body: fd }));
-     if (!r.ok) { alert('등록 실패'); return; }
-
-    f.reset(); loadMenus();
-  });
-
-})();
-</script>
-
-
-
-
+<script defer src="/js/detail.js"></script>
 {{>layout/footer}}

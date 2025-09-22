@@ -84,7 +84,7 @@ public class AuthController {
         String token = jwtTokenProvider.generateToken(ud, member.getTokenVersion()==null?0L:member.getTokenVersion());
         ResponseCookie cookie = ResponseCookie.from("AT", token)
                 .httpOnly(true).secure(false).sameSite("Lax")
-                .path("/").maxAge(Duration.ofDays(7))
+                .path("/").maxAge(Duration.ofMillis(jwtTokenProvider.getJwtExpirationMs()))
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
@@ -126,7 +126,7 @@ public class AuthController {
         m.setNickname(memberNickname);
         m.setAge(memberAge == null ? null : memberAge.longValue());
         m.setGender(("M".equalsIgnoreCase(memberGender) || "F".equalsIgnoreCase(memberGender)) ? memberGender.toUpperCase() : null);
-        m.setRoleKind(RoleKind.valueOf("USER"));
+        m.setRoleKind(RoleKind.valueOf("MEMBER"));
         m.setCreatedAt(LocalDateTime.now());
         m.setTokenVersion(0L);
 

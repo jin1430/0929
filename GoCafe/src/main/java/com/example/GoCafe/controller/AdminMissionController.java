@@ -15,7 +15,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("/admin/missions")
-@PreAuthorize("hasRole('ADMIN')") // 시큐리티 설정에 맞춰 조정
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class AdminMissionController {
 
@@ -24,34 +24,35 @@ public class AdminMissionController {
 
     @GetMapping("/completed")
     public String completed(Model model) {
-        // 아주 단순: 전체 Notification에서 COMPLETED만 수집 (필요하면 페이지네이션 추가)
         List<Notification> all = notificationRepository.findAll();
-        List<Map<String, Object>> rows = new ArrayList<>();
+        List<Map<String, Object>> missionReviews = new ArrayList<>();
+
         for (Notification n : all) {
             if (n.getMessage() != null && n.getMessage().startsWith("MISSION:COMPLETED:")) {
                 Long reviewId = Long.valueOf(n.getMessage().substring("MISSION:COMPLETED:".length()));
                 Review r = reviewRepository.findById(reviewId).orElse(null);
                 if (r == null) continue;
-                rows.add(Map.of(
+                missionReviews.add(Map.of(
                         "reviewId", r.getId(),
-                        "memberNickname", r.getMember().getNickname(),
-                        "cafeName", r.getCafe().getName(),
-                        "sentiment", r.getSentiment() // 현재 값 노출
+                        "memberNickname", r.getMember()!=null ? r.getMember().getNickname() : "알수없음",
+                        "cafeName", r.getCafe()!=null ? r.getCafe().getName() : "알수없음",
+                        "currentSentiment", r.getSentiment()==null? "" : r.getSentiment()
                 ));
             }
         }
-        model.addAttribute("rows", rows);
-        return "admin/missions/completed";
+        model.addAttribute("missionReviews", missionReviews);
+        return "admin/main"; // 같은 페이지에서 탭으로 보여줄 때
+        // 별도 페이지면 "admin/missions/completed"로 유지
     }
 
     @PostMapping("/{reviewId}/sentiment")
     public String mark(@PathVariable Long reviewId, @RequestParam String v) {
-        Review r = reviewRepository.findById(reviewId).orElseThrow();
         if (!"GOOD".equals(v) && !"BAD".equals(v)) {
-            return "redirect:/admin/missions/completed?error=bad_param";
+            return "redirect:/admin#tab-missions";
         }
+        Review r = reviewRepository.findById(reviewId).orElseThrow();
         r.setSentiment(v);
         reviewRepository.save(r);
-        return "redirect:/admin/missions/completed?ok=marked";
+        return "redirect:/admin#tab-missions";
     }
 }

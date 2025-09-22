@@ -19,7 +19,7 @@ public class CafePhoto {
     @JsonIgnore
     private Cafe cafe;
 
-    @Column(name = "url", nullable = false, length = 255)
+    @Column(name = "photo_url", nullable = false, length = 255)
     private String url;
 
     @Column(name = "original_name", length = 120)
@@ -35,5 +35,5 @@ public class CafePhoto {
     private Integer sortIndex = 0;
 
     @Column(name = "is_main")
-    private Boolean main = Boolean.FALSE;
+    private Boolean isMain = Boolean.FALSE; // 필드명 변경
 }

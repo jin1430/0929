@@ -2,7 +2,6 @@
 
 <main class="cg-container">
 
-    <!-- 타이틀 + 검색 -->
     <section class="cg-section" style="margin-top:20px;">
         <div class="cg-search" style="display:flex; gap:8px;">
             <input id="searchInput" class="cg-input" type="text" placeholder="주소 또는 키워드를 입력하세요 (예: 브런치, 감성, 홍대입구)">
@@ -11,9 +10,7 @@
         <p class="cg-meta" style="margin-top:8px;">※ 데이터는 홍대입구·상수·연트럴파크·합정의 <b>1.2km 이내</b> 카페만 포함됩니다. 지도는 해당 권역보다 <b>더 넓게(줌아웃)</b> 볼 수 없습니다. 줌인은 자유롭게 가능하며, 줌아웃하면 항상 초기 크기까지만 돌아옵니다.</p>
     </section>
 
-    <!-- 지도 + 인기 장소 -->
     <section class="cg-section" style="display:flex; gap:24px; align-items:flex-start; background:#E8F3EE; border-radius:32px; padding:32px;">
-        <!-- 지도 카드 -->
         <div style="flex:2;">
             <div class="cg-card">
                 <div class="cg-card__body" style="padding:0;">
@@ -22,7 +19,6 @@
             </div>
         </div>
 
-        <!-- 주변 인기 장소(리스트) -->
         <aside style="flex:1;">
             <div class="cg-section__head" style="display:flex; align-items:center; justify-content:space-between;">
                 <h2 class="cg-title" style="font-size:28px;">주변 인기 장소</h2>
@@ -49,13 +45,12 @@
     </section>
 </main>
 
-<!-- Kakao Maps SDK (+services,clusterer) -->
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey={{kakaoJsKey}}&autoload=false&libraries=services,clusterer"></script>
 
 <script>
     // 서버에서 주입되는 초기 데이터
     const SERVER_PLACES  = {{&placesJson}}  || [];   // [{id,name,rating,address,lat,lng,tags,thumbnail}]
-  const ANCHORS        = {{&anchorsJson}} || [];   // [{id,name,lat,lng}]
+  const ANCHORS        = {{&anchorsJson}} || []; // [{id,name,lat,lng}]
   const RADIUS_M = 1200;
 
   // 전역 참조
@@ -64,21 +59,18 @@
   let placeMarkers = [];    // 현재 표시 중인 마커 배열
 
   kakao.maps.load(initMap);
-
   function initMap() {
     const container = document.getElementById('map');
     map = new kakao.maps.Map(container, {
       center: new kakao.maps.LatLng(37.553, 126.921),
       level: 5
     });
-
     infoWindow = new kakao.maps.InfoWindow({ removable: true });
     clusterer  = new kakao.maps.MarkerClusterer({
       map,
       averageCenter: true,
       minLevel: 6
     });
-
     // ----- 권역(anchors의 1.2km 박스 union) 계산 -----
     const allowedBounds = buildAllowedBounds(ANCHORS, RADIUS_M);
     if (!allowedBounds.isEmpty()) {
@@ -87,12 +79,11 @@
 
     // ⬇️ 초기 레벨(가장 넓은 상태)을 저장해 '줌아웃 상한'으로 사용
     function setMinLevelOnce() {
-      MIN_OUT_LEVEL = map.getLevel();           // 초기 레벨(최대 확대영역) 고정
+      MIN_OUT_LEVEL = map.getLevel(); // 초기 레벨(최대 확대영역) 고정
       kakao.maps.event.removeListener(map, 'idle', setMinLevelOnce);
       if (map.setMaxLevel) map.setMaxLevel(MIN_OUT_LEVEL); // 엔진 차원 상한
     }
     kakao.maps.event.addListener(map, 'idle', setMinLevelOnce);
-
     // ✅ 줌인은 허용, 줌아웃은 '초기 레벨'까지만 허용
     kakao.maps.event.addListener(map, 'zoom_changed', () => {
       if (MIN_OUT_LEVEL == null) return;
@@ -101,19 +92,15 @@
         map.setLevel(MIN_OUT_LEVEL, { anchor: map.getCenter() }); // 초기 크기로 복귀
       }
     });
-
     // 드래그로 권역 밖으로 못 나가게(센터 클램프)
     kakao.maps.event.addListener(map, 'dragend', () => clampCenterIntoBounds(map, allowedBounds));
-
     // 앵커 마커
     drawAnchorMarkers(ANCHORS);
 
     // 초기 장소 마커 & 리스트
     renderPlaces(SERVER_PLACES);
-
     // 검색 고도화: 주소 + 키워드
     wireSearchHandlers(allowedBounds);
-
     // 초기화 버튼
     document.getElementById('resetBtn').addEventListener('click', () => {
       infoWindow.close();
@@ -175,7 +162,6 @@
   function renderPlaces(places){
     // 리스트
     renderList(places);
-
     // 마커 + 클러스터
     clearPlaceMarkers();
     const markers = [];
@@ -247,11 +233,9 @@
 
     const ps = new kakao.maps.services.Places();
     const geocoder = new kakao.maps.services.Geocoder();
-
     function runSearch(){
       const q = ($input.value || '').trim();
       if (!q) return;
-
       // 1) 주소일 경우 지도 중심 이동(권역 외부면 드래그 클램프에 의해 가장자리로 보정)
       geocoder.addressSearch(q, (res, status) => {
         if (status === kakao.maps.services.Status.OK && res[0]) {
@@ -259,7 +243,6 @@
           map.setCenter(pos);
         }
       });
-
       // 2) 키워드 검색(현재 지도 bounds 우선)
       ps.keywordSearch(q, (data, status) => {
         if (status !== kakao.maps.services.Status.OK || !data?.length) {

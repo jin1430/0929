@@ -1,133 +1,123 @@
 {{>layout/header}}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>CafeGo – 인트로</title>
 
-<link rel="stylesheet" href="/css/intro.css">
-<main class="intro-root">
-    <!-- HERO -->
-    <section class="intro-hero" id="hero">
-        <div class="intro-inner">
-            <div class="hero-left">
-                <div class="kicker">CafeGo</div>
-                <h1>취향으로 만나는 카페, <strong>CafeGo</strong></h1>
-                <p class="lead">간단한 선택으로 취향 태그를 뽑아 맞춤 카페를 추천하고, 전문 리뷰어 미션에도 도전할 수 있어요.</p>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+        :root{
+          --purple: #6b46c1;
+          --blue: #2563eb;
+          --pink: #ec4899;
+          --green: #16a34a;
+          --text:#111827;
+          --muted:#6b7280;
+          --bg:#f5f7fb;
+          --card:#fff;
+          --radius:18px;
+          --shadow: 0 20px 40px rgba(0,0,0,.08);
+        }
+        html,body{margin:0;padding:0;background:linear-gradient(135deg,#f6f0ff 0%,#eef6ff 100%);color:var(--text);font-family:'Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1200px;margin:0 auto;padding:0 24px}
+        .header{background:#fff;border-bottom:1px solid #eef2f7}
+        .header-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+        .nav a{margin-left:22px;color:#4b5563}
+        .nav a:hover{color:var(--purple)}
+        .hero{padding:72px 0 24px}
+        .title{font-size:40px;font-weight:800;margin:0 0 8px;text-align:center}
+        .subtitle{font-size:18px;color:var(--muted);text-align:center;max-width:760px;margin:0 auto}
+        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin:38px 0}
+        .card{border-radius:var(--radius);padding:32px;color:#fff;box-shadow:var(--shadow);transition:transform .25s ease}
+        .card:hover{transform:translateY(-8px)}
+        .expert{background:linear-gradient(135deg,#f093fb 0%, #f5576c 100%)}
+        .reco{background:linear-gradient(135deg,#4facfe 0%, #00f2fe 100%)}
+        .pill{width:64px;height:64px;background:rgba(255,255,255,.22);border-radius:999px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:26px}
+        .card h3{font-size:26px;margin:0 0 10px}
+        .bul{display:flex;align-items:center;margin:8px 0;color:rgba(255,255,255,.95)}
+        .dot{width:8px;height:8px;background:#fff;border-radius:50%;margin-right:10px}
+        .btn{width:100%;padding:14px 18px;border-radius:14px;font-weight:700;border:none;cursor:pointer;background:#fff}
+        .btn-purple{color:#6b46c1}
+        .btn-blue{color:#2563eb}
+        .stats{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+        .stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+        .stat{ text-align:center}
+        .stat .num{font-size:30px;font-weight:800;margin-bottom:6px}
+        .cta{ text-align:center;margin:40px 0 10px}
+        .cta .btn-lg{padding:16px 26px;border-radius:16px;background:linear-gradient(90deg,#6b46c1,#2563eb);color:#fff;border:0;box-shadow:var(--shadow);font-weight:800}
+        .footer{background:#111827;color:#e5e7eb;margin-top:64px}
+        .footer a{color:#9ca3af}
+        .footer a:hover{color:#fff}
+        .footer-inner{padding:28px 0}
+        .footer-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+        .badge{display:inline-block;margin-right:6px;padding:2px 8px;border-radius:999px;font-size:12px;background:#eef2ff;color:#4338ca}
+        .fade{opacity:0;transform:translateY(18px);animation:fadeUp .7s ease forwards}
+        .fade:nth-child(1){animation-delay:.1s}.fade:nth-child(2){animation-delay:.25s}.fade:nth-child(3){animation-delay:.4s}
+        @keyframes fadeUp{to{opacity:1;transform:none}}
+        @media (max-width:960px){ .grid{grid-template-columns:1fr} .stats-grid{grid-template-columns:repeat(2,1fr)} .title{font-size:32px}}
+    </style>
+</head>
 
-                <div class="hero-ctas">
-                    <a class="btn btn-primary" href="/search">추천받으러 가기</a>
-                    <a class="btn btn-ghost" href="/reviewer/apply">리뷰어 도전하러 가기</a>
-                    <a class="btn btn-outline" href="/main">메인 둘러보러 가기</a>
-                </div>
+<body>
+<main class="container">
+    <section class="hero">
+        <h2 class="title">당신만의 완벽한 카페를 찾아보세요</h2>
+        <p class="subtitle">전문 리뷰어의 깊이 있는 분석부터 개인 맞춤 추천까지, 모든 카페 정보를 한 곳에서</p>
+    </section>
 
-                <ul class="hero-stats" aria-hidden="true">
-                    <li><strong>{{reviewerCount}}</strong><span>전문 리뷰어</span></li>
-                    <li><strong>{{missionCount}}</strong><span>진행중 미션</span></li>
-                    <li><strong>{{cafesIndexed}}</strong><span>등록 카페</span></li>
-                </ul>
+    <section class="grid">
+        <article class="card expert fade">
+            <div class="pill">👨‍💼</div>
+            <h3>전문 리뷰어</h3>
+            <p style="margin:8px 0 16px;color:#fff;opacity:.95">커피 전문가들의 상세한 리뷰를 확인하세요. 원두, 추출 방식, 분위기까지 전문적인 시각으로 분석한 리뷰를 만나보실 수 있습니다.</p>
+            <div>
+                <div class="bul"><span class="dot"></span><span>커피 전문가 인증 리뷰</span></div>
+                <div class="bul"><span class="dot"></span><span>상세한 맛과 향 분석</span></div>
+                <div class="bul"><span class="dot"></span><span>분위기와 서비스 평가</span></div>
             </div>
+            <a href="/reviewer/guide"><button class="btn btn-purple" type="button">전문 리뷰 보러 가기 →</button></a>
+        </article>
 
-            <div class="hero-right">
-                <div class="demo-card">
-                    <h4>퀵 추천 데모</h4>
-                    <form id="quick-form" class="quick-form" onsubmit="return false;">
-                        <select id="q1">
-                            <option value="감성">감성/조용</option>
-                            <option value="활기">활기/음악</option>
-                            <option value="작업">작업/와이파이</option>
-                        </select>
-                        <select id="q2">
-                            <option value="라떼">라떼 맛집</option>
-                            <option value="브런치">브런치</option>
-                            <option value="디저트">디저트</option>
-                        </select>
-                        <select id="q3">
-                            <option value="홍대">홍대/연남</option>
-                            <option value="합정">합정/상수</option>
-                            <option value="강남">강남</option>
-                        </select>
-                        <div class="demo-actions">
-                            <button id="demo-btn" class="btn btn-primary">지금 추천 보기</button>
-                            <button id="demo-clear" class="btn btn-outline">초기화</button>
-                        </div>
-                    </form>
-                    <div id="demo-result" class="demo-result" aria-live="polite" hidden></div>
-                </div>
+        <article class="card reco fade">
+            <div class="pill">🎯</div>
+            <h3>맞춤 카페 추천</h3>
+            <p style="margin:8px 0 16px;color:#fff;opacity:.95">당신의 취향과 상황에 맞는 카페를 추천해드립니다. 위치, 분위기, 메뉴 선호도를 바탕으로 완벽한 카페를 찾아보세요.</p>
+            <div>
+                <div class="bul"><span class="dot"></span><span>개인 취향 맞춤 추천</span></div>
+                <div class="bul"><span class="dot"></span><span>위치 기반 검색</span></div>
+                <div class="bul"><span class="dot"></span><span>실시간 혼잡도 정보</span></div>
+            </div>
+            <a href="/search"><button class="btn btn-blue" type="button">카페 추천 받으러 가기 →</button></a>
+        </article>
+    </section>
+
+    <section class="stats fade">
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="num" style="color:#6d28d9">{{cafesIndexed}}{{^cafesIndexed}}1,200+{{/cafesIndexed}}</div>
+                <div class="label" style="color:var(--muted)">등록된 카페</div>
+            </div>
+            <div class="stat">
+                <div class="num" style="color:#2563eb">{{reviewerCount}}{{^reviewerCount}}50+{{/reviewerCount}}</div>
+                <div class="label" style="color:var(--muted)">전문 리뷰어</div>
+            </div>
+            <div class="stat">
+                <div class="num" style="color:#db2777">{{totalReviews}}{{^totalReviews}}15,000+{{/totalReviews}}</div>
+                <div class="label" style="color:var(--muted)">리뷰 수</div>
+            </div>
+            <div class="stat">
+                <div class="num" style="color:#16a34a">{{satisfactionRate}}{{^satisfactionRate}}98%{{/satisfactionRate}}</div>
+                <div class="label" style="color:var(--muted)">만족도</div>
             </div>
         </div>
     </section>
 
-    <!-- 섹션 1: 전문 리뷰어 -->
-    <section class="intro-section" id="reviewer">
-        <div class="section-inner">
-            <div class="section-head">
-                <h2>전문 리뷰어가 되는 법</h2>
-                <p class="muted">신뢰할 수 있는 리뷰와 미션으로 포인트와 배지를 획득하세요.</p>
-            </div>
-
-            <div class="cards-grid">
-                <div class="card">
-                    <div class="card-num">1</div>
-                    <h3>신청하기</h3>
-                    <p>프로필과 샘플 리뷰로 간단히 신청합니다.</p>
-                    <a class="card-cta" href="/reviewer/apply">신청하러 가기 →</a>
-                </div>
-                <div class="card">
-                    <div class="card-num">2</div>
-                    <h3>검증 & 레벨업</h3>
-                    <p>자동 검증 + 편집팀 심사로 브론즈→PRO 레벨 업.</p>
-                    <a class="card-cta" href="/reviewer/guide">가이드 보러 가기 →</a>
-                </div>
-                <div class="card">
-                    <div class="card-num">3</div>
-                    <h3>미션 수행</h3>
-                    <p>테마별 미션을 수행하고 리워드를 받아요.</p>
-                    <a class="card-cta" href="/missions">미션 보러 가기 →</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 섹션 2: 추천 방식 -->
-    <section class="intro-section alt" id="how">
-        <div class="section-inner">
-            <div class="section-head">
-                <h2>추천은 이렇게 작동해요</h2>
-                <p class="muted">키워드/퀵퀴즈 → 태그 추출 → 가중치 → 추천 정렬</p>
-            </div>
-            <div class="flow">
-                <div class="flow-step">1. 선택</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step">2. 태그 추출</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step">3. 가중치</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-step">4. 추천</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 섹션 3: 추천 샘플 -->
-    <section class="intro-section" id="samples">
-        <div class="section-inner">
-            <div class="section-head">
-                <h2>지금 뜨는 추천 카페</h2>
-                <p class="muted">유저 피드백 기반의 샘플입니다.</p>
-            </div>
-
-            <div id="sample-cards" class="cards-grid sample-cards"></div>
-        </div>
-    </section>
-
-    <!-- 최종 CTA -->
-    <section class="intro-final">
-        <div class="final-inner">
-            <h3>바로 시작해 볼까요?</h3>
-            <div class="final-ctas">
-                <a class="btn btn-primary lg" href="/search">개인 추천 받으러 가기</a>
-                <a class="btn btn-ghost lg" href="/reviewer/apply">리뷰어 도전하러 가기</a>
-                <a class="btn btn-outline lg" href="/main">플랫폼 전체 둘러보러 가기</a>
-            </div>
-            <div class="small-muted">회원가입하면 추천 품질이 더 좋아져요 — 프로필과 리뷰 이력으로 개인화 강화.</div>
-        </div>
+    <section class="cta fade">
+        <p style="color:var(--muted);margin-bottom:12px">아직 회원이 아니신가요?</p>
+        <a href="/signup"><button class="btn-lg" type="button">회원가입하고 시작하기 🚀</button></a>
     </section>
 </main>
 
-<script src="/js/intro.js"></script>
 {{>layout/footer}}

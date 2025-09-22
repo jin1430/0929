@@ -1,58 +1,41 @@
 package com.example.GoCafe.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
-    private final SecretKey key;
-    protected final long jwtExpirationMs;
+
+    private final Key key;
+
+    @Getter
+    public final long jwtExpirationMs;
 
     public JwtTokenProvider(
-            @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration-ms:3600000}") long jwtExpirationMs
+            @Value("${app.jwt.secret}") String base64Secret,
+            @Value("${app.jwt.expiration-ms:86400000}") long jwtExpirationMs // 1d
     ) {
-        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64Secret));
         this.jwtExpirationMs = jwtExpirationMs;
     }
 
-    // (기존) 단순 발급
-    public String generateToken(UserDetails user) {
-        String roles = user.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+    public String generateToken(UserDetails user, long tokenVersion) {
+        long now = System.currentTimeMillis();
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .addClaims(Map.of("roles", roles))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    // (신규) ver 클레임 포함 발급
-    public String generateToken(UserDetails user, Long version) {
-        String roles = user.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-        return Jwts.builder()
-                .setSubject(user.getUsername())
-                .addClaims(Map.of("roles", roles, "ver", version == null ? 0L : version))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .addClaims(Map.of("ver", tokenVersion))
+                .setIssuedAt(new Date(now))
+                .setExpiration(new Date(now + jwtExpirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -61,13 +44,12 @@ public class JwtTokenProvider {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public <T> T extractClaim(String token, Function<Claims, T> resolver) {
+    public <T> T extractClaim(String token, Function<Claims, T> fn) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
-                .setAllowedClockSkewSeconds(60) // 시계 오차 허용
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return resolver.apply(claims);
+        return fn.apply(claims);
     }
 }

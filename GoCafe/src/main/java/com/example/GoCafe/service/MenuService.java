@@ -7,6 +7,7 @@ import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -53,4 +54,16 @@ public class MenuService {
     public List<Menu> findByCafeId(Long cafeId) {
         return repository.findByCafe_Id(cafeId);
     }
+
+    void add(Long cafeId,
+             String menuName,
+             Integer menuPrice,
+             MultipartFile menuPhoto,   // 파일 업로드(선택)
+             String photoUrl,           // URL 직접입력(선택)
+             Boolean isNew,
+             Boolean isRecommended,
+             Long editorMemberId) {
+
+    }
+
 }

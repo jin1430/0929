@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -26,7 +27,7 @@ public class CafePhotoService {
     }
 
     // 메인 사진 URL만 반환
-    public CafePhoto getMainPhoto(Long cafeId) {
+    public Optional<CafePhoto> getMainPhoto(Long cafeId) {
         return cafePhotoRepository.findMainPhoto(cafeId);
     }
 
@@ -60,13 +61,13 @@ public class CafePhotoService {
     @Transactional
     public void setMain(Long cafeId, Long photoId) {
         // 기존 대표 해제
-        cafePhotoRepository.findByCafe_IdAndMainTrue(cafeId).ifPresent(p -> {
-            p.setMain(false);
+        cafePhotoRepository.findByCafe_IdAndIsMainTrue(cafeId).ifPresent(p -> {
+            p.setIsMain(false);
             cafePhotoRepository.save(p);
         });
         // 새 대표 설정
         CafePhoto p = cafePhotoRepository.findById(photoId).orElseThrow(() -> new NotFoundException("사진 없음"));
-        p.setMain(true);
+        p.setIsMain(true);
         cafePhotoRepository.save(p);
     }
 

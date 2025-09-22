@@ -3,10 +3,12 @@ package com.example.GoCafe.dto;
 import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.MenuCategory;
 import com.example.GoCafe.entity.Menu;
+import com.pgvector.PGvector;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Vector;
 
 @Getter @Setter
 @NoArgsConstructor

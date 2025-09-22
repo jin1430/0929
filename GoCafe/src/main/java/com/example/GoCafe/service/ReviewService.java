@@ -116,7 +116,7 @@ public class ReviewService {
         String cafeName = (cafe != null ? cafe.getName() : "(알 수 없음)");
 
         // 카페 사진 url
-        String cafeMainPhotoUrl = cafePhotoRepository.findMainPhoto(cafe.getId()).getUrl();
+        String cafeMainPhotoUrl = String.valueOf(cafePhotoRepository.findMainPhoto(cafe.getId()).get());
         try {
             // 예시: c.getCafeThumb() 가 있으면 /images/cafe/{file} 로 만든다
             var method = Cafe.class.getMethod("getCafeThumb");
@@ -163,14 +163,34 @@ public class ReviewService {
         r.setCafe(cafeRepository.getReferenceById(form.getCafeId()));
         r.setMember(memberRepository.getReferenceById(memberId));
 
-        // ⬇️ 아래 3줄은 네 엔티티/폼 필드명에 맞게 필요하면 이름만 바꿔줘!
-        r.setContent(form.getReviewContent());         // 예: form.getText() / r.setText(...)
-        r.setSentiment(
-                form.getSentiment() != null ? form.getSentiment() : "GOOD"
-        );                                       // 감성 필드명 다르면 맞게 변경
+        // content(또는 text/reviewContent 등) 세팅
+        String content = null;
+        try { content = (String) ReviewCreateForm.class.getMethod("getReviewContent").invoke(form); } catch (Exception ignored) {}
+        if (content == null) {
+            try { content = (String) ReviewCreateForm.class.getMethod("getContent").invoke(form); } catch (Exception ignored) {}
+        }
+        if (content == null) content = "";
+        try { Review.class.getMethod("setContent", String.class).invoke(r, content); } catch (Exception e) { /* 엔티티 필드명이 다르면 알려줘 */ }
+
+        // rating 있으면 세팅(선택 필드)
+        Integer rating = null;
+        try { Object v = ReviewCreateForm.class.getMethod("getRating").invoke(form); if (v != null) rating = (Integer) v; } catch (Exception ignored) {}
+        if (rating != null) {
+            try { Review.class.getMethod("setRating", Integer.class).invoke(r, rating); } catch (Exception ignored) {}
+            try { Review.class.getMethod("setRating", int.class).invoke(r, rating); } catch (Exception ignored) {}
+        }
+
+        // sentiment 기본값 GOOD
+        String sentiment = "GOOD";
+        try {
+            Object v = ReviewCreateForm.class.getMethod("getSentiment").invoke(form);
+            if (v != null) sentiment = String.valueOf(v);
+        } catch (Exception ignored) {}
+        try { Review.class.getMethod("setSentiment", String.class).invoke(r, sentiment); } catch (Exception ignored) {}
 
         return r;
     }
+
     private String extractTagCode(ReviewTag t) {
         try { Object v = ReviewTag.class.getMethod("getTagCode").invoke(t); if (v!=null) return v.toString(); } catch (Exception ignored) {}
         try { Object v = ReviewTag.class.getMethod("getCode").invoke(t);    if (v!=null) return v.toString(); } catch (Exception ignored) {}

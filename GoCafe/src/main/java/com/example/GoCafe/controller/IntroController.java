@@ -10,14 +10,12 @@ public class IntroController {
 
     @GetMapping("/")
     public String intro(Model model, Authentication auth) {
-        boolean isLoggedIn = (auth != null && auth.isAuthenticated());
-        model.addAttribute("isLoggedIn", isLoggedIn);
-
-        // 임시 통계 (실서비스는 서비스/리포지토리에서 조회)
-        model.addAttribute("reviewerCount", 128);
-        model.addAttribute("missionCount", 9);
-        model.addAttribute("cafesIndexed", 433);
-
+        model.addAttribute("isLoggedIn", auth != null && auth.isAuthenticated());
+        model.addAttribute("reviewerCount", 50);      // Long/Integer/String 모두 OK
+        model.addAttribute("cafesIndexed", "1,200+");
+        model.addAttribute("totalReviews", "15,000+");
+        model.addAttribute("satisfactionRate", "98%");
         return "page/intro";
     }
+
 }

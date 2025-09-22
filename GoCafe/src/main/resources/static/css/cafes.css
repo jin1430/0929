@@ -1,0 +1,123 @@
+/* cafes.css | UTF-8 */
+
+/* 카드/버튼 공통 */
+.card-shadow {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+  transition: all .3s ease;
+}
+.card-shadow:hover {
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,.1), 0 10px 10px -5px rgba(0,0,0,.04);
+  transform: translateY(-2px);
+}
+.btn-primary {
+  background: var(--primary-mint, #3aa17e);
+  transition: all .3s ease;
+}
+.btn-primary:hover {
+  background: var(--primary-mint-dark, #2d8066);
+  transform: translateY(-1px);
+}
+
+/* 태그 칩 & 필터 바 */
+.filter-bar {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+}
+.tag-chip {
+  background: var(--mint-100, #ccfbef);
+  color: var(--mint-800, #115e59);
+  border: 1px solid var(--mint-200, #99f6e0);
+  transition: all .2s ease;
+}
+.tag-chip:hover { background: var(--mint-200, #99f6e0); }
+.tag-chip.selected {
+  background: var(--primary-mint, #3aa17e);
+  color: #fff;
+  border-color: var(--primary-mint, #3aa17e);
+}
+
+/* 별/더미 이미지 */
+.rating-stars { color: #fbbf24; }
+.cafe-image {
+  background: linear-gradient(45deg, #34d399 0%, #10b981 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ===== 카페 찾기 필터 레이아웃 (Tailwind 미의존) ===== */
+
+/* 필터 카드 */
+.filter-bar{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:20px;
+  padding:20px;
+}
+
+/* 4열 그리드: 1열씩 → 2열 → 4열 반응형 */
+.cg-filter-row{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr 160px;
+  gap:12px;
+}
+@media (max-width: 1024px){
+  .cg-filter-row{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px){
+  .cg-filter-row{ grid-template-columns: 1fr; }
+}
+
+/* 입력/셀렉트 공통 */
+.cg-input, .cg-select{
+  height:44px;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:0 16px;
+  background:#fff;
+  outline:none;
+  font-size:14px;
+}
+.cg-input::placeholder{ color:#9ca3af; }
+
+/* 버튼: 가득차는 문제 방지 (auto width) */
+.cg-btn{
+  height:44px;
+  padding:0 18px;
+  border:none;
+  border-radius:14px;
+  background:var(--primary-mint, #3aa17e);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+}
+.cg-btn:hover{
+  background:var(--primary-mint-dark, #2d8066);
+}
+
+/* 태그 칩 바 */
+.tag-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  padding-top:12px;
+}
+.tag-chip{
+  background:var(--mint-100, #ccfbef);
+  border:1px solid var(--mint-200, #99f6e0);
+  color:var(--mint-800, #115e59);
+  padding:8px 14px;
+  border-radius:9999px;
+  font-size:14px;
+  transition:background .2s ease,border-color .2s ease,color .2s ease;
+}
+.tag-chip:hover{ background:var(--mint-200, #99f6e0); }
+.tag-chip.selected{
+  background:var(--primary-mint, #3aa17e);
+  border-color:var(--primary-mint, #3aa17e);
+  color:#fff;
+}

@@ -28,7 +28,7 @@ public class CafeInfo {
     @Column(name = "notice", length = 20)
     private String notice;
 
-    @Column(name = "info", length = 500)
+    @Column(name = "description", length = 500) // 변경
     private String info;
 
     @Column(name = "open_time", length = 7)
@@ -39,5 +39,4 @@ public class CafeInfo {
 
     @Column(name = "holiday", length = 7)
     private String holiday;
-
 }

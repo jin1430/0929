@@ -26,7 +26,7 @@ public class NotificationService {
         n.setRecipient(cafe.getOwner());
         n.setCafe(cafe);
         n.setReview(review);
-        n.setType(NotificationType.REVIEW);
+        n.setNotificationType(NotificationType.REVIEW);
         n.setMessage("[" + cafe.getName() + "]에 새 리뷰가 등록되었습니다.");
         notificationRepository.save(n);
     }
@@ -38,14 +38,14 @@ public class NotificationService {
         Notification n = new Notification();
         n.setRecipient(cafe.getOwner());
         n.setCafe(cafe);
-        n.setType(status == CafeStatus.APPROVED ? NotificationType.CAFE_APPROVED : NotificationType.CAFE_REJECTED);
+        n.setNotificationType(status == CafeStatus.APPROVED ? NotificationType.CAFE_APPROVED : NotificationType.CAFE_REJECTED);
         n.setMessage(status == CafeStatus.APPROVED ? "카페가 승인되었습니다." : "카페가 반려되었습니다.");
         notificationRepository.save(n);
     }
 
     @Transactional(readOnly = true)
     public long unreadCount(String email) {
-        return (email == null) ? 0 : notificationRepository.countByRecipient_EmailAndReadIsFalse(email);
+        return (email == null) ? 0 : notificationRepository.countByRecipient_EmailAndIsReadFalse(email);
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +64,7 @@ public class NotificationService {
 
     @Transactional
     public void markAllAsRead(String email) {
-        var list = notificationRepository.findByRecipient_EmailAndReadIsFalseOrderByCreatedAtDesc(email);
+        var list = notificationRepository.findByRecipient_EmailAndIsReadFalseOrderByCreatedAtDesc(email);
         list.forEach(n -> n.setRead(true));
     }
 }

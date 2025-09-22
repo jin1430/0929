@@ -1,0 +1,47 @@
+{{< layout/base}}
+    {{#title}}카페 미션{{/title}}
+    {{#body}}
+        <section class="cg-section">
+            <div class="cg-container">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-2">🎯 카페 미션</h1>
+                    <p class="text-gray-600">카페를 방문하고 미션을 완료해보세요! 리워드를 받을 수 있어요.</p>
+                </div>
+
+                <div class="cg-grid cg-grid-3 mb-8">
+                    <div class="cg-card center" style="flex-direction:column">
+                        <div class="text-3xl" style="font-weight:800">{{missions.size}}</div>
+                        <div class="small">진행중인 미션</div>
+                    </div>
+                    <div class="cg-card center" style="flex-direction:column">
+                        <div class="text-3xl" style="font-weight:800">0</div>
+                        <div class="small">완료한 미션</div>
+                    </div>
+                    <div class="cg-card center" style="flex-direction:column">
+                        <div class="text-3xl" style="font-weight:800">0</div>
+                        <div class="small">획득 포인트</div>
+                    </div>
+                </div>
+
+                <div class="cg-grid cg-grid-3">
+                    {{#missions}}
+                        <article class="cg-card">
+                            <h3 style="margin:0;font-weight:800">{{title}}</h3>
+                            <div class="small mt-2">카페 ID: {{cafeId}}</div>
+                            <div class="small mt-2">마감일: {{dueDate}}</div>
+                            <div class="small mt-2">난이도: {{difficulty}} · 리워드: {{reward}}P {{#sponsoredYn}} · 스폰서: {{sponsoredYn}}{{/sponsoredYn}}</div>
+                            <p class="mt-3">{{description}}</p>
+                            <form class="mt-4" method="post" action="/missions/{{id}}/apply">
+                                <button class="cg-btn cg-btn--primary" type="submit">미션 참여하기</button>
+                                <a class="cg-btn cg-btn--ghost" href="/missions/{{id}}">자세히</a>
+                            </form>
+                        </article>
+                    {{/missions}}
+                    {{^missions}}
+                        <div class="small">참여 가능한 미션이 없습니다.</div>
+                    {{/missions}}
+                </div>
+            </div>
+        </section>
+    {{/body}}
+{{/ layout/base}}

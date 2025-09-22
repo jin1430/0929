@@ -3,113 +3,77 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>CafeGo</title>
+    <title>GoCafe</title>
     <link rel="icon" href="/favicon.ico"/>
+
+    <!-- 공용/컴포넌트/테마 순서 -->
+    <link rel="stylesheet" href="/css/tw-shim.css"/>
+    <link rel="stylesheet" href="/css/detail.css"/>
+    <link rel="stylesheet" href="/css/owner-modal.css"/>
+    <link rel="stylesheet" href="/css/alert.css"/>
+    <link rel="stylesheet" href="/css/footer.css"/>
     <link rel="stylesheet" href="/css/cafego.css"/>
+    <link rel="stylesheet" href="/css/theme-green.css"/>
+    <link rel="stylesheet" href="/css/cafes.css"/>
+
 </head>
-<body>
+<body class="{{#isLoggedIn}}is-logged-in{{/isLoggedIn}}">
 
 <nav class="cg-nav">
     <div class="cg-container cg-nav__inner">
-        <a href="/" class="cg-brand" aria-label="CafeGo">CafeGo</a>
+        <a href="/" class="cg-brand" aria-label="GoCafe">GoCafe</a>
 
-        <ul class="cg-navlinks">
-            <li>
-                <a href="/index/map" class="{{#isMap}}cg-nav-active{{/isMap}}">탐색 지도</a>
-            </li>
+        <ul class="cg-navlinks cg-navlinks--left">
+            <li><a href="/main"       class="{{#isHome}}cg-nav-active{{/isHome}}">홈</a></li>
+            <li><a href="/index/map"  class="{{#isMap}}cg-nav-active{{/isMap}}">탐색 지도</a></li>
+            <li><a href="/cafes"     class="{{#isCafes}}cg-nav-active{{/isCafes}}">카페 찾기</a></li>
+            <li><a href="/missions"   class="{{#isMissions}}cg-nav-active{{/isMissions}}">미션</a></li>
+            <li><a href="/reviews"    class="{{#isReviews}}cg-nav-active{{/isReviews}}">리뷰</a></li>
+            <li><a href="/community"  class="{{#isCommunity}}cg-nav-active{{/isCommunity}}">커뮤니티</a></li>
+            <li><a href="/events"     class="{{#isEvents}}cg-nav-active{{/isEvents}}">이벤트</a></li>
         </ul>
 
         <div class="cg-nav__actions">
             {{^isLoggedIn}}
-                <a href="/signup" class="cg-btn-outline">회원가입</a>
-                <a href="/login"  class="cg-btn-outline">로그인</a>
+                <div class="cg-auth-out">
+                    <a href="/signup" class="cg-btn-outline">회원가입</a>
+                    <a href="/login"  class="cg-btn">로그인</a>
+                </div>
             {{/isLoggedIn}}
 
             {{#isLoggedIn}}
-                안녕하세요,<span class="cg-me-email">{{currentUserNickname}}</span>님!
-                <div class="cg-noti" style="position:relative;display:inline-block;margin:0 8px">
-                    <button id="notiBtn" class="cg-btn-outline" type="button" aria-haspopup="true" aria-expanded="false">
-                        🔔 <span id="notiCount">{{notificationCount}}</span>
-                    </button>
-                    <div id="notiDropdown" class="cg-dropdown" style="display:none;position:absolute;right:0;top:40px;width:360px;max-height:420px;overflow:auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:8px;box-shadow:0 10px 25px rgba(0,0,0,.08)">
-                        <ul id="notiList" style="list-style:none;margin:0;padding:0"></ul>
-                        <div style="display:flex;justify-content:flex-end;margin-top:8px">
-                            <button id="notiReadAll" class="cg-btn-outline" type="button">모두 읽음</button>
+                <div class="cg-auth-in">
+                    <span class="cg-me-email">{{currentUserNickname}}님, 환영합니다!</span>
+                    <div class="cg-noti">
+                        <button id="notiBtn" class="cg-btn-outline" type="button">🔔 <span id="notiCount">{{notificationCount}}</span></button>
+                        <div id="notiDropdown" class="cg-dropdown" aria-label="알림 목록">
+                            <ul id="notiList" class="cg-dropdown__list"></ul>
+                            <div class="cg-dropdown__footer">
+                                <button id="notiReadAll" class="cg-btn-outline" type="button">모두 읽음</button>
+                            </div>
                         </div>
                     </div>
+                    <a href="/member/me" class="cg-btn-outline">마이페이지</a>
+                    {{#isAdmin}}<a href="/admin" class="cg-btn-outline">관리자</a>{{/isAdmin}}
+                    <form id="logoutForm" action="/api/auth/logout" method="post" style="display:inline;">
+                        <button id="logoutBtn" class="cg-btn-outline" type="button">로그아웃</button>
+                    </form>
                 </div>
-                <a href="/member/me" class="cg-btn-outline" aria-label="마이페이지">마이페이지</a>
-                {{#isAdmin}}<a href="/admin" class="cg-btn-outline">관리자 페이지</a>{{/isAdmin}}
-                <form id="logoutForm" action="/api/auth/logout" method="post" style="display:inline">
-                    <button class="cg-btn-outline" type="submit">로그아웃</button>
-                </form>
             {{/isLoggedIn}}
-
-
         </div>
     </div>
 </nav>
-{{#flashInfo}}
-    <div style="margin:12px 0;padding:10px 12px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:8px;color:#1e40af">
-        {{flashInfo}}
-    </div>
-{{/flashInfo}}
 <script>
-    (function(){
-      const btn = document.getElementById('notiBtn');
-      const dd  = document.getElementById('notiDropdown');
-      const list= document.getElementById('notiList');
-      const countEl = document.getElementById('notiCount');
-
-      if (!btn) return; // 비로그인
-
-      btn.addEventListener('click', ()=>{
-        const opened = dd.style.display === 'block';
-        dd.style.display = opened ? 'none' : 'block';
-        if (!opened) fetchList();
-      });
-
-      function fmt(ts){
-        try { return new Date(ts).toLocaleString(); } catch(e){ return ts; }
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include', keepalive: true });
+      } finally {
+        try {
+          localStorage.removeItem('AT'); localStorage.removeItem('RT');
+          sessionStorage.removeItem('AT'); sessionStorage.removeItem('RT');
+        } catch {}
+        location.reload();
       }
-      function render(items){
-        if (!Array.isArray(items) || items.length===0){
-          list.innerHTML = '<li style="padding:8px 10px;color:#64748b">알림이 없습니다.</li>';
-          countEl.textContent = '0';
-          return;
-        }
-        const unread = items.filter(it=>it.read===false).length;
-        countEl.textContent = String(unread);
-        list.innerHTML = items.map(it => `
-          <li style="padding:10px;border-bottom:1px solid #f1f5f9">
-            <div style="font-size:14px">${it.message || '(알림)'}</div>
-            <div style="font-size:12px;color:#94a3b8">${fmt(it.createdAt)}</div>
-            ${it.read ? '' : `<button data-id="${it.id}" class="markRead" style="margin-top:6px" type="button">읽음</button>`}
-          </li>
-        `).join('');
-        list.querySelectorAll('.markRead').forEach(btn=>{
-          btn.addEventListener('click', ()=>{
-            fetch('/api/notifications/'+btn.dataset.id+'/read', {method:'POST'}).then(fetchList);
-          });
-        });
-      }
-
-      function fetchList(){
-        fetch('/api/notifications',{credentials:'same-origin'})
-          .then(r=>r.json()).then(render).catch(()=>{});
-      }
-      function fetchCount(){
-        fetch('/api/notifications/unread-count',{credentials:'same-origin'})
-          .then(r=>r.text()).then(n=>{ countEl.textContent = n; }).catch(()=>{});
-      }
-
-      document.getElementById('notiReadAll')?.addEventListener('click', ()=>{
-        fetch('/api/notifications/read-all',{method:'POST',credentials:'same-origin'}).then(fetchList);
-      });
-
-      // 초기/주기 갱신
-      fetchCount();
-      setInterval(fetchCount, 10000);
-    })();
+    });
 </script>
-
+{{#flashInfo}}<div class="cg-flash-info">{{flashInfo}}</div>{{/flashInfo}}

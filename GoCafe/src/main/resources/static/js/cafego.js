@@ -389,4 +389,5 @@ document.addEventListener('DOMContentLoaded', function() {
     let recs = recommendLocal(tags);
 
     // ② 서버 API
-
+  });
+});

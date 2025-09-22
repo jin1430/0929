@@ -1,0 +1,68 @@
+{{>layout/header}}
+
+<main id="page-cafes" class="page active bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- 헤더 타이틀 -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">카페 찾기</h1>
+            <p class="text-gray-600">원하는 조건으로 카페를 찾아보세요</p>
+        </header>
+
+        <!-- 필터 바 -->
+        <!-- 필터 바 -->
+        <section class="filter-bar mb-8">
+            <!-- ▼ 기존: grid md:grid-cols-4 gap-4 mb-6  ➜  변경: cg-filter-row -->
+            <div class="cg-filter-row mb-6">
+                <!-- 지역 -->
+                <select id="region-filter" class="cg-select">
+                    <option value="">전체 지역</option>
+                    <option value="합정">합정</option>
+                    <option value="연트럴파크">연트럴파크</option>
+                    <option value="홍대">홍대</option>
+                    <option value="상수">상수</option>
+                </select>
+
+                <!-- 정렬 -->
+                <select id="sort-filter" class="cg-select">
+                    <option value="latest">최신순</option>
+                    <option value="rating">평점순</option>
+                    <option value="reviews">리뷰많은순</option>
+                    <option value="views">조회수순</option>
+                </select>
+
+                <!-- 검색 -->
+                <input id="cafe-search" type="text" placeholder="카페명 검색..." class="cg-input"/>
+
+                <!-- 적용 버튼 -->
+                <button onclick="applyCafeFilters()" class="cg-btn">
+                    필터 적용
+                </button>
+            </div>
+
+            <!-- 태그 필터 (JS로 렌더링) -->
+            <div id="tag-filters" class="tag-bar"></div>
+        </section>
+
+
+        <!-- 결과 요약 -->
+        <section aria-live="polite" class="mb-4">
+            <p class="text-sm text-gray-500">
+                선택한 조건에 맞는 카페 목록입니다.
+            </p>
+        </section>
+
+        <!-- 카페 카드 그리드 (JS로 렌더링) -->
+        <section>
+            <div id="cafe-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"></div>
+        </section>
+
+        <!-- 페이지네이션 (원하면 사용) -->
+        <nav class="flex justify-center">
+            <div id="pagination" class="flex space-x-2"></div>
+        </nav>
+
+    </div>
+</main>
+
+{{>layout/footer}}

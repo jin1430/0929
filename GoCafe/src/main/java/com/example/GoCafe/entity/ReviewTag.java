@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(
         name = "review_tag",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_review_tag_review_code", columnNames = {"review_id", "code"})
+                @UniqueConstraint(name = "uk_review_tag_review_code", columnNames = {"review_id", "tag_code"}) // 컬럼명 변경
         }
 )
 @Getter @Setter
@@ -30,6 +30,6 @@ public class ReviewTag {
     @Column(name = "category_code", length = 20)
     private String categoryCode;
 
-    @Column(name = "code", length = 20)
+    @Column(name = "tag_code", length = 20) // 필드 및 컬럼명 변경
     private String code;
 }

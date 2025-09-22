@@ -43,7 +43,7 @@ public class CafePhotoController {
 
         // 기존 사진/대표 존재 여부
         List<CafePhoto> existing = cafePhotoRepository.findByCafe_Id(cafeId);
-        boolean hasMain = existing.stream().anyMatch(p -> Boolean.TRUE.equals(p.getMain()));
+        boolean hasMain = existing.stream().anyMatch(p -> Boolean.TRUE.equals(p.getIsMain()));
 
         // sortIndex 기준 next 값
         int nextOrder = existing.stream()
@@ -69,15 +69,15 @@ public class CafePhotoController {
             // 대표 지정 규칙: (1) setMain=true면 이번 업로드 중 첫 장을 대표로, (2) 기존 대표가 없으면 첫 장을 대표로
             if ((!hasMain && !mainAssignedThisRound) || (setMain && !mainAssignedThisRound)) {
                 // 기존 대표 해제
-                cafePhotoRepository.findByCafe_IdAndMainTrue(cafeId).ifPresent(prev -> {
-                    prev.setMain(false);
+                cafePhotoRepository.findByCafe_IdAndIsMainTrue(cafeId).ifPresent(prev -> {
+                    prev.setIsMain(false);
                     cafePhotoRepository.save(prev);
                 });
-                img.setMain(true);
+                img.setIsMain(true);
                 mainAssignedThisRound = true;
                 hasMain = true;
             } else {
-                img.setMain(false);
+                img.setIsMain(false);
             }
 
             cafePhotoRepository.save(img);
@@ -98,15 +98,15 @@ public class CafePhotoController {
         ensureOwner(auth, cafe);
 
         // 기존 대표 해제
-        cafePhotoRepository.findByCafe_IdAndMainTrue(cafe.getId()).ifPresent(prev -> {
+        cafePhotoRepository.findByCafe_IdAndIsMainTrue(cafe.getId()).ifPresent(prev -> {
             if (!prev.getId().equals(photoId)) {
-                prev.setMain(false);
+                prev.setIsMain(false);
                 cafePhotoRepository.save(prev);
             }
         });
 
         // 대상 대표 지정
-        target.setMain(true);
+        target.setIsMain(true);
         cafePhotoRepository.save(target);
 
         return ResponseEntity.ok(cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafe.getId()));
@@ -131,16 +131,16 @@ public class CafePhotoController {
         // 파일 실제 삭제 (구현돼 있으면)
         try { storage.delete(target.getUrl()); } catch (Throwable ignored) {}
 
-        boolean wasMain = Boolean.TRUE.equals(target.getMain());
+        boolean wasMain = Boolean.TRUE.equals(target.getIsMain());
         cafePhotoRepository.delete(target);
 
         // 대표가 사라졌다면 첫 번째 사진을 대표로
         if (wasMain) {
-            cafePhotoRepository.findByCafe_IdAndMainTrue(cafe.getId()).orElseGet(() -> {
+            cafePhotoRepository.findByCafe_IdAndIsMainTrue(cafe.getId()).orElseGet(() -> {
                 var list = cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafe.getId());
                 if (!list.isEmpty()) {
                     CafePhoto first = list.get(0);
-                    first.setMain(true);
+                    first.setIsMain(true);
                     cafePhotoRepository.save(first);
                 }
                 return null;

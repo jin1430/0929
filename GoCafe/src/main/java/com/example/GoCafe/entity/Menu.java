@@ -1,9 +1,11 @@
 package com.example.GoCafe.entity;
 
+import com.pgvector.PGvector;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.domain.Vector;
 
 @NoArgsConstructor
 @Entity
@@ -42,4 +44,5 @@ public class Menu {
 
     @Column(name = "photo", length = 255)
     private String photo;
+
 }

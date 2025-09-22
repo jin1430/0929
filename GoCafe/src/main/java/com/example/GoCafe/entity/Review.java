@@ -64,6 +64,9 @@ public class Review {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column
+    private Integer rating;
+
     @Builder.Default
     @Transient
     private List<ReviewTag> tags = new ArrayList<>();
@@ -75,21 +78,10 @@ public class Review {
 
     @PrePersist
     void onCreate() {
+        // createdAt 초기화
         if (createdAt == null) createdAt = LocalDateTime.now();
-    }
 
-    @Transient
-    public String getMemberNickname() {
-        return (member != null ? member.getNickname() : null);
-    }
-
-    @Transient
-    public String getCreatedAtFmt() {
-        return createdAt != null
-                ? createdAt.format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
-                : "";
-    }
-    private void applySentimentCountsOnCreate() {
+        // ✅ sentiment 로직을 PrePersist 시점에 실행하도록 수정
         String s = normalizeSentiment(this.sentiment);
 
         // 신규 생성 시 good/bad가 아직 0이면 라디오 선택을 숫자 칼럼에 1로 반영
@@ -106,6 +98,19 @@ public class Review {
         // 저장되는 sentiment는 GOOD/BAD만 허용, 그 외는 null
         this.sentiment = ("GOOD".equals(s) || "BAD".equals(s)) ? s : null;
     }
+
+    @Transient
+    public String getMemberNickname() {
+        return (member != null ? member.getNickname() : null);
+    }
+
+    @Transient
+    public String getCreatedAtFmt() {
+        return createdAt != null
+                ? createdAt.format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
+                : "";
+    }
+
     private String normalizeSentiment(String raw) {
         return raw == null ? null : raw.trim().toUpperCase();
     }
