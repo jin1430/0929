@@ -1,4 +1,4 @@
-{{>layout/header}}
+{{> layout/header}}
 
 <main class="cg-container mypage">
     <h1 class="cg-title">마이페이지</h1>
@@ -10,7 +10,7 @@
                 <a href="/member/me"       class="{{#nav_me}}is-active{{/nav_me}}">내 정보</a>
                 <a href="/member/edit"     class="{{#nav_edit}}is-active{{/nav_edit}}">내 정보 수정</a>
                 <a href="/member/reviews"  class="{{#nav_reviews}}is-active{{/nav_reviews}}">내가 쓴 리뷰</a>
-                <a href="/favorites"       class="{{#nav_favorites}}is-active{{/nav_favorites}}">즐겨찾기 목록 확인</a>
+                <a href="/member/favorites"       class="{{#nav_favorites}}is-active{{/nav_favorites}}">즐겨찾기 목록 확인</a>
                 <a href="/member/withdraw" class="is-danger {{#nav_withdraw}}is-active{{/nav_withdraw}}">회원 탈퇴</a>
             </nav>
         </aside>
@@ -26,29 +26,29 @@
                 </header>
 
                 <div class="cg-panel__body">
+
                     {{#hasContent}}
                         <ul class="cg-list" style="display:flex;flex-direction:column;gap:12px">
                             {{#items}}
                                 <li class="cg-card" style="border:1px solid #e5e7eb;border-radius:14px;padding:14px">
                                     <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
                                         <div style="min-width:240px">
-                                            <div style="font-weight:800;color:#111827">{{cafeName}}</div>
+                                            <a href="/cafes/{{cafeId}}" style="font-weight:800;color:#111827;text-decoration:none">
+                                                {{cafeName}}
+                                            </a>
                                             <div style="color:#6b7280;font-size:12px">{{createdAt}}</div>
                                         </div>
                                         <div style="display:flex;gap:8px;align-items:center">
-                                            <span class="cg-badge">⭐ {{taste}}</span>
                                             {{#good}}<span class="cg-badge">GOOD {{good}}</span>{{/good}}
                                             {{#bad}}<span class="cg-badge" style="background:#fee2e2;border-color:#fecaca;color:#991b1b">BAD {{bad}}</span>{{/bad}}
                                         </div>
                                     </div>
-                                    <p style="margin-top:8px;color:#374151">{{content}}</p>
-                                    {{#tags}}
-                                        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
-                                            {{#.}}
-                                                <span class="cg-badge" style="background:#eefcf6;border-color:rgba(58,161,126,.25);color:#3aa17e">{{.}}</span>
-                                            {{/.}}
-                                        </div>
-                                    {{/tags}}
+
+                                    <!-- 내용 3줄 말줄임 -->
+                                    <p style="margin-top:8px;color:#374151;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">
+                                        {{content}}
+                                    </p>
+
                                     <div style="margin-top:10px">
                                         <a class="cg-btn-outline" href="/cafes/{{cafeId}}">카페 보기</a>
                                     </div>
@@ -77,7 +77,7 @@
     </div>
 </main>
 
-{{>layout/footer}}
+{{> layout/footer}}
 
 <style>
     :root{--primary-mint:#3aa17e;--primary-mint-dark:#2d8066;--gray-200:#e5e7eb;--gray-600:#4b5563;--gray-800:#1f2937;}
@@ -86,7 +86,7 @@
     .cg-mypage-grid{display:grid;grid-template-columns:260px 1fr;gap:24px}
     @media(max-width:1024px){.cg-mypage-grid{grid-template-columns:1fr}}
     .cg-sidenav{position:sticky;top:84px;display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid var(--gray-200);border-radius:14px;padding:14px}
-    .cg-sidenav a{padding:10px 12px;border-radius:10px;color:#374151;font-weight:600}
+    .cg-sidenav a{padding:10px 12px;border-radius:10px;color:#374151;font-weight:600;text-decoration:none}
     .cg-sidenav a:hover{background:#f3f4f6}
     .cg-sidenav a.is-active{background:rgba(58,161,126,.1);color:var(--primary-mint)}
     .cg-panel{background:#fff;border:1px solid var(--gray-200);border-radius:16px;box-shadow:0 6px 16px rgba(0,0,0,.04);margin-bottom:20px}
@@ -94,7 +94,7 @@
     .cg-panel__title{font-size:20px;font-weight:800}
     .cg-panel__body{padding:18px 20px}
     .cg-badge{background:#eefcf6;border:1px solid rgba(58,161,126,.25);color:#3aa17e;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}
-    .cg-btn-outline{height:36px;padding:0 12px;border:1px solid var(--primary-mint);color:var(--primary-mint);border-radius:10px;font-weight:700;background:#fff;display:inline-flex;align-items:center}
+    .cg-btn-outline{height:36px;padding:0 12px;border:1px solid var(--primary-mint);color:var(--primary-mint);border-radius:10px;font-weight:700;background:#fff;display:inline-flex;align-items:center;text-decoration:none}
     .cg-btn-outline.is-active{background:rgba(58,161,126,.06)}
     .cg-notice-panel{background:#f0fdf9;border:1px solid #99f6e0;color:#065f46;padding:12px;border-radius:12px}
 </style>

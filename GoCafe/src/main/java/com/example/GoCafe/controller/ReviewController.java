@@ -139,4 +139,53 @@ public class ReviewController {
         model.addAttribute("reviews", reviews);
         return "reviews/list";
     }
+    // 전체 리뷰 목록 (페이징)
+    @GetMapping
+    public String allReviews(@RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "12") int size,
+                             Model model) {
+        if (page < 1) page = 1;
+        if (size < 1) size = 12;
+
+        var pageable = org.springframework.data.domain.PageRequest.of(page - 1, size);
+        var pageData = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        // Mustache에서 안전 사용을 위해 뷰 맵으로 변환
+        java.util.List<java.util.Map<String,Object>> items = new java.util.ArrayList<>();
+        for (Review r : pageData.getContent()) {
+            java.util.Map<String,Object> m = new java.util.LinkedHashMap<>();
+            m.put("id", r.getId());
+            m.put("cafeId", r.getCafe() != null ? r.getCafe().getId() : null);
+            m.put("cafeName", r.getCafe() != null ? r.getCafe().getName() : "(알 수 없음)");
+            m.put("memberNickname", r.getMemberNickname());      // Review 엔티티에 @Transient로 제공됨
+            m.put("createdAt", r.getCreatedAtFmt());             // Review 엔티티에 @Transient로 제공됨
+            // 본문 요약 120자
+            String content = null;
+            try { content = (String) Review.class.getMethod("getContent").invoke(r); } catch (Exception ignored) {}
+            if (content == null) content = "";
+            String excerpt = content.length() > 120 ? content.substring(0, 117) + "..." : content;
+            m.put("excerpt", excerpt);
+            // 평점/감정(있으면)
+            try { Object rating = Review.class.getMethod("getRating").invoke(r); if (rating != null) m.put("rating", rating); } catch (Exception ignored) {}
+            try { Object s = Review.class.getMethod("getSentiment").invoke(r); if (s != null) m.put("sentiment", String.valueOf(s)); } catch (Exception ignored) {}
+            // 좋아요/싫어요 카운트(있으면)
+            try { Object g = Review.class.getMethod("getGood").invoke(r); if (g != null) m.put("good", g); } catch (Exception ignored) {}
+            try { Object b = Review.class.getMethod("getBad").invoke(r); if (b != null) m.put("bad", b); } catch (Exception ignored) {}
+
+            items.add(m);
+        }
+
+        model.addAttribute("reviews", items);
+        model.addAttribute("page", page);
+        model.addAttribute("size", size);
+        model.addAttribute("totalPages", pageData.getTotalPages());
+        model.addAttribute("totalElements", pageData.getTotalElements());
+        model.addAttribute("hasPrev", page > 1);
+        model.addAttribute("hasNext", page < Math.max(1, pageData.getTotalPages()));
+        model.addAttribute("prevPage", Math.max(1, page - 1));
+        model.addAttribute("nextPage", Math.min(Math.max(1, pageData.getTotalPages()), page + 1));
+
+        return "reviews/reviews"; // 아래 템플릿
+    }
+
 }

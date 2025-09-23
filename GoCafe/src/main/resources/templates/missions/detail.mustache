@@ -1,39 +1,34 @@
-{{< layout/base}}
-    {{#title}}{{mission.title}}{{/title}}
-    {{#body}}
-        <section class="cg-section">
-            <div class="cg-container">
-                <div class="cg-card">
-                    <h1 style="margin:0;font-weight:800">{{mission.title}}</h1>
-                    <div class="small mt-2">카페 ID: {{mission.cafeId}}</div>
-                    <div class="small mt-2">마감일: {{mission.dueDate}}</div>
-                    <div class="small mt-2">난이도: {{mission.difficulty}} · 리워드: {{mission.reward}}P {{#mission.sponsoredYn}} · 스폰서: {{mission.sponsoredYn}}{{/mission.sponsoredYn}}</div>
-                    <p class="mt-3">{{mission.description}}</p>
+{{> layout/header}}
 
-                    {{#applied}}
-                        <div class="cg-badge mt-3">미션 참여 완료</div>
-                    {{/applied}}
+<section class="cg-section">
+    <div class="cg-container">
+        <div class="cg-card">
+            <h1 style="margin:0;font-weight:800">{{mission.title}}</h1>
+            {{#mission.cafeId}}<div class="small mt-2">카페 ID: {{mission.cafeId}}</div>{{/mission.cafeId}}
+            <div class="small mt-2">마감일: {{mission.dueDate}}</div>
+            {{#mission.sponsoredYn}}<div class="small mt-2">스폰서: {{mission.sponsoredYn}}</div>{{/mission.sponsoredYn}}
+            <p class="mt-3">{{mission.description}}</p>
 
-                    <form class="mt-4" method="post" action="/missions/{{mission.id}}/apply">
-                        <button class="cg-btn cg-btn--primary" type="submit">미션 참여하기</button>
-                    </form>
+            {{#applied}}
+                <div class="cg-badge mt-3">미션 참여 완료</div>
+            {{/applied}}
 
-                    <hr class="mt-6" />
+            {{^applied}}
+                <form class="mt-4" method="post" action="/missions/{{mission.id}}/apply">
+                    <button class="cg-btn cg-btn--primary" type="submit">미션 수락</button>
+                </form>
+            {{/applied}}
 
-                    <h3 class="mt-4" style="margin:0;font-weight:800">완료 증명 업로드</h3>
-                    <form class="mt-3" method="post" enctype="multipart/form-data" action="/missions/{{memberMissionId}}/proof">
-                        <input class="cg-input" type="text" name="note" placeholder="후기 메모(선택)"/>
-                        <div class="mt-3">
-                            <input class="cg-input" type="file" name="photo" accept="image/*" required />
-                        </div>
-                        <button class="cg-btn cg-btn--accent mt-3" type="submit">증빙 제출</button>
-                    </form>
+            <hr class="mt-6"/>
 
-                    {{#proofed}}
-                        <div class="cg-badge mt-3">증빙 제출 완료</div>
-                    {{/proofed}}
-                </div>
-            </div>
-        </section>
-    {{/body}}
-{{/ layout/base}}
+            <h3 class="mt-4" style="margin:0;font-weight:800">완료 증명 업로드</h3>
+            <form class="mt-3" method="post" action="/missions/{{mission.id}}/proof">
+                <input class="cg-input" type="text" name="proofUrl" placeholder="사진/영상 URL(옵션)"/>
+                <input class="cg-input" type="text" name="note" placeholder="후기 메모(옵션)"/>
+                <button class="cg-btn" type="submit">제출</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{{> layout/footer}}

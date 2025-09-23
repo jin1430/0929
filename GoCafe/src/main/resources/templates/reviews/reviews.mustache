@@ -1,0 +1,58 @@
+{{> layout/header}}
+
+<section class="cg-section">
+    <div class="cg-container">
+
+        <!-- 페이지 헤더 -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">📝 전체 리뷰</h1>
+            <p class="text-gray-600">최신 리뷰를 모아봤어요. 카드를 클릭하면 해당 카페 상세 페이지로 이동합니다.</p>
+        </div>
+
+        <!-- 리뷰 그리드 -->
+        <div class="cg-grid cg-grid-3">
+            {{#reviews}}
+                <a href="/cafes/{{cafeId}}"
+                   class="cg-card block"
+                   style="display:block;text-decoration:none;color:inherit">
+                    <!-- 헤더 영역: 카페명/작성자/시간 + 배지 -->
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-gray-900 font-semibold truncate">{{cafeName}}</div>
+                            <div class="small text-gray-500 truncate">by {{memberNickname}} · {{createdAt}}</div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            {{#rating}}<span class="cg-badge">★ {{rating}}</span>{{/rating}}
+                            {{#sentiment}}<span class="cg-badge">{{sentiment}}</span>{{/sentiment}}
+                        </div>
+                    </div>
+
+                    <!-- 본문 요약: 2줄 말줄임 -->
+                    <p class="mt-3 text-gray-700"
+                       style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.8em;">
+                        {{excerpt}}
+                    </p>
+
+                    <!-- 반응(선택) -->
+                    {{#good}}{{#bad}}
+                        <div class="mt-3 small text-gray-500">👍 {{good}} · 👎 {{bad}}</div>
+                    {{/bad}}{{/good}}
+                </a>
+            {{/reviews}}
+
+            {{^reviews}}
+                <div class="small">아직 등록된 리뷰가 없습니다.</div>
+            {{/reviews}}
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div class="mt-8 flex items-center justify-center gap-2">
+            {{#hasPrev}}<a class="cg-btn" href="/reviews?page={{prevPage}}&size={{size}}">이전</a>{{/hasPrev}}
+            <span class="small">페이지 {{page}} / {{#totalPages}}{{totalPages}}{{/totalPages}}{{^totalPages}}1{{/totalPages}}</span>
+            {{#hasNext}}<a class="cg-btn" href="/reviews?page={{nextPage}}&size={{size}}">다음</a>{{/hasNext}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}

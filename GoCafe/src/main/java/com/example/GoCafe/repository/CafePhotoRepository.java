@@ -65,4 +65,8 @@ public interface CafePhotoRepository extends JpaRepository<CafePhoto, Long> {
 
     // ✅ 필드명 isMain에 맞춰 수정
     Optional<CafePhoto> findByCafe_IdAndIsMainTrue(Long cafeId);
+
+    Optional<CafePhoto> findFirstByCafe_IdOrderByIsMainDescIdAsc(Long cafeId);
+
+    List<CafePhoto> findByCafe_IdIn(Collection<Long> cafeIds);
 }

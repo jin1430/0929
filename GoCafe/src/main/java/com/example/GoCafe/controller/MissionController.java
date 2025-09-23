@@ -1,154 +1,225 @@
 // src/main/java/com/example/GoCafe/controller/MissionController.java
 package com.example.GoCafe.controller;
 
-import com.example.GoCafe.entity.Cafe;
-import com.example.GoCafe.entity.CafeInfo;
 import com.example.GoCafe.entity.Member;
+import com.example.GoCafe.entity.Mission;
 import com.example.GoCafe.entity.Notification;
-import com.example.GoCafe.repository.CafeInfoRepository;
-import com.example.GoCafe.repository.CafeRepository;
 import com.example.GoCafe.repository.MemberRepository;
+import com.example.GoCafe.repository.MissionRepository;
 import com.example.GoCafe.repository.NotificationRepository;
 import com.example.GoCafe.service.ProGateService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/missions")
 public class MissionController {
 
-    private final CafeInfoRepository cafeInfoRepository;
-    private final CafeRepository cafeRepository;
-    private final MemberRepository memberRepository;
+    private final MissionRepository missionRepository;
     private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
     private final ProGateService proGateService;
 
-    private static final String MARK_MISSION = "[미션]";
-    private static final String MARK_SPONSORED = "[협찬]";
-
+    // 진행 중 미션 목록
     @GetMapping
     public String list(Model model, Authentication auth) {
-        boolean loggedIn = auth != null;
+        // 1) 미션 목록 조회
+        List<Mission> src = missionRepository
+                .findByActiveYnAndDueDateGreaterThanEqualOrderByIdDesc("Y", LocalDate.now());
+
+        // 2) 템플릿에 맞게 변환 (cafeId 등)
+        List<Map<String, Object>> missions = src.stream()
+                .map(this::toView)
+                .toList();
+
+        model.addAttribute("missions", missions);
+        model.addAttribute("missionCount", missions.size());
+
+        // 3) 로그인/권한 플래그
+        boolean loggedIn = auth != null && auth.isAuthenticated()
+                && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
+        model.addAttribute("loggedIn", loggedIn);
+
         String roleKind = "GUEST";
         boolean isPro = false;
-
         if (loggedIn) {
-            Member me = memberRepository.findByEmail(auth.getName()).orElseThrow();
-            // 최신 등급 반영
-            proGateService.refreshRoleKind(me.getId());
-            roleKind = String.valueOf(me.getRoleKind());
-            isPro = "PRO".equals(roleKind);
+            Member me = memberRepository.findByEmail(auth.getName()).orElse(null);
+            if (me != null) {
+                proGateService.refreshRoleKind(me.getId());
+                roleKind = String.valueOf(me.getRoleKind());
+                isPro = "PRO".equalsIgnoreCase(roleKind);
+            }
         }
-
-        List<Map<String, Object>> cards = new ArrayList<>();
-        for (CafeInfo ci : cafeInfoRepository.findByNoticeMarker(MARK_MISSION)) {
-            Cafe cafe = ci.getCafe();
-            String notice = Optional.ofNullable(ci.getNotice()).orElse("");
-            boolean sponsored = notice.contains(MARK_SPONSORED);
-            LocalDate due = parseDue(notice);
-            cards.add(Map.of(
-                    "cafeId", cafe.getId(),
-                    "cafeName", cafe.getName(),
-                    "summary", shorten(notice, 120),
-                    "due", due != null ? due.toString() : "-",
-                    "sponsored", sponsored
-            ));
-        }
-
-        model.addAttribute("missions", cards);
-        model.addAttribute("loggedIn", loggedIn);
         model.addAttribute("roleKind", roleKind);
         model.addAttribute("isPro", isPro);
-        return "missions/list";
+
+        return "missions/index";
     }
 
-    @GetMapping("/{cafeId}")
-    public String detail(@PathVariable Long cafeId, Model model, Authentication auth) {
-        Cafe cafe = cafeRepository.findById(cafeId).orElseThrow();
-        String notice = cafeInfoRepository.findByCafe_Id(cafeId)
-                .map(CafeInfo::getNotice).orElse("");
+    // 상세
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Authentication auth, Model model) {
+        Mission m = missionRepository.findById(id).orElseThrow();
+        model.addAttribute("mission", toView(m));
 
-        boolean loggedIn = auth != null;
+        boolean loggedIn = auth != null && auth.isAuthenticated()
+                && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken);
+        model.addAttribute("loggedIn", loggedIn);
+
         String roleKind = "GUEST";
         boolean isPro = false;
-        boolean accepted = false;
-        boolean sponsored = notice.contains(MARK_SPONSORED);
+        boolean applied = false;
 
         if (loggedIn) {
-            Member me = memberRepository.findByEmail(auth.getName()).orElseThrow();
-            proGateService.refreshRoleKind(me.getId());
-            roleKind = String.valueOf(me.getRoleKind());
-            isPro = "PRO".equals(roleKind);
-            accepted = notificationRepository.latestMissionLog(me.getId(), cafeId)
-                    .map(n -> n.getMessage().startsWith("MISSION:ACCEPTED")
-                            || n.getMessage().startsWith("MISSION:COMPLETED"))
-                    .orElse(false);
-        }
+            Member me = memberRepository.findByEmail(auth.getName()).orElse(null);
+            if (me != null) {
+                proGateService.refreshRoleKind(me.getId());
+                roleKind = String.valueOf(me.getRoleKind());
+                isPro = "PRO".equalsIgnoreCase(roleKind);
 
-        model.addAttribute("cafeId", cafe.getId());
-        model.addAttribute("cafeName", cafe.getName());
-        model.addAttribute("notice", notice);
-        model.addAttribute("due", parseDue(notice));
-        model.addAttribute("loggedIn", loggedIn);
-        model.addAttribute("roleKind", roleKind);
-        model.addAttribute("isPro", isPro);
-        model.addAttribute("accepted", accepted);
-        model.addAttribute("sponsored", sponsored);
-        return "missions/detail";
-    }
-
-    @PostMapping("/{cafeId}/accept")
-    @PreAuthorize("isAuthenticated()")
-    public String accept(@PathVariable Long cafeId, Authentication auth) {
-        Member me = memberRepository.findByEmail(auth.getName()).orElseThrow();
-        String notice = cafeInfoRepository.findByCafe_Id(cafeId).map(CafeInfo::getNotice).orElse("");
-        boolean sponsored = notice != null && notice.contains(MARK_SPONSORED);
-
-        // 협찬이면 PRO만 수락 가능
-        if (sponsored) {
-            proGateService.refreshRoleKind(me.getId());
-            if (!"PRO".equals(me.getRoleKind())) {
-                return "redirect:/missions/" + cafeId + "?error=pro_only";
+                applied = notificationRepository.latestMissionLog(
+                                me.getId(),
+                                m.getCafe() == null ? -1L : m.getCafe().getId())
+                        .map(n -> isAcceptedOrCompleted(n, id))
+                        .orElse(false);
             }
         }
 
-        // 이미 수락한 기록이 있으면 재수락 금지
+        model.addAttribute("roleKind", roleKind);
+        model.addAttribute("isPro", isPro);
+        model.addAttribute("applied", applied);
+        model.addAttribute("memberMissionId", id);
+        return "missions/detail";
+    }
+
+    // 수락
+    @PostMapping("/{id}/apply")
+    public String apply(@PathVariable Long id, Authentication auth) {
+        Member me = currentMember(auth);
+        Mission m = missionRepository.findById(id).orElseThrow();
+        Long cafeId = (m.getCafe() == null ? -1L : m.getCafe().getId());
+
+        // 중복 수락 방지
         boolean already = notificationRepository.latestMissionLog(me.getId(), cafeId)
-                .map(n -> n.getMessage().startsWith("MISSION:ACCEPTED")
-                        || n.getMessage().startsWith("MISSION:COMPLETED"))
+                .map(n -> isAcceptedOrCompleted(n, id))
                 .orElse(false);
-        if (already) return "redirect:/missions/" + cafeId + "?ok=already";
+        if (!already) {
+            Notification log = new Notification();
+            log.setRecipient(me);
+            log.setCafe(m.getCafe());
+            log.setMessage("MISSION:ACCEPTED:" + id);
+            log.setCreatedAt(LocalDateTime.now());
+            notificationRepository.save(log);
+        }
+        return "redirect:/missions/" + id;
+    }
+
+    // 증빙 제출 → 관리자 심사 대기
+    @PostMapping("/{id}/proof")
+    public String submitProof(@PathVariable Long id,
+                              @RequestParam(required = false) String proofUrl,
+                              @RequestParam(required = false) String note,
+                              Authentication auth) {
+        Member me = currentMember(auth);
+        Mission m = missionRepository.findById(id).orElseThrow();
 
         Notification log = new Notification();
         log.setRecipient(me);
-        log.setCafe(cafeRepository.findById(cafeId).orElseThrow());
-        log.setMessage("MISSION:ACCEPTED");
-        log.setRead(true); // 알람용이 아니므로 true로
-        // type은 기존 enum 재사용 (없어도 필수 아님)
-        // log.setType(NotificationType.REVIEW);
+        log.setCafe(m.getCafe());
+        StringBuilder msg = new StringBuilder("MISSION:SUBMITTED:").append(id);
+        if (proofUrl != null && !proofUrl.isBlank()) msg.append("|proofUrl=").append(proofUrl.trim());
+        if (note != null && !note.isBlank()) msg.append("|note=").append(note.trim().replaceAll("\\s+", " "));
+        log.setMessage(msg.toString());
+        log.setCreatedAt(LocalDateTime.now());
         notificationRepository.save(log);
 
-        return "redirect:/missions/" + cafeId + "?ok=accepted";
+        return "redirect:/missions/my";
     }
 
-    private static LocalDate parseDue(String s) {
-        if (s == null) return null;
-        Matcher m = Pattern.compile("DUE:(\\d{4}-\\d{2}-\\d{2})").matcher(s);
-        return m.find() ? LocalDate.parse(m.group(1)) : null;
+    // 내 미션
+    @GetMapping("/my")
+    public String my(Authentication auth, Model model) {
+        Member me = currentMember(auth);
+        List<Notification> all = notificationRepository.findByMemberCafeAndPrefix(me.getId(), -1L, "MISSION:");
+
+        Map<Long, Map<String, Object>> byMission = new LinkedHashMap<>();
+        Pattern pId = Pattern.compile("^MISSION:(ACCEPTED|SUBMITTED|COMPLETED|REJECTED):(\\d+)");
+        for (Notification n : all) {
+            Matcher m = pId.matcher(n.getMessage());
+            if (!m.find()) continue;
+            String type = m.group(1);
+            Long missionId = Long.valueOf(m.group(2));
+            byMission.putIfAbsent(missionId, new LinkedHashMap<>(Map.of(
+                    "status", "NEW",
+                    "acceptedAt", null,
+                    "completedAt", null,
+                    "proofUrl", null,
+                    "note", null
+            )));
+            Map<String, Object> v = byMission.get(missionId);
+            switch (type) {
+                case "ACCEPTED" -> {
+                    v.put("status", "ACCEPTED");
+                    v.put("acceptedAt", n.getCreatedAt());
+                }
+                case "SUBMITTED" -> {
+                    v.put("status", "SUBMITTED");
+                    // proofUrl|note 파싱
+                    String[] parts = n.getMessage().split("\\|");
+                    for (String s : parts) {
+                        if (s.startsWith("proofUrl=")) v.put("proofUrl", s.substring(9));
+                        else if (s.startsWith("note=")) v.put("note", s.substring(5));
+                    }
+                }
+                case "COMPLETED" -> {
+                    v.put("status", "COMPLETED"); // GOOD
+                    v.put("completedAt", n.getCreatedAt());
+                }
+                case "REJECTED" -> {
+                    v.put("status", "REJECTED"); // BAD
+                    v.put("completedAt", n.getCreatedAt());
+                }
+            }
+        }
+
+        List<Map<String, Object>> view = new ArrayList<>(byMission.values());
+        model.addAttribute("myMissions", view);
+        return "missions/my";
     }
 
-    private static String shorten(String s, int n) {
-        if (s == null) return "";
-        String t = s.replaceAll("\\s+", " ").trim();
-        return t.length() > n ? t.substring(0, n) + "…" : t;
+    // ===== helpers =====
+    private Member currentMember(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) throw new RuntimeException("로그인이 필요합니다.");
+        Member me = memberRepository.findByEmail(auth.getName()).orElse(null);
+        if (me == null) throw new RuntimeException("회원 정보를 찾을 수 없습니다.");
+        proGateService.refreshRoleKind(me.getId());
+        return me;
+    }
+
+    private boolean isAcceptedOrCompleted(Notification n, Long missionId) {
+        String msg = n.getMessage();
+        return msg.equals("MISSION:ACCEPTED:" + missionId) || msg.equals("MISSION:COMPLETED:" + missionId);
+    }
+
+    private Map<String, Object> toView(Mission m) {
+        Map<String, Object> v = new LinkedHashMap<>();
+        v.put("id", m.getId());
+        v.put("title", m.getTitle());
+        v.put("description", m.getDescription());
+        v.put("dueDate", m.getDueDate());
+        v.put("sponsoredYn", m.getSponsoredYn());
+        v.put("activeYn", m.getActiveYn());
+        v.put("cafeId", m.getCafe() == null ? null : m.getCafe().getId());
+        return v;
     }
 }

@@ -35,4 +35,21 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         List<Notification> list = findByMemberCafeAndPrefix(memberId, cafeId, "MISSION:");
         return list.isEmpty() ? Optional.empty() : Optional.of(list.get(0));
     }
+    /** 제출된 미션 로그 전체 (MISSION:SUBMITTED:...) 최신순 */
+    @Query("""
+      select n from Notification n
+       where n.message like 'MISSION:SUBMITTED:%'
+       order by n.createdAt desc
+    """)
+    List<Notification> findAllMissionSubmissions();
+
+    /** 특정 회원의 특정 미션에 대한 판정(GOOD/BAD/REJECTED/COMPLETED) 로그 최신순 조회에 사용 */
+    @Query("""
+      select n from Notification n
+       where n.recipient.id = :memberId
+         and n.message like :prefix%
+       order by n.createdAt desc
+    """)
+    List<Notification> findDecisionLogs(@Param("memberId") Long memberId,
+                                        @Param("prefix") String prefix);
 }
