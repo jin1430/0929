@@ -260,3 +260,14 @@ body{
   .hero-ctas{ flex-wrap:wrap; }
   .hero-cta{ min-width:140px; height:44px; }
 }
+
+.modal{display:none;position:fixed;inset:0;width:100%;height:100%;
+  background:rgba(0,0,0,.5);z-index:1000;backdrop-filter:blur(5px)}
+.modal.active{display:flex;align-items:center;justify-content:center}
+.onboarding-step{display:none}
+.onboarding-step.active{display:block}
+.onboarding-option{transition:all .3s ease}
+.onboarding-option.selected{border-color:#3aa17e;background:#f0fdf9;transform:scale(1.02)}
+.step-indicator.active{background:#3aa17e}
+.tag-chip{background:#ccfbef;border:1px solid #a5f3e7;transition:.2s}
+.tag-chip.selected{background:#3aa17e;color:#fff;border-color:#3aa17e}

@@ -26,11 +26,16 @@
         <ul class="cg-navlinks cg-navlinks--left">
             <li><a href="/main"       class="{{#isHome}}cg-nav-active{{/isHome}}">홈</a></li>
             <li><a href="/index/map"  class="{{#isMap}}cg-nav-active{{/isMap}}">탐색 지도</a></li>
-            <li><a href="/cafes"     class="{{#isCafes}}cg-nav-active{{/isCafes}}">카페 찾기</a></li>
+            <li>
+                <a href="/cafes"
+                   id="openOnboarding"
+                   data-open="onboarding"
+                   class="{{#isCafes}}cg-nav-active{{/isCafes}}">
+                    카페 찾기
+                </a>
+            </li>
             <li><a href="/missions"   class="{{#isMissions}}cg-nav-active{{/isMissions}}">미션</a></li>
             <li><a href="/reviews"    class="{{#isReviews}}cg-nav-active{{/isReviews}}">리뷰</a></li>
-            <li><a href="/community"  class="{{#isCommunity}}cg-nav-active{{/isCommunity}}">커뮤니티</a></li>
-            <li><a href="/events"     class="{{#isEvents}}cg-nav-active{{/isEvents}}">이벤트</a></li>
         </ul>
 
         <div class="cg-nav__actions">
