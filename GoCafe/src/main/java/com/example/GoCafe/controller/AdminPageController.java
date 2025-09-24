@@ -6,10 +6,7 @@ import com.example.GoCafe.domain.ReportStatus;
 import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.entity.Notification;
 import com.example.GoCafe.entity.Review;
-import com.example.GoCafe.repository.MemberRepository;
-import com.example.GoCafe.repository.NotificationRepository;
-import com.example.GoCafe.repository.ReviewReportRepository;
-import com.example.GoCafe.repository.ReviewRepository;
+import com.example.GoCafe.repository.*;
 import com.example.GoCafe.service.CafeService;
 import com.example.GoCafe.service.ProGateService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +33,7 @@ public class AdminPageController {
     private final ReviewReportRepository reviewReportRepository;
     private final ProGateService proGateService;
     private final NotificationRepository notificationRepository;
+    private final MissionRepository missionRepository;
 
     @GetMapping
     public String main(@RequestParam(defaultValue = "cafes") String tab, Model model) {
@@ -85,6 +83,7 @@ public class AdminPageController {
                     .filter(m -> Boolean.TRUE.equals(m.get("eligible"))) // 후보만 노출
                     .toList();
             model.addAttribute("proCandidates", candidates);
+            model.addAttribute("pendingMissionCount", missionRepository.findByActiveYnOrderByIdDesc("N").size());
         }
 
         return "admin/main";

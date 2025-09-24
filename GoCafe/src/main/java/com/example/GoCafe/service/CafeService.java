@@ -293,6 +293,37 @@ public class CafeService {
     @Transactional(readOnly = true)
     public long countAll() { return cafeRepository.count(); }
 
+    // ===== (추가) 가시성 로직: 승인된 것 + (내가 소유한) 대기중 포함, 관리자면 전체 =====
+    @Transactional(readOnly = true)
+    public List<Cafe> searchVisible(String keyword, Long viewerMemberId, boolean isAdmin) {
+                if (isAdmin) {
+                        // 관리자: 키워드 없으면 전체, 있으면 전체 상태에서 키워드 매칭
+                                if (keyword == null || keyword.isBlank()) return cafeRepository.findAll();
+                        return cafeRepository.findByNameContainingOrAddressContaining(keyword, keyword);
+                    }
+
+                        // 기본: 승인된 결과
+                                List<Cafe> approved = searchApproved(keyword);
+
+                        if (viewerMemberId == null) return approved;
+
+                        // 소유자: 본인 소유의 PENDING도 보이게
+                                List<Cafe> minePending;
+                if (keyword == null || keyword.isBlank()) {
+                        minePending = cafeRepository.findByOwner_IdAndCafeStatus(viewerMemberId, CafeStatus.PENDING);
+                    } else {
+                        minePending = cafeRepository.findByOwner_IdAndCafeStatusAndNameContainingOrOwner_IdAndCafeStatusAndAddressContaining(
+                                        viewerMemberId, CafeStatus.PENDING, keyword,
+                                        viewerMemberId, CafeStatus.PENDING, keyword
+                                        );
+                    }
+                // distinct merge by id
+                        java.util.Map<Long, Cafe> map = new java.util.LinkedHashMap<>();
+                for (Cafe c : approved) map.put(c.getId(), c);
+                for (Cafe c : minePending) map.put(c.getId(), c);
+                return new java.util.ArrayList<>(map.values());
+            }
+
     /* =========================
      *         FILE ACCESS
      * ========================= */
@@ -308,4 +339,5 @@ public class CafeService {
         // FileStorageService에 맞는 로더 사용 (예: loadAsBytes, read, getBytes 등 네 구현에 맞춰 호출)
         return fileStorageService.loadAsBytes(path);
     }
+
 }

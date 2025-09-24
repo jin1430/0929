@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -40,4 +41,26 @@ public interface ReviewTagRepository extends JpaRepository<ReviewTag, Long> {
     void deleteByReviewId(@Param("reviewId") Long reviewId);
 
     List<ReviewTag> findByReview_Id(Long reviewId);
+
+    @Query(
+            value = """
+      select rt.tag_code, count(*) as cnt, avg(rt.score) as avg_score, sum(rt.score) as sum_score
+      from review_tag rt
+      join review r on r.review_id = rt.review_id
+      where r.cafe_id = :cafeId
+      and rt.score >= :minScore
+      group by rt.tag_code
+      order by avg_score desc
+     """,
+            nativeQuery = true
+    )
+    List<ReviewTagProjection> findRowsForCafe(@Param("cafeId") Long cafeId, @Param("tau") Double tau);
+
+    interface ReviewTagProjection {
+        String getCategoryCode();
+        String getCode();
+        Double getScore();
+        LocalDateTime getCreatedAt();
+    }
+
 }

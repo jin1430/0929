@@ -7,10 +7,12 @@ import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.CafeInfo;
 import com.example.GoCafe.entity.Review;
 import com.example.GoCafe.entity.ReviewTag;
+import com.example.GoCafe.event.ReviewChangedEvent;
 import com.example.GoCafe.repository.*;
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class ReviewService {
     private final CafeInfoRepository cafeInfoRepository;
     private final CafeRepository cafeRepository;
     private final MemberRepository memberRepository;
+    private final ApplicationEventPublisher publisher;
+
 
     @Transactional(readOnly = true)
     public List<Review> findAll() {
@@ -205,4 +209,10 @@ public class ReviewService {
         try { ReviewTag.class.getMethod("setTag", String.class).invoke(t, code);     return; } catch (Exception ignored) {}
         // 위 세터가 아무것도 없다면, 프로젝트의 실제 필드명을 알려줘. 그에 맞게 한 줄만 바꿔 줄게.
     }
+
+    private void afterChanged(Long cafeId) {
+        publisher.publishEvent(new ReviewChangedEvent(cafeId));
+    }
+
+
 }

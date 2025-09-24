@@ -1,7 +1,7 @@
-// src/main/java/com/example/GoCafe/controller/CafeController.java
 package com.example.GoCafe.controller;
 
 import com.example.GoCafe.domain.CafeStatus;
+import com.example.GoCafe.dto.CafeCardForm;
 import com.example.GoCafe.dto.CafeForm;
 import com.example.GoCafe.dto.ReviewForm; // ★ 추가
 import com.example.GoCafe.entity.Cafe;
@@ -21,7 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -204,7 +208,7 @@ public class CafeController {
         }).toList();
         model.addAttribute("menus", menuVm);
 
-        // 8) 리뷰 목록 + 사진
+        // 8) 리뷰 목록 + 사진 (템플릿 변수명에 맞게 수정)
         var reviews = reviewService.findByCafeIdWithMember(cafeId);
         var reviewVm = new java.util.ArrayList<java.util.Map<String, Object>>();
         for (var r : reviews) {
@@ -216,7 +220,7 @@ public class CafeController {
                 var dt = r.getCreatedAt();
                 if (dt != null) {
                     createdDate = (dt instanceof java.time.LocalDateTime)
-                            ? ((java.time.LocalDateTime) dt).toLocalDate().toString()
+                            ? ((java.time.LocalDateTime) dt).toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy.MM.dd"))
                             : dt.toString();
                 }
             } catch (Exception ignored) {}
@@ -236,10 +240,13 @@ public class CafeController {
             } catch (Exception ignored) {}
 
             var map = new java.util.LinkedHashMap<String, Object>();
-            map.put("memberName", memberName);
-            map.put("memberInitial", initial);
-            map.put("createdDate", createdDate);
+            // 템플릿에 맞게 키 이름 수정
+            map.put("id", r.getId());
+            map.put("nickname", memberName);
+            map.put("createdAt", createdDate);
             map.put("content", r.getContent());
+            map.put("good", r.getGood());
+            map.put("bad", r.getBad());
             map.put("ratingStars", ratingStars);
             map.put("photos", photos.stream().map(p -> java.util.Map.of("url", p.getUrl())).toList());
             reviewVm.add(map);
@@ -289,20 +296,94 @@ public class CafeController {
     }
 
     // ----- 목록 페이지 -----
-    @GetMapping({ "", "/" })
-    public String listCafesPage(@RequestParam(value = "region", required = false) String region,
+    @GetMapping({"", "/"})
+    public String listCafesPage(@RequestParam(value = "region", required = false, defaultValue = "") String region,
                                 @RequestParam(value = "sort",   required = false, defaultValue = "latest") String sort,
-                                @RequestParam(value = "q",      required = false) String query,
+                                @RequestParam(value = "q",      required = false, defaultValue = "") String query,
                                 @RequestParam(value = "tags",   required = false) String tagsCsv,
                                 Authentication auth,
                                 Model model) {
 
-        boolean isLoggedIn = (auth != null && auth.isAuthenticated());
-        model.addAttribute("isLoggedIn", isLoggedIn);
+        // ================== [ 디버깅 로그 1: 입력값 확인 ] ==================
+        System.out.println("\n[디버깅 1] === 요청 수신 ===");
+        System.out.println("  > 검색어(q): " + query);
+        System.out.println("  > 지역(region): " + region);
 
+        model.addAttribute("isLoggedIn", (auth != null && auth.isAuthenticated()));
         model.addAttribute("initialRegion", region);
         model.addAttribute("initialSort",   sort);
         model.addAttribute("initialQuery",  query);
+
+        Long meId = null;
+        if (auth != null && auth.isAuthenticated()) {
+            com.example.GoCafe.entity.Member me = memberService.findByEmail(auth.getName());
+            if (me != null) meId = me.getId();
+        }
+        boolean isAdmin = (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().contains("ADMIN")));
+
+        java.util.List<com.example.GoCafe.entity.Cafe> preload = cafeService.searchVisible(query, meId, isAdmin);
+        // ================== [ 디버깅 로그 2: 초기 데이터 확인 ] ==================
+        System.out.println("[디버깅 2] DB에서 가져온 초기 카페 개수: " + preload.size() + "개");
+
+
+        if (!query.isBlank()) {
+            preload = preload.stream()
+                    .filter(c -> c.getName() != null && c.getName().toLowerCase().contains(query.toLowerCase()))
+                    .toList();
+        }
+        // ================== [ 디버깅 로그 3: 이름으로 필터링 후 확인 ] ==================
+        System.out.println("[디버깅 3] '" + query + "' 이름으로 필터링 후 개수: " + preload.size() + "개");
+
+
+        if (!region.isBlank()) {
+            preload = preload.stream()
+                    .filter(c -> {
+                        String addr = c.getAddress() != null ? c.getAddress() : "";
+                        String nm = c.getName() != null ? c.getName() : "";
+                        return addr.contains(region) || nm.contains(region);
+                    })
+                    .toList();
+        }
+        // ================== [ 디버깅 로그 4: 지역으로 필터링 후 확인 ] ==================
+        System.out.println("[디버깅 4] '" + region + "' 지역으로 필터링 후 개수: " + preload.size() + "개");
+
+
+        if ("popular".equalsIgnoreCase(sort)) {
+            preload = preload.stream()
+                    .sorted(Comparator.comparing(com.example.GoCafe.entity.Cafe::getViews, Comparator.nullsLast(Comparator.reverseOrder())))
+                    .toList();
+        } else {
+            preload = preload.stream()
+                    .sorted(Comparator.comparing(com.example.GoCafe.entity.Cafe::getId, Comparator.reverseOrder()))
+                    .toList();
+        }
+
+        if (!preload.isEmpty()) {
+            Set<Long> cafeIds = preload.stream().map(com.example.GoCafe.entity.Cafe::getId).collect(Collectors.toSet());
+            List<com.example.GoCafe.entity.CafePhoto> mainPhotos = cafePhotoService.findForCafeIdsOrderByMainThenSort(cafeIds);
+            Map<Long, String> photoMap = mainPhotos.stream()
+                    .collect(Collectors.toMap(
+                            p -> p.getCafe().getId(),
+                            com.example.GoCafe.entity.CafePhoto::getUrl,
+                            (first, second) -> first
+                    ));
+
+            List<CafeCardForm> initialCafeCards = preload.stream()
+                    .map(c -> new CafeCardForm(
+                            c.getId(), c.getName(), c.getAddress(),
+                            c.getPhoneNumber(), c.getBusinessCode(),
+                            c.getViews(),
+                            photoMap.getOrDefault(c.getId(), "")
+                    ))
+                    .toList();
+            model.addAttribute("cafeCards", initialCafeCards);
+        } else {
+            model.addAttribute("cafeCards", java.util.Collections.emptyList());
+        }
+        // ================== [ 디버깅 로그 5: 최종 결과 확인 ] ==================
+        System.out.println("[디버깅 5] 최종적으로 화면에 전달되는 카페 개수: " + ((java.util.List)model.getAttribute("cafeCards")).size() + "개");
+        System.out.println("==================================================\n");
+
 
         java.util.List<String> initialTags = java.util.Collections.emptyList();
         if (tagsCsv != null && !tagsCsv.isBlank()) {
@@ -317,6 +398,8 @@ public class CafeController {
     }
 
     // ====== ★ 리뷰 생성: DTO 버전만 유지 (충돌 방지) ======
+    // 참고: ReviewController에도 동일 기능의 핸들러가 존재합니다.
+    // 중복되므로 향후 ReviewController의 핸들러로 통합하는 것을 권장합니다.
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/{cafeId}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String createReview(@PathVariable Long cafeId,

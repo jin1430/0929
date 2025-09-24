@@ -1,10 +1,9 @@
 {{>layout/header}}
 <link rel="stylesheet" href="/css/detail.css">
-<main class="max-w-7xl mx-auto px-6 py-8" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
 
+<main class="max-w-7xl mx-auto px-6 py-8" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
     <!-- 카페 기본 카드 -->
     <section class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 fade-in">
-
         <!-- 이미지 갤러리 -->
         <div class="image-gallery p-4">
             <!-- 메인 -->
@@ -20,49 +19,55 @@
                 {{/mainPhoto}}
             </div>
 
-            <!-- 썸네일 4장 -->
-            {{#cafePhotos}}
-                {{#limit4}}
-                    <div class="rounded-xl overflow-hidden">
+            <!-- 썸네일 (서버에서 최대 4장으로 제한된 thumbPhotos 제공 권장) -->
+            {{#thumbPhotos}}
+                <div class="rounded-xl overflow-hidden">
+                    <img src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover" onerror="this.style.display='none'">
+                </div>
+            {{/thumbPhotos}}
+            {{^thumbPhotos}}
+                {{#cafePhotos}}
+                    <div class="rounded-xl overflow-hidden thumb-fallback">
                         <img src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover" onerror="this.style.display='none'">
                     </div>
-                {{/limit4}}
-            {{/cafePhotos}}
-
-            {{^cafePhotos}}
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">🌿</div>
-                        <p class="text-green-600 text-sm">인테리어</p>
+                {{/cafePhotos}}
+                {{^cafePhotos}}
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">🌿</div>
+                            <p class="text-green-600 text-sm">인테리어</p>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">🥐</div>
-                        <p class="text-green-600 text-sm">디저트</p>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">🥐</div>
+                            <p class="text-green-600 text-sm">디저트</p>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">☕</div>
-                        <p class="text-green-600 text-sm">커피</p>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">☕</div>
+                            <p class="text-green-600 text-sm">커피</p>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                    <div class="text-center">
-                        <div class="text-3xl mb-2">🪑</div>
-                        <p class="text-green-600 text-sm">좌석</p>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="text-3xl mb-2">🪑</div>
+                            <p class="text-green-600 text-sm">좌석</p>
+                        </div>
                     </div>
-                </div>
-            {{/cafePhotos}}
+                {{/cafePhotos}}
+            {{/thumbPhotos}}
         </div>
 
         <!-- 상단 정보 -->
         <div class="p-8">
             <div class="flex items-start justify-between mb-6">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800 mb-1">{{#cafe}}{{name}}{{/cafe}}</h1>
-                    <p class="text-gray-600 mb-4">{{#info}}{{cafeInfo}}{{/info}}{{^info}}자연 친화적인 분위기의 스페셜티 카페{{/info}}</p>
+                <div class="min-w-0">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-1 truncate">{{#cafe}}{{name}}{{/cafe}}</h1>
+                    <p class="text-gray-600 mb-4 break-words">
+                        {{#info}}{{cafeInfo}}{{/info}}{{^info}}자연 친화적인 분위기의 스페셜티 카페{{/info}}
+                    </p>
 
                     <div class="flex items-center flex-wrap gap-3 text-sm text-gray-600">
                         <span>조회수 {{#views}}{{views}}{{/views}}{{^views}}0{{/views}}</span>
@@ -73,14 +78,15 @@
                     </div>
                 </div>
 
-                <div class="flex space-x-3">
-                    <!-- 즐겨찾기 -->
-                    <form method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/favorite/toggle">
+                <div class="flex space-x-3 shrink-0">
+                    <!-- 즐겨찾기 (JWT 환경이면 서버에서 CSRF 섹션 비워두면 됨) -->
+                    <form method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/favorite/toggle" class="m-0">
                         {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
                         <button class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors" type="submit">
                             {{#isFavorited}}❤️ 즐겨찾기 해제{{/isFavorited}}{{^isFavorited}}🤍 즐겨찾기{{/isFavorited}}
                         </button>
                     </form>
+
                     {{#cafe}}
                         <a class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
                            target="_blank"
@@ -94,6 +100,19 @@
                             </a>
                         {{/phoneNumber}}
                     {{/cafe}}
+                    {{#isLoggedIn}}
+                        <button id="openReviewModal"
+                                type="button"
+                                class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors">
+                            ✍️ 리뷰 작성
+                        </button>
+                    {{/isLoggedIn}}
+                    {{^isLoggedIn}}
+                        <a href="/login"
+                           class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors">
+                            ✍️ 리뷰 작성 (로그인)
+                        </a>
+                    {{/isLoggedIn}}
                 </div>
             </div>
 
@@ -102,8 +121,8 @@
                 <div class="md:col-span-2 grid grid-cols-2 gap-6">
                     <div class="bg-green-50 p-4 rounded-xl">
                         <h3 class="font-semibold text-green-800 mb-2">📍 위치</h3>
-                        <p class="text-gray-700">{{#cafe}}{{address}}{{/cafe}}</p>
-                        {{#info}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1">{{cafeNotice}}</p>{{/cafeNotice}}{{/info}}
+                        <p class="text-gray-700 break-words">{{#cafe}}{{address}}{{/cafe}}</p>
+                        {{#info}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1 break-words">{{cafeNotice}}</p>{{/cafeNotice}}{{/info}}
                     </div>
                     <div class="bg-green-50 p-4 rounded-xl">
                         <h3 class="font-semibold text-green-800 mb-2">⏰ 영업시간</h3>
@@ -133,7 +152,7 @@
                     </div>
                 </div>
 
-                <!-- 실시간/요약 위젯 (더미) -->
+                <!-- 실시간/요약 (더미) -->
                 <div class="space-y-4">
                     <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl">
                         <h3 class="font-semibold mb-3">🔥 실시간 정보</h3>
@@ -152,12 +171,10 @@
     <section class="bg-white rounded-2xl shadow-lg mb-8 fade-in">
         <div class="border-b border-gray-200">
             <nav class="flex space-x-8 px-8">
-                <button class="tab-button py-4 px-2 border-b-2 font-medium text-sm tab-active" data-tab="menu">메뉴</button>
-                <button class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="reviews">
-                    리뷰 ({{reviewsCount}})
-                </button>
-                <button class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="photos">사진</button>
-                <button class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="map">지도</button>
+                <button type="button" class="tab-button py-4 px-2 border-b-2 font-medium text-sm tab-active" data-tab="menu">메뉴</button>
+                <button type="button" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="reviews">리뷰 ({{reviewsCount}})</button>
+                <button type="button" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="photos">사진</button>
+                <button type="button" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="map">지도</button>
                 {{#isOwner}}<button type="button" id="ownerEditToggle" class="px-4 py-2 rounded-xl border">점주 편집</button>{{/isOwner}}
             </nav>
         </div>
@@ -167,8 +184,8 @@
             <ul class="grid md:grid-cols-2 gap-6">
                 {{#menus}}
                     <li class="flex justify-between items-center p-4 bg-green-50 rounded-xl">
-                        <div>
-                            <h4 class="font-medium text-gray-800">{{menuName}}</h4>
+                        <div class="min-w-0">
+                            <h4 class="font-medium text-gray-800 truncate">{{menuName}}</h4>
                             {{#menuPrice}}<p class="text-sm text-gray-600">{{menuPrice}}</p>{{/menuPrice}}
                         </div>
                         <img src="{{menuPhoto}}" alt="{{menuName}}" class="w-20 h-20 object-cover rounded-lg" onerror="this.onerror=null;this.src='/images/placeholder-cafe.jpg'">
@@ -182,38 +199,30 @@
 
         <!-- 리뷰 탭 -->
         <div id="reviews-tab" class="tab-content p-8 hidden">
-
-            {{#isLoggedIn}}
-                <div class="mb-4 flex justify-end">
-                    <button id="openReviewModal" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700">
-                        ✍️ 리뷰 작성하기
-                    </button>
-                </div>
-            {{/isLoggedIn}}
-
-            {{#reviews}}
-                <article class="review-card bg-white border border-gray-200 p-6 rounded-xl mb-4">
-                    <header class="flex items-start justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                <span class="text-green-600 font-medium">{{memberInitial}}</span>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-800">{{memberName}}</h4>
-                                <p class="text-sm text-gray-500">{{createdDate}}</p>
-                            </div>
+            <section class="bg-white rounded-2xl shadow p-6 mb-8">
+                <h2 class="text-xl font-bold mb-4">리뷰</h2>
+                {{#reviews}}
+                    <article class="border-b border-gray-100 py-4">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="text-sm text-gray-600 truncate">{{nickname}} · {{createdAt}}</div>
+                            <form method="post" class="m-0 flex items-center gap-2 shrink-0">
+                                {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+                                <button type="submit" formaction="/reviews/{{id}}/good" class="cg-btn cg-btn--sm cg-btn--success">👍 {{good}}</button>
+                                <button type="submit" formaction="/reviews/{{id}}/bad" class="cg-btn cg-btn--sm cg-btn--danger">👎 {{bad}}</button>
+                            </form>
                         </div>
-                        <div class="text-yellow-400">{{ratingStars}}</div>
-                    </header>
-                    <p class="text-gray-700 leading-relaxed">{{content}}</p>
-                    {{#photos}}
-                        <ul class="grid grid-cols-3 gap-2 mt-3">
-                            {{#.}}<li><img src="{{url}}" class="w-full h-28 object-cover rounded-md"></li>{{/.}}
-                        </ul>
-                    {{/photos}}
-                </article>
-            {{/reviews}}
-            {{^reviews}}<p class="text-gray-500">아직 리뷰가 없어요.</p>{{/reviews}}
+                        <p class="mt-2 text-gray-800 whitespace-pre-line break-words">{{content}}</p>
+                        {{#photos}}
+                            {{#url}}
+                                <div class="grid grid-cols-3 gap-2 mt-3">
+                                    <img src="{{url}}" alt="review photo" class="w-full h-28 object-cover rounded-md">
+                                </div>
+                            {{/url}}
+                        {{/photos}}
+                    </article>
+                {{/reviews}}
+                {{^reviews}}<div class="text-gray-500">아직 리뷰가 없습니다.</div>{{/reviews}}
+            </section>
         </div>
 
         <!-- 사진 탭 -->
@@ -263,15 +272,13 @@
                     <button type="button" id="closeReviewModal" class="cg-modal__close" aria-label="닫기">✕</button>
                 </div>
 
-                <!-- 리뷰 작성 모달 내부 form (교체/추가) -->
                 <form id="reviewForm" class="space-y-4"
                       action="/cafes/{{#cafe}}{{id}}{{/cafe}}/reviews"
                       method="post" enctype="multipart/form-data">
+                    {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
 
-                    <!-- 카페 ID (DTO 매핑용) -->
                     <input type="hidden" name="cafeId" value="{{#cafe}}{{id}}{{/cafe}}"/>
 
-                    <!-- 평점: DTO.rating 으로 바인딩 -->
                     <div>
                         <label class="block text-sm font-medium mb-1">평점</label>
                         <div id="ratingStars" class="flex gap-1 text-2xl cursor-pointer" aria-label="평점 선택">
@@ -280,7 +287,6 @@
                         <input type="hidden" name="rating" id="ratingInput" value="5"/>
                     </div>
 
-                    <!-- 내용: DTO.reviewContent 로 바인딩 -->
                     <div>
                         <label class="block text-sm font-medium mb-1" for="reviewContent">내용</label>
                         <textarea id="reviewContent" name="reviewContent" rows="5" required
@@ -288,13 +294,11 @@
                                   placeholder="카페 분위기, 메뉴, 좌석, 소음 등 경험을 들려주세요."></textarea>
                     </div>
 
-                    <!-- 대기시간(선택): DTO.waitingTime -->
                     <div>
                         <label class="block text-sm font-medium mb-1" for="waitingTime">대기시간(분)</label>
                         <input id="waitingTime" name="waitingTime" type="number" min="0" step="1" class="w-40 border rounded-xl p-2" />
                     </div>
 
-                    <!-- 동반자 유형(선택): DTO.companionType -->
                     <div>
                         <label class="block text-sm font-medium mb-1" for="companionType">동반자</label>
                         <select id="companionType" name="companionType" class="border rounded-xl p-2">
@@ -306,13 +310,11 @@
                         </select>
                     </div>
 
-                    <!-- 방문일(선택): DTO.reviewDate (HTML5 datetime-local) -->
                     <div>
                         <label class="block text-sm font-medium mb-1" for="reviewDate">방문일시</label>
                         <input id="reviewDate" name="reviewDate" type="datetime-local" class="border rounded-xl p-2"/>
                     </div>
 
-                    <!-- 사진: files -->
                     <div>
                         <label class="block text-sm font-medium mb-1" for="photos">사진 (최대 6장)</label>
                         <input id="photos" name="photos" type="file" accept="image/*" multiple class="w-full"/>
@@ -324,11 +326,13 @@
                         <button type="submit" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700">등록</button>
                     </div>
                 </form>
+
                 {{#isOwner}}
                     <div class="cg-card mt-6">
                         <h2 style="margin:0;font-weight:800">내 카페 미션 등록</h2>
                         <form class="mt-3 grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:12px"
-                              method="post" action="/cafes/{{cafe.id}}/missions">
+                              method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/missions">
+                            {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
                             <input class="cg-input" name="title" placeholder="제목" required>
                             <input class="cg-input" name="dueDate" type="date" required>
                             <textarea class="cg-input" name="description" rows="2" style="grid-column:1/-1" placeholder="설명(선택)"></textarea>
@@ -342,4 +346,15 @@
 </main>
 
 <script defer src="/js/detail.js"></script>
+<script>
+    // thumb-fallback가 많으면 4장만 보여주기 (서버 제한 없을 때)
+    document.addEventListener('DOMContentLoaded', () => {
+      const thumbs = Array.from(document.querySelectorAll('.thumb-fallback'));
+      thumbs.slice(4).forEach(el => el.remove());
+    });
+     document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.cg-onboarding')?.classList.add('hidden');
+  });
+</script>
+
 {{>layout/footer}}

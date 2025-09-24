@@ -9,11 +9,7 @@ import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.entity.Review;
 import com.example.GoCafe.repository.CafeInfoRepository;
 import com.example.GoCafe.repository.MemberRepository;
-import com.example.GoCafe.service.CafePhotoService;
-import com.example.GoCafe.service.CafeService;
-import com.example.GoCafe.service.CafeTagService;
-import com.example.GoCafe.service.ProGateService;
-import com.example.GoCafe.service.ReviewService;
+import com.example.GoCafe.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -35,6 +31,7 @@ public class MainController {
     private final CafeTagService cafeTagService;
     private final ReviewService reviewService;
     private final CafePhotoService cafePhotoService;
+    private final MemberService memberService;
 
     // ✅ 미션/컨텍스트
     private final CafeInfoRepository cafeInfoRepository;
@@ -90,8 +87,16 @@ public class MainController {
                          Model model,
                          Authentication auth) {
 
-        // 1) 검색 결과 카페 → cafeCards 로 통일
-        List<Cafe> results = cafeService.searchApproved(q);
+        // 로그인/권한에 따라 가시성 분기: 승인 + (내 소유 PENDING), 관리자면 전체
+        Long meId = null;
+                if (auth != null && auth.isAuthenticated()) {
+                    com.example.GoCafe.entity.Member me = memberService.findByEmail(auth.getName());
+                        if (me != null) meId = me.getId();
+                    }
+
+        boolean isAdmin = (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().contains("ADMIN")));
+                List<Cafe> results = cafeService.searchVisible(q, meId, isAdmin);
+
         List<CafeCardForm> cafeCards = buildCafeCards(results);
         model.addAttribute("cafeCards", cafeCards);
 

@@ -12,6 +12,8 @@
         <!-- 리뷰 그리드 -->
         <div class="cg-grid cg-grid-3">
             {{#reviews}}
+
+                <!-- 카드: 본문은 링크, 투표는 링크 밖 -->
                 <a href="/cafes/{{cafeId}}"
                    class="cg-card block"
                    style="display:block;text-decoration:none;color:inherit">
@@ -33,11 +35,27 @@
                         {{excerpt}}
                     </p>
 
-                    <!-- 반응(선택) -->
-                    {{#good}}{{#bad}}
-                        <div class="mt-3 small text-gray-500">👍 {{good}} · 👎 {{bad}}</div>
-                    {{/bad}}{{/good}}
+                    <!-- 아래 '반응' 블록은 링크 바깥으로 분리 -->
                 </a>
+
+                <!-- 반응(색상 원형 버튼) : 기능/카운트 유지 -->
+                <div class="mt-3 flex items-center gap-3">
+                    <!-- 초록 원형: 좋아요 -->
+                    <form method="post" action="/reviews/{{id}}/good" title="좋아요 {{good}}">
+                        <button class="cg-dot cg-dot--good" aria-label="좋아요"></button>
+                    </form>
+
+                    <!-- 빨강 원형: 아쉬워요 -->
+                    <form method="post" action="/reviews/{{id}}/bad" title="아쉬워요 {{bad}}">
+                        <button class="cg-dot cg-dot--bad" aria-label="아쉬워요"></button>
+                    </form>
+
+                    <!-- (옵션) 카운트 표시: 작게 보이게 -->
+                    <span class="small text-gray-500">
+                        {{#good}}👍 {{good}}{{/good}}{{#bad}} {{#good}}·{{/good}} 👎 {{bad}}{{/bad}}
+                    </span>
+                </div>
+
             {{/reviews}}
 
             {{^reviews}}
@@ -54,5 +72,13 @@
 
     </div>
 </section>
+
+<style>
+    /* 색만 보이는 작은 원형 버튼 */
+    .cg-dot{ width:20px; height:20px; padding:0; border:none; border-radius:9999px; cursor:pointer; }
+    .cg-dot--good{ background:#10b981; }   /* emerald-500 */
+    .cg-dot--bad{  background:#ef4444; }   /* red-500 */
+    .cg-dot:active{ transform:scale(0.96); }
+</style>
 
 {{> layout/footer}}

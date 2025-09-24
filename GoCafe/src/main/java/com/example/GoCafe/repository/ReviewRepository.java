@@ -43,4 +43,11 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @EntityGraph(attributePaths = {"cafe", "member"})
     Page<Review> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    long countByCafe_Id(Long cafeId);
+
+    @Query("select distinct r.cafe.id from Review r")
+    List<Long> findCafeIdsHavingReviews();
+
+
 }

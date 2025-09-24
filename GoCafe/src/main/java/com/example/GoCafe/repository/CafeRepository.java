@@ -32,4 +32,13 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
     long countByCafeStatus(CafeStatus status);
 
     boolean existsByAddress(String address);
+
+    // Owner-visible (pending included)
+    List<Cafe> findByOwner_IdAndCafeStatus(Long ownerId, com.example.GoCafe.domain.CafeStatus status);
+
+    // Keyword search within owner's cafés by status
+    List<Cafe> findByOwner_IdAndCafeStatusAndNameContainingOrOwner_IdAndCafeStatusAndAddressContaining(Long ownerId1, CafeStatus status1, String name, Long ownerId2, CafeStatus status2, String address);
+
+    // Admin-wide keyword search (all statuses)
+    List<Cafe> findByNameContainingOrAddressContaining(String name, String address);
 }

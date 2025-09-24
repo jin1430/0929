@@ -25,17 +25,15 @@
             </div>
         </section>
 
-        {{#cafeTags}}
-            <section class="cg-section" style="padding: 24px 0;">
-                <div class="cg-container">
-                    <div class="cg-chips">
-                        {{#cafeTags}}
-                            <a href="/search?tag={{code}}" class="cg-chip">{{label}}</a>
-                        {{/cafeTags}}
-                    </div>
+        <section class="cg-section" style="padding: 24px 0;">
+            <div class="cg-container">
+                <div class="cg-chips">
+                    {{#cafeTags}}
+                        <a href="/search?tag={{code}}" class="cg-chip">{{label}}</a>
+                    {{/cafeTags}}
                 </div>
-            </section>
-        {{/cafeTags}}
+            </div>
+        </section>
 
         <section class="cg-section" style="background-color: #f8fafc; padding: 64px 0;">
             <div class="cg-container">
@@ -49,12 +47,12 @@
                         <li class="cg-card">
                             <a href="/cafes/{{id}}" class="cg-card__link">
                                 <div class="cg-card__imgwrap">
-                                    {{#mainPhoto}}
-                                        <img src="{{mainPhoto}}" alt="{{name}}" class="cg-card__img"/>
-                                    {{/mainPhoto}}
-                                    {{^mainPhoto}}
+                                    {{#photoUrl}}
+                                        <img src="{{photoUrl}}" alt="{{name}}" class="cg-card__img"/>
+                                    {{/photoUrl}}
+                                    {{^photoUrl}}
                                         <div class="cg-noimg">☕</div>
-                                    {{/mainPhoto}}
+                                    {{/photoUrl}}
                                 </div>
                                 <div class="cg-card__body">
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -107,7 +105,6 @@
     <div id="page-missions" class="page"></div>
     <div id="page-cafes" class="page"></div>
     <div id="page-reviews" class="page"></div>
-    <!-- CTA: 카페 등록하기 (메인 맨 아래, </main> 바로 위) -->
     <section class="cta-register">
         <div class="cg-container" style="max-width: 960px; margin: 0 auto; text-align: center;">
             <h3>내 카페를 더 많은 사람들에게 알려보세요</h3>
@@ -125,7 +122,6 @@
             </div>
         </div>
     </section>
-
 
 </main>
 

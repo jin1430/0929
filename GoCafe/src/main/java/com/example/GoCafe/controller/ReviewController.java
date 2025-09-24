@@ -188,4 +188,22 @@ public class ReviewController {
         return "reviews/reviews"; // 아래 템플릿
     }
 
+    // --- 투표 (좋아요/싫어요) ---
+    @PostMapping("/{id}/good")
+    public String voteGood(@PathVariable Long id, HttpServletRequest req) {
+                Review r = reviewRepository.findById(id).orElseThrow();
+                Integer g = r.getGood(); if (g == null) g = 0; r.setGood(g + 1);
+                reviewRepository.save(r);
+                String ref = req.getHeader("Referer");
+                return (ref != null ? "redirect:" + ref : "redirect:/reviews");
+            }
+
+    @PostMapping("/{id}/bad")
+    public String voteBad(@PathVariable Long id, HttpServletRequest req) {
+                Review r = reviewRepository.findById(id).orElseThrow();
+                Integer b = r.getBad(); if (b == null) b = 0; r.setBad(b + 1);
+                reviewRepository.save(r);
+                String ref = req.getHeader("Referer");
+                return (ref != null ? "redirect:" + ref : "redirect:/reviews");
+            }
 }
