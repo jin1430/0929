@@ -1,0 +1,124 @@
+{{>layout/header}}
+
+<div class="cg-page">
+    <header class="cg-topbar">
+        <div class="cg-container cg-topbar__inner">
+            <div class="cg-brand">
+                <div class="cg-logo">GoCafe</div>
+                <div class="cg-breadcrumb">
+                    <span>홈</span><span>›</span><span>카페 관리</span><span>›</span><span class="em">신규 등록</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="cg-container cg-grid">
+        <section class="cg-col--main">
+            <form id="cafeCreateForm" method="post" action="/cafes/create" enctype="multipart/form-data" class="space-y">
+                <div class="cg-card">
+                    <div class="cg-card__head">
+                        <h2>기본 정보</h2>
+                        <p class="muted">카페의 기본 표시 정보를 입력하세요.</p>
+                    </div>
+
+                    <div class="cg-grid2">
+                        <label class="field">
+                            <div class="field__label">카페명 <span class="req">*</span></div>
+                            <input class="cg-input" name="name" maxlength="10" required>
+                            <p class="hint">최대 10자</p>
+                        </label>
+
+                        <label class="field">
+                            <div class="field__label">카테고리 코드 <span class="req">*</span></div>
+                            <input class="cg-input" name="code" maxlength="10" required>
+                            <p class="hint">예: CAFE, DESSERT 등</p>
+                        </label>
+
+                        <label class="field">
+                            <div class="field__label">연락처 <span class="req">*</span></div>
+                            <input class="cg-input" name="number" maxlength="13" placeholder="010-1234-5678">
+                            <p class="hint">하이픈 포함 12~13자</p>
+                        </label>
+
+                        <label class="field">
+                            <div class="field__label">영업 개시일</div>
+                            <input class="cg-input" type="date" name="date">
+                            <p class="hint">미입력 시 서버에서 기본값 처리 가능</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="cg-card">
+                    <div class="cg-card__head">
+                        <h2>주소 · 위치</h2>
+                        <p class="muted">주소 검색 후 위·경도를 확인하세요.</p>
+                    </div>
+
+                    <div class="grid-addr">
+                        <div class="addr-left">
+                            <label class="field">
+                                <div class="field__label">주소 <span class="req">*</span></div>
+                                <input class="cg-input" name="address" maxlength="60" placeholder="도로명 주소" required>
+                                <p class="hint">최대 60자</p>
+                            </label>
+                        </div>
+                        <div class="addr-right">
+                            <button type="button" id="btnFindAddr" class="cg-btn w100">주소 찾기</button>
+                        </div>
+                    </div>
+
+                    <div class="cg-grid2">
+                        <label class="field">
+                            <div class="field__label">위도 (lat) <span class="req">*</span></div>
+                            <input class="cg-input" name="lat" required>
+                        </label>
+
+                        <label class="field">
+                            <div class="field__label">경도 (lon) <span class="req">*</span></div>
+                            <input class="cg-input" name="lon" required>
+                        </label>
+                    </div>
+
+                    <div class="mapbox">지도 미리보기 (Map Placeholder)</div>
+                </div>
+
+                <div class="cg-card">
+                    <div class="cg-card__head">
+                        <h2>사진 · 검증</h2>
+                        <p class="muted">대표 사진과 사업자 증빙을 첨부하세요.</p>
+                    </div>
+
+                    <div class="cg-grid2">
+                        <label class="field">
+                            <div class="field__label">대표 사진</div>
+                            <div class="uploader">
+                                <div class="thumb" aria-hidden="true"></div>
+                                <span>여기로 드래그 앤 드롭 또는 클릭하여 업로드</span>
+                                <input type="file" name="cafePhotoFile" class="file" accept="image/*">
+                                <input type="hidden" name="cafePhoto" value="">
+                            </div>
+                            <p class="hint">파일명 30자 이내</p>
+                        </label>
+
+                        <label class="field">
+                            <div class="field__label">사업자 증빙</div>
+                            <div class="uploader">
+                                <div class="thumb" aria-hidden="true"></div>
+                                <span>사업자등록증 등 서류 첨부</span>
+                                <input type="file" name="bizDocFile" class="file" accept=".pdf,image/*">
+                                <input type="hidden" name="bizDoc" value="">
+                            </div>
+                            <p class="hint">PDF/JPG 허용</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="cg-actions end" style="margin-top:16px;">
+                    <button type="submit" class="cg-btn cg-btn--primary">등록</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+
+{{>layout/footer}}

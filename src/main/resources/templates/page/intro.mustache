@@ -1,0 +1,123 @@
+{{>layout/header}}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>CafeGo – 인트로</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+        :root{
+          --purple: #6b46c1;
+          --blue: #2563eb;
+          --pink: #ec4899;
+          --green: #16a34a;
+          --text:#111827;
+          --muted:#6b7280;
+          --bg:#f5f7fb;
+          --card:#fff;
+          --radius:18px;
+          --shadow: 0 20px 40px rgba(0,0,0,.08);
+        }
+        html,body{margin:0;padding:0;background:linear-gradient(135deg,#f6f0ff 0%,#eef6ff 100%);color:var(--text);font-family:'Noto Sans KR',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1200px;margin:0 auto;padding:0 24px}
+        .header{background:#fff;border-bottom:1px solid #eef2f7}
+        .header-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+        .nav a{margin-left:22px;color:#4b5563}
+        .nav a:hover{color:var(--purple)}
+        .hero{padding:72px 0 24px}
+        .title{font-size:40px;font-weight:800;margin:0 0 8px;text-align:center}
+        .subtitle{font-size:18px;color:var(--muted);text-align:center;max-width:760px;margin:0 auto}
+        .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin:38px 0}
+        .card{border-radius:var(--radius);padding:32px;color:#fff;box-shadow:var(--shadow);transition:transform .25s ease}
+        .card:hover{transform:translateY(-8px)}
+        .expert{background:linear-gradient(135deg,#f093fb 0%, #f5576c 100%)}
+        .reco{background:linear-gradient(135deg,#4facfe 0%, #00f2fe 100%)}
+        .pill{width:64px;height:64px;background:rgba(255,255,255,.22);border-radius:999px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:26px}
+        .card h3{font-size:26px;margin:0 0 10px}
+        .bul{display:flex;align-items:center;margin:8px 0;color:rgba(255,255,255,.95)}
+        .dot{width:8px;height:8px;background:#fff;border-radius:50%;margin-right:10px}
+        .btn{width:100%;padding:14px 18px;border-radius:14px;font-weight:700;border:none;cursor:pointer;background:#fff}
+        .btn-purple{color:#6b46c1}
+        .btn-blue{color:#2563eb}
+        .stats{background:#fff;border-radius:var(--radius);padding:28px;box-shadow:var(--shadow)}
+        .stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+        .stat{ text-align:center}
+        .stat .num{font-size:30px;font-weight:800;margin-bottom:6px}
+        .cta{ text-align:center;margin:40px 0 10px}
+        .cta .btn-lg{padding:16px 26px;border-radius:16px;background:linear-gradient(90deg,#6b46c1,#2563eb);color:#fff;border:0;box-shadow:var(--shadow);font-weight:800}
+        .footer{background:#111827;color:#e5e7eb;margin-top:64px}
+        .footer a{color:#9ca3af}
+        .footer a:hover{color:#fff}
+        .footer-inner{padding:28px 0}
+        .footer-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+        .badge{display:inline-block;margin-right:6px;padding:2px 8px;border-radius:999px;font-size:12px;background:#eef2ff;color:#4338ca}
+        .fade{opacity:0;transform:translateY(18px);animation:fadeUp .7s ease forwards}
+        .fade:nth-child(1){animation-delay:.1s}.fade:nth-child(2){animation-delay:.25s}.fade:nth-child(3){animation-delay:.4s}
+        @keyframes fadeUp{to{opacity:1;transform:none}}
+        @media (max-width:960px){ .grid{grid-template-columns:1fr} .stats-grid{grid-template-columns:repeat(2,1fr)} .title{font-size:32px}}
+    </style>
+</head>
+
+<body>
+<main class="container">
+    <section class="hero">
+        <h2 class="title">당신만의 완벽한 카페를 찾아보세요</h2>
+        <p class="subtitle">전문 리뷰어의 깊이 있는 분석부터 개인 맞춤 추천까지, 모든 카페 정보를 한 곳에서</p>
+    </section>
+
+    <section class="grid">
+        <article class="card expert fade">
+            <div class="pill">👨‍💼</div>
+            <h3>전문 리뷰어</h3>
+            <p style="margin:8px 0 16px;color:#fff;opacity:.95">커피 전문가들의 상세한 리뷰를 확인하세요. 원두, 추출 방식, 분위기까지 전문적인 시각으로 분석한 리뷰를 만나보실 수 있습니다.</p>
+            <div>
+                <div class="bul"><span class="dot"></span><span>커피 전문가 인증 리뷰</span></div>
+                <div class="bul"><span class="dot"></span><span>상세한 맛과 향 분석</span></div>
+                <div class="bul"><span class="dot"></span><span>분위기와 서비스 평가</span></div>
+            </div>
+            <a href="/reviewer/guide"><button class="btn btn-purple" type="button">전문 리뷰 보러 가기 →</button></a>
+        </article>
+
+        <article class="card reco fade">
+            <div class="pill">🎯</div>
+            <h3>맞춤 카페 추천</h3>
+            <p style="margin:8px 0 16px;color:#fff;opacity:.95">당신의 취향과 상황에 맞는 카페를 추천해드립니다. 위치, 분위기, 메뉴 선호도를 바탕으로 완벽한 카페를 찾아보세요.</p>
+            <div>
+                <div class="bul"><span class="dot"></span><span>개인 취향 맞춤 추천</span></div>
+                <div class="bul"><span class="dot"></span><span>위치 기반 검색</span></div>
+                <div class="bul"><span class="dot"></span><span>실시간 혼잡도 정보</span></div>
+            </div>
+            <a href="/search"><button class="btn btn-blue" type="button">카페 추천 받으러 가기 →</button></a>
+        </article>
+    </section>
+
+    <section class="stats fade">
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="num" style="color:#6d28d9">{{cafesIndexed}}{{^cafesIndexed}}1,200+{{/cafesIndexed}}</div>
+                <div class="label" style="color:var(--muted)">등록된 카페</div>
+            </div>
+            <div class="stat">
+                <div class="num" style="color:#2563eb">{{reviewerCount}}{{^reviewerCount}}50+{{/reviewerCount}}</div>
+                <div class="label" style="color:var(--muted)">전문 리뷰어</div>
+            </div>
+            <div class="stat">
+                <div class="num" style="color:#db2777">{{totalReviews}}{{^totalReviews}}15,000+{{/totalReviews}}</div>
+                <div class="label" style="color:var(--muted)">리뷰 수</div>
+            </div>
+            <div class="stat">
+                <div class="num" style="color:#16a34a">{{satisfactionRate}}{{^satisfactionRate}}98%{{/satisfactionRate}}</div>
+                <div class="label" style="color:var(--muted)">만족도</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta fade">
+        <p style="color:var(--muted);margin-bottom:12px">아직 회원이 아니신가요?</p>
+        <a href="/signup"><button class="btn-lg" type="button">회원가입하고 시작하기 🚀</button></a>
+    </section>
+</main>
+
+{{>layout/footer}}

@@ -1,0 +1,37 @@
+{{>layout/header}}
+<link rel="stylesheet" href="/css/alert.css">
+
+<main class="cg-container" style="max-width:1100px;margin:0 auto;padding:24px 16px;">
+    {{#msg}}
+        <div class="cg-alert cg-alert-warn" role="alert" aria-live="polite">
+            {{msg}}
+        </div>
+    {{/msg}}
+    {{#error}}
+        <div class="cg-alert cg-alert-error" role="alert" aria-live="polite">
+            {{error}}
+        </div>
+    {{/error}}
+    <main class="cg-auth-page">
+        <section class="cg-auth-card">
+            <h1 class="cg-auth-title">로그인</h1>
+            <p class="cg-auth-sub">이메일과 비밀번호를 입력하세요.</p>
+
+            <form id="loginPageForm" class="cg-authform" method="post" action="/login">
+                <label class="cg-label">이메일</label>
+                <input class="cg-input" name="memberEmail" type="email" placeholder="you@example.com" required/>
+
+                <label class="cg-label">비밀번호</label>
+                <input class="cg-input" name="memberPassword" type="password" placeholder="••••••••" required/>
+
+                <button class="cg-btn cg-auth-submit" type="submit">로그인</button>
+            </form>
+
+            {{#error}}
+                <p class="cg-auth-tip" style="color:#c62828">{{error}}</p>
+            {{/error}}
+            <p class="cg-auth-tip">아직 계정이 없으신가요? <a class="cg-link" href="/signup">회원가입</a></p>
+        </section>
+    </main>
+    <script src="/js/alert.js"></script>
+{{>layout/footer}}

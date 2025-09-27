@@ -1,0 +1,52 @@
+{{>layout/header}}
+
+<main class="cg-container mypage" style="padding:24px 0">
+    <h1 class="cg-title">마이페이지</h1>
+
+    <div class="cg-mypage-grid" id="me-layout">
+        <aside>
+            <nav class="cg-sidenav">
+                <a href="/member/me">내 정보</a>
+                <a href="/member/edit">내 정보 수정</a>
+                <a href="/reviews/mine">내가 쓴 리뷰</a>
+                <a href="/favorites" class="is-active">즐겨찾기 목록 확인</a>
+                <a href="/member/withdraw" class="is-danger">회원 탈퇴</a>
+            </nav>
+        </aside>
+
+        <section>
+            <article class="cg-panel">
+                <header class="cg-panel__head">
+                    <div>
+                        <div class="cg-eyebrow">내 계정</div>
+                        <h2 class="cg-panel__title">즐겨찾기 목록</h2>
+                    </div>
+                </header>
+
+                <div class="cg-panel__body">
+                    {{#favorites.length}}
+                        <ul class="cg-card-grid">
+                            {{#favorites}}
+                                <li class="cg-card">
+                                    <div class="cg-card__imgwrap">
+                                        <img class="cg-card__img" src="{{photo}}" alt="{{name}}"
+                                             onerror="this.style.display='none'; this.parentElement.classList.add('cg-noimg');"/>
+                                    </div>
+                                    <div class="cg-card__body">
+                                        <div class="cg-card__title"><a href="/cafes/{{id}}">{{name}}</a></div>
+                                        <div class="cg-card__meta">{{address}}</div>
+                                    </div>
+                                </li>
+                            {{/favorites}}
+                        </ul>
+                    {{/favorites.length}}
+                    {{^favorites.length}}
+                        <div class="cg-empty">아직 즐겨찾기한 카페가 없어요.</div>
+                    {{/favorites.length}}
+                </div>
+            </article>
+        </section>
+    </div>
+</main>
+
+{{>layout/footer}}

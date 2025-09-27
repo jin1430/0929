@@ -1,0 +1,21 @@
+
+/* 공통 Footer */
+.cg-footer{background:#111827;color:#e5e7eb;margin-top:64px}
+.cg-footer a{color:#9ca3af;text-decoration:none}
+.cg-footer a:hover{color:#ffffff}
+.cg-footer__inner{padding:28px 0}
+.cg-footer__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.cg-footer__title{margin:0 0 10px;font-weight:700;color:#fff}
+.cg-footer__muted{color:#9ca3af;margin:0}
+.cg-footer__list{list-style:none;margin:0;padding:0}
+.cg-footer__list li{margin:6px 0}
+.cg-footer__socials{display:flex;gap:10px}
+.cg-footer__socials a{display:inline-flex;width:34px;height:34px;background:#374151;border-radius:999px;align-items:center;justify-content:center}
+.cg-footer__bottom{border-top:1px solid #1f2937;margin-top:16px;padding-top:16px;text-align:center;color:#9ca3af;font-size:13px}
+
+/* (옵션) 인트로에서만 다크/라이트 전환이 필요하면 아래처럼 모드 클래스로 오버라이드
+.footer--dark .cg-footer{background:#111827;color:#e5e7eb}
+.footer--dark .cg-footer a{color:#9ca3af}
+.footer--light .cg-footer{background:#ffffff;color:#111827;border-top:1px solid #e5e7eb}
+.footer--light .cg-footer a{color:#4b5563}
+*/

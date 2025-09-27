@@ -1,0 +1,188 @@
+{{>layout/header}}
+
+<main class="cg-container mypage" style="padding:24px 0">
+    <h1 class="cg-title">마이페이지</h1>
+
+    <div class="cg-mypage-grid" id="me-layout">
+        <aside>
+            <nav class="cg-sidenav">
+                <a href="/member/me"       class="{{#nav_me}}is-active{{/nav_me}}">내 정보</a>
+                <a href="/member/edit"     class="{{#nav_edit}}is-active{{/nav_edit}}">내 정보 수정</a>
+                <a href="/member/reviews"  class="{{#nav_reviews}}is-active{{/nav_reviews}}">내가 쓴 리뷰</a>
+                <a href="/favorites"       class="{{#nav_favorites}}is-active{{/nav_favorites}}">즐겨찾기 목록 확인</a>
+                <a href="/member/withdraw" class="is-danger {{#nav_withdraw}}is-active{{/nav_withdraw}}">회원 탈퇴</a>
+            </nav>
+        </aside>
+
+        <section>
+
+            {{#member}}
+                <article class="cg-panel">
+                    <header class="cg-panel__head">
+                        <div>
+                            <div class="cg-eyebrow">내 계정</div>
+                            <h2 class="cg-panel__title">내 정보</h2>
+                        </div>
+                    </header>
+
+                    <div class="cg-panel__body">
+                        <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;">
+                            {{#hasPhoto}}
+                                <img src="{{photo}}" alt="프로필" class="cg-avatar-lg cg-avatar-ring">
+                            {{/hasPhoto}}
+                            {{^hasPhoto}}
+                                <div class="cg-avatar-lg cg-avatar-ring" style="background:#e5e7eb;display:flex;align-items:center;justify-content:center;">
+                                    <span style="font-size:12px;color:#6b7280;">NO IMG</span>
+                                </div>
+                            {{/hasPhoto}}
+
+                            <div class="cg-badges" style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <span class="cg-badge">{{nickname}}</span>
+                                <span class="cg-badge" title="역할">{{roleKind}}</span>
+                                {{#isPro}}<span class="cg-badge is-warning">협찬 가능</span>{{/isPro}}
+                            </div>
+                        </div>
+
+                        <div class="cg-divider"></div>
+
+                        <dl class="cg-kv">
+                            <dt>이메일</dt><dd>{{email}}</dd>
+                            <dt>성별</dt><dd>{{gender}}</dd>
+                            <dt>나이</dt><dd>{{age}}</dd>
+                            <dt>가입일</dt><dd>{{createdAt}}</dd>
+                        </dl>
+                    </div>
+                </article>
+
+                <article class="cg-panel">
+                    <header class="cg-panel__head">
+                        <div>
+                            <div class="cg-eyebrow">리뷰어</div>
+                            <h2 class="cg-panel__title">등급 & 미션</h2>
+                        </div>
+                        <div style="display:flex;gap:8px">
+                            <a class="cg-btn-outline" href="/missions">미션 보러가기</a>
+                            <button class="cg-btn" type="button" id="btn-open-pro-info">전문 리뷰어 안내</button>
+                        </div>
+                    </header>
+
+                    <div class="cg-panel__body">
+                        {{#isPro}}
+                            <div class="cg-notice-panel">
+                                <strong>PRO 등급</strong>입니다. <span class="cg-badge is-warning">협찬</span> 미션에 지원할 수 있어요.
+                            </div>
+                        {{/isPro}}
+
+                        {{^isPro}}
+                            {{#proProgress}}
+                                <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">{{totalReviews}}</div>
+                                        <div class="cg-kpi__label">승인 리뷰</div>
+                                    </div>
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">{{goodReviews}}</div>
+                                        <div class="cg-kpi__label">GOOD 리뷰</div>
+                                    </div>
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">10</div>
+                                        <div class="cg-kpi__label">필요 총수</div>
+                                    </div>
+                                    <div class="cg-kpi">
+                                        <div class="cg-kpi__value">6</div>
+                                        <div class="cg-kpi__label">필요 GOOD</div>
+                                    </div>
+                                </div>
+
+                                <div class="cg-progress" style="margin-top:12px">
+                                    <div class="cg-progress__bar" style="width: {{percent}}%"></div>
+                                </div>
+                                <p class="cg-note" style="margin-top:8px">
+                                    Pro 기준: 최근 승인 리뷰 10건 이상 & 그중 GOOD 6건 이상.
+                                </p>
+                            {{/proProgress}}
+
+                            {{^proProgress}}
+                                <p class="cg-note" style="margin-top:8px;color:#6b7280">
+                                    진행도는 리뷰가 등록되면 표시됩니다.
+                                </p>
+                            {{/proProgress}}
+                        {{/isPro}}
+                    </div>
+                </article>
+            {{/member}}
+
+            {{^member}}
+                <div class="cg-panel"><div class="cg-panel__body">사용자 정보를 불러오지 못했습니다.</div></div>
+            {{/member}}
+        </section>
+    </div>
+</main>
+
+{{>layout/footer}}
+
+<div id="pro-info-modal" class="cg-modal" aria-hidden="true">
+    <div class="cg-modal__backdrop" data-close></div>
+    <div class="cg-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="pro-info-title">
+        <header class="cg-modal__header">
+            <h2 id="pro-info-title">전문 리뷰어 안내</h2>
+            <button class="cg-modal__close" type="button" aria-label="닫기" data-close>&times;</button>
+        </header>
+        <div class="cg-modal__body">
+            <section class="cg-panel">
+                <header class="cg-panel__head"><h3 class="cg-panel__title">할 수 있는 일</h3></header>
+                <div class="cg-panel__body">
+                    <ul class="cg-list">
+                        <li>플랫폼 미션 신청/수행</li>
+                        <li>승인 시 포인트/레벨</li>
+                        <li><strong>Pro</strong> 달성 후 <span class="cg-badge is-warning">협찬</span> 미션 참여</li>
+                    </ul>
+                </div>
+            </section>
+            <section class="cg-panel">
+                <header class="cg-panel__head"><h3 class="cg-panel__title">혜택</h3></header>
+                <div class="cg-panel__body">
+                    <ul class="cg-list">
+                        <li>Pro 전용 협찬 미션 지원 자격</li>
+                        <li>프로필 Pro 뱃지</li>
+                        <li>추천 미션 우선 초대</li>
+                    </ul>
+                    <p class="cg-note" style="margin-top:8px">
+                        Pro 기준: 승인 리뷰 10건 이상 & GOOD 6건 이상.
+                    </p>
+                </div>
+            </section>
+        </div>
+        <footer class="cg-modal__footer" style="display:flex;gap:8px;justify-content:flex-end">
+            <a class="cg-btn" href="/missions">미션 보러가기</a>
+            <button class="cg-btn-outline" type="button" data-close>닫기</button>
+        </footer>
+    </div>
+</div>
+
+<style>
+    .cg-modal{position:fixed;inset:0;display:none;z-index:1000}
+    .cg-modal.is-open{display:block}
+    .cg-modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+    .cg-modal__dialog{position:relative;margin:6vh auto;max-width:760px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:16px}
+    .cg-modal__header{display:flex;justify-content:space-between;align-items:center}
+    .cg-modal__close{background:none;border:0;font-size:28px;line-height:1;cursor:pointer}
+    .cg-progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+    .cg-progress__bar{height:100%}
+    .cg-kpi{min-width:96px}
+    .cg-kpi__value{font-size:20px;font-weight:700}
+    .cg-kpi__label{font-size:12px;color:#6b7280}
+</style>
+<script>
+    (function(){
+      const modal = document.getElementById('pro-info-modal');
+      const btn   = document.getElementById('btn-open-pro-info');
+      if (modal && btn) {
+        const open = ()=>modal.classList.add('is-open');
+        const close= ()=>modal.classList.remove('is-open');
+        btn.addEventListener('click', open);
+        modal.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click', close));
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') close(); });
+      }
+    })();
+</script>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>CafeGo</title>
+    <link rel="icon" href="/favicon.ico"/>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/cafego.css"/>
+
+    <link rel="stylesheet" href="/css/theme-green.css"/>
+
+    <link rel="stylesheet" href="/css/alert.css"/>
+    <link rel="stylesheet" href="/css/footer.css"/>
+</head>
+<body class="{{#isLoggedIn}}is-logged-in{{/isLoggedIn}}">
+
+<nav class="cg-nav">
+    <div class="cg-container cg-nav__inner">
+        <a href="/" class="cg-brand" aria-label="GoCafe">GoCafe</a>
+
+        <ul class="cg-navlinks cg-navlinks--left">
+            <li><a href="/main"        class="{{#isHome}}cg-nav-active{{/isHome}}">홈</a></li>
+            <li><a href="/index/map" class="{{#isMap}}cg-nav-active{{/isMap}}">탐색 지도</a></li>
+            <li><a href="/search"      class="{{#isCafes}}cg-nav-active{{/isCafes}}">카페 찾기</a></li>
+            <li><a href="/missions"    class="{{#isMissions}}cg-nav-active{{/isMissions}}">미션</a></li>
+            <li><a href="/reviews"     class="{{#isReviews}}cg-nav-active{{/isReviews}}">리뷰</a></li>
+            <li><a href="/community"   class="{{#isCommunity}}cg-nav-active{{/isCommunity}}">커뮤니티</a></li>
+            <li><a href="/events"      class="{{#isEvents}}cg-nav-active{{/isEvents}}">이벤트</a></li>
+        </ul>
+        <div class="cg-nav__actions">
+            {{^isLoggedIn}}
+                <div class="cg-auth-out">
+                    <a href="/signup" class="cg-btn-outline">회원가입</a>
+                    <a href="/login"  class="cg-btn">로그인</a>
+                </div>
+            {{/isLoggedIn}}
+
+            {{#isLoggedIn}}
+                <div class="cg-auth-in">
+                    <span class="cg-me-email">{{currentUserNickname}}님, 환영합니다!</span>
+
+                    <div class="cg-noti">
+                        <button id="notiBtn" class="cg-btn-outline" type="button" aria-haspopup="true" aria-expanded="false">
+                            🔔 <span id="notiCount">{{notificationCount}}</span>
+                        </button>
+                        <div id="notiDropdown" class="cg-dropdown" aria-label="알림 목록">
+                            <ul id="notiList" class="cg-dropdown__list"></ul>
+                            <div class="cg-dropdown__footer">
+                                <button id="notiReadAll" class="cg-btn-outline" type="button">모두 읽음</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/member/me" class="cg-btn-outline" aria-label="마이페이지">마이페이지</a>
+                    {{#isAdmin}}<a href="/admin" class="cg-btn-outline">관리자</a>{{/isAdmin}}
+                    <form id="logoutForm" action="/api/auth/logout" method="post" style="display:inline;">
+                        <button class="cg-btn-outline" type="submit">로그아웃</button>
+                    </form>
+                </div>
+            {{/isLoggedIn}}
+        </div>
+    </div>
+</nav>
+
+{{#flashInfo}}
+    <div class="cg-flash-info">{{flashInfo}}</div>
+{{/flashInfo}}

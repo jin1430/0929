@@ -1,0 +1,243 @@
+/* =========================================
+   CafeGo – Base Design System
+   ========================================= */
+
+:root{
+  --cg-primary:#10b981;
+  --cg-primary-strong:#059669;
+  --cg-primary-deep:#047857;
+  --text:#1e2a2a;
+  --muted:#5b6a6a;
+  --line:#e7eeee;
+  --white:#fff;
+  --gray-50: #f8fafc;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  color:var(--text);
+  background:var(--white);
+  font-family:'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* -----------------------------------------
+   Layout helpers
+----------------------------------------- */
+.cg-container{max-width:1200px;margin:0 auto;padding:0 24px}
+.cg-title{font-size:40px;line-height:1.25;margin:28px 0 16px;font-weight:900}
+.cg-subtitle{font-size: 18px; color: var(--muted); max-width: 760px; margin: 0 auto;}
+.cg-link{color:var(--cg-primary-strong);text-decoration:none;font-weight:700;cursor:pointer}
+.cg-meta{color:var(--muted)}
+.cg-dot{color:var(--muted); margin: 0 4px;}
+.cg-empty{color:var(--muted);padding:12px;border:1px dashed var(--line);border-radius:12px;background:#fff}
+
+/* -----------------------------------------
+   Nav
+----------------------------------------- */
+.cg-nav{
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  position:sticky; top:0; z-index:100;
+}
+.cg-nav__inner{
+  display:flex; align-items:center; gap:18px;
+  height: 64px;
+}
+.cg-brand{
+  font-weight:900; font-size:24px; text-decoration:none;
+  background:linear-gradient(90deg, var(--cg-primary-strong), var(--cg-primary));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.cg-navlinks{display:flex; gap:16px; list-style:none; margin:0; padding:0}
+.cg-navlinks a{color:var(--text); text-decoration:none; font-weight:700; padding: 8px 0;}
+.cg-navlinks a:hover, .cg-nav a:hover{color:var(--cg-primary-strong)}
+.cg-nav-active{
+  color: var(--cg-primary-strong);
+  border-bottom: 3px solid var(--cg-primary);
+}
+.cg-nav__actions{margin-left:auto; display:flex; align-items:center; gap:10px}
+
+/* -----------------------------------------
+   Buttons
+----------------------------------------- */
+.cg-btn, button.cg-btn, a.cg-btn {
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+  height:40px; padding:0 16px; border:1px solid transparent; border-radius:10px;
+  background:var(--cg-primary); color:#fff; font-weight:700; cursor:pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.cg-btn:hover{filter: brightness(1.1);}
+
+.cg-btn--primary {
+  background: linear-gradient(135deg, var(--cg-primary) 0%, var(--cg-primary-strong) 100%);
+}
+.cg-btn--primary:hover{
+  box-shadow:0 8px 18px rgba(16,185,129,.22);
+  transform: translateY(-1px);
+}
+
+.cg-btn-outline{
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+  height:40px; padding:0 16px; border:2px solid var(--line);
+  background:#fff; color:var(--text); border-radius:10px;
+  font-weight:700;
+}
+.cg-btn-outline:hover{background:var(--gray-50); border-color: var(--cg-primary);}
+
+.cg-btn-ghost{
+  height:36px; padding:0 12px; border:1px solid var(--line);
+  background:#fff; border-radius:9px; cursor:pointer;
+}
+
+/* -----------------------------------------
+   Forms / Inputs
+----------------------------------------- */
+.cg-input{
+  height:44px; padding:0 14px; border:1px solid var(--line);
+  border-radius:10px; width:100%; outline:none; background:#fff; font-size: 16px;
+}
+.cg-input:focus{border-color:#cfe6de; box-shadow:0 0 0 3px #e8f3ee}
+
+/* -----------------------------------------
+   Hero
+----------------------------------------- */
+.cg-hero{
+  padding: 24px;
+}
+.cg-hero--one{
+  position:relative;
+  background: linear-gradient(135deg, var(--cg-primary) 0%, var(--cg-primary-deep) 100%);
+  color:#fff;
+  padding: 64px 24px;
+}
+.cg-search{display:flex; gap:8px; margin-top:8px}
+
+/* -----------------------------------------
+   Chips
+----------------------------------------- */
+.cg-chips{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
+.cg-chip{
+  border:1px solid var(--line); background:#eaf7f2; color:#2a6b57;
+  border-radius:999px; padding:10px 14px; font-weight:700; cursor:pointer;
+  text-decoration: none;
+}
+.cg-chip:hover{filter:brightness(.98)}
+
+/* -----------------------------------------
+   Sections / Cards
+----------------------------------------- */
+.cg-section{margin:32px 0}
+.cg-section__head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
+
+.cg-card-grid{
+  list-style:none; padding:0; margin:0;
+  display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px;
+}
+.cg-card{
+    border:1px solid var(--line); border-radius:16px; background:#fff; overflow:hidden;
+    transition: all .3s ease; box-shadow: 0 4px 6px -1px rgba(0,0,0,.05), 0 2px 4px -1px rgba(0,0,0,.03);
+}
+.cg-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+}
+.cg-card__link{display:block; color:inherit; text-decoration:none}
+.cg-card__imgwrap{height:180px; background:#dff4ec; position:relative}
+.cg-card__img{
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.cg-noimg{display:flex; align-items:center; justify-content:center; color:var(--muted); font-size: 2rem;}
+.cg-card__body{padding:16px}
+.cg-card__title{font-weight:800; margin: 0 0 6px 0;}
+.cg-card__sub, .cg-card__meta{color:var(--muted); font-size:14px; margin: 0 0 6px 0;}
+
+
+/* -----------------------------------------
+   Review Feed
+----------------------------------------- */
+.cg-feed{list-style:none; padding:0; margin:0; display:grid; gap:16px}
+.cg-feed__item{border:1px solid var(--line); border-radius:12px; padding:16px; background:#fff}
+.cg-feed__text{margin:0 0 8px; line-height: 1.6;}
+.cg-feed__meta{display:flex; gap:12px; color:var(--muted); font-size:12px}
+
+/* -----------------------------------------
+   Avatars
+----------------------------------------- */
+.cg-avatar-ring{ outline:4px solid #fff; box-shadow:0 0 0 3px #c8f5e5; }
+
+
+/* -----------------------------------------
+   Responsive
+----------------------------------------- */
+@media (max-width:1024px){
+  .cg-card-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  .cg-title{font-size:30px}
+  .cg-nav__inner{gap:12px}
+  .cg-navlinks{display: none;} /* 모바일에서는 메뉴 숨김 처리 (햄버거 메뉴 등으로 대체 필요) */
+}
+
+/* 헤더 기본 레이아웃 */
+.cg-nav { background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.04); position:sticky; top:0; z-index:50; }
+.cg-nav__inner { display:flex; align-items:center; justify-content:space-between; height:64px; }
+
+/* 브랜드 */
+.cg-brand { display:flex; align-items:center; gap:10px; font-weight:700; color:#111827; text-decoration:none; }
+.cg-brand__logo { width:28px; height:28px; border-radius:8px;
+  display:grid; place-items:center; color:#fff; background:linear-gradient(135deg,#10b981 0%,#059669 100%);
+  font-weight:800; }
+.cg-brand__text { font-size:18px; }
+
+/* 좌측 정렬 내비 */
+.cg-navlinks { display:flex; gap:28px; margin:0; padding:0; list-style:none; }
+.cg-navlinks--left { margin-left:24px; margin-right:auto; } /* ← 로고 옆에 붙고 좌측으로 펼쳐짐 */
+
+.cg-navlinks a { position:relative; display:inline-block; padding:8px 0;
+  font-weight:600; color:#334155; text-decoration:none; }
+.cg-navlinks a:hover { color:#0f766e; }
+
+.cg-nav-active { color:#065f46 !important; }
+.cg-navlinks a.cg-nav-active::after {
+  content:""; position:absolute; left:0; right:0; bottom:-6px; height:3px;
+  background:#10b981; border-radius:2px;
+}
+
+/* 우측 액션 */
+.cg-nav__actions { display:flex; align-items:center; gap:10px; }
+
+
+  /* 바로 위 섹션의 바닥 패딩 축소(마지막 섹션만) */
+  #page-home .cg-section:last-of-type { padding-bottom: 0; }
+
+  /* CTA 섹션: 풀블리드 + 내부 여백만 */
+  .cta-register{
+    margin:0;
+    padding:70px 0;            /* 원하는 높이 */
+    background: linear-gradient(90deg,#6d28d9,#2563eb);
+    color:#fff;
+  }
+   main > section:last-of-type{ margin-bottom:0; }           /* 마지막 섹션 하단 마진 제거 */
+    footer, .cg-footer{ margin-top:0 !important; }           /* 푸터 상단 마진 제거 */
+    #page-home .cg-section:last-of-type{ padding-bottom:0; margin-bottom:0; } /* 바로 위 섹션 여유 제거 */
+  .cta-register h3{
+    margin:0 0 12px;           /* 기본 h3 마진 제거 */
+    font-size:32px; font-weight:800; line-height:1.2;
+  }
+  .cta-register p{
+    margin:0 0 24px;           /* 기본 p 마진 정리 */
+    font-size:18px; opacity:.9;
+  }
+  .cta-register .cta-actions{
+    display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin:0;
+  }
+  .cta-register .cta-primary{
+    background:#fff; color:#4c1d95; font-weight:700;
+    padding:14px 24px; border-radius:12px; display:inline-flex; align-items:center; gap:8px;
+  }
+  .cta-register .cta-ghost{
+    border:2px solid #fff; color:#fff; font-weight:700;
+    padding:12px 22px; border-radius:12px; display:inline-flex; align-items:center; gap:8px;
+  }
