@@ -351,10 +351,21 @@
     document.addEventListener('DOMContentLoaded', () => {
       const thumbs = Array.from(document.querySelectorAll('.thumb-fallback'));
       thumbs.slice(4).forEach(el => el.remove());
+
+      //  여기 추가했습니다
+      const ownerEditBtn = document.getElementById('ownerEditToggle');
+      if (ownerEditBtn) {
+          const cafeId = document.querySelector('main').dataset.cafeId;
+          ownerEditBtn.addEventListener('click', () => {
+              window.location.href = `/cafes/${cafeId}/manage`;
+          });
+      }
     });
-     document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.cg-onboarding')?.classList.add('hidden');
-  });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.cg-onboarding')?.classList.add('hidden');
+    });
 </script>
+
 
 {{>layout/footer}}

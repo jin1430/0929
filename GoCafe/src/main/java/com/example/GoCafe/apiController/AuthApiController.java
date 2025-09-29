@@ -111,40 +111,34 @@ public class AuthApiController {
                         .body(Map.of("message", "Invalid credentials")));
     }
 
+    // ⭐️ [수정된 부분] logout 메서드만 수정되었습니다.
     @PostMapping("/logout")
     public ResponseEntity<?> logout(Authentication auth) {
-        // ✅ 쿠키 삭제(무효화)는 인증 여부와 관계없이 항상 수행
+        // 쿠키 삭제(무효화)를 위한 쿠키 생성
         ResponseCookie del = ResponseCookie.from("AT", "")
                 .httpOnly(true)
                 .secure(false) // prod: true
                 .sameSite("Lax")
                 .path("/")
-                .maxAge(0)
+                .maxAge(0) // 유효기간을 0으로 만들어 즉시 만료
                 .build();
 
-        // 인증 안 되었으면 쿠키만 제거하고 204
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-            return ResponseEntity.noContent()
-                    .header(HttpHeaders.SET_COOKIE, del.toString())
-                    .build();
+        // 사용자가 인증된 상태(로그인 상태)인 경우, 서버측 토큰도 무효화
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            String email = auth.getName();
+            memberRepository.findByEmail(email)
+                    .ifPresent(m -> {
+                        long nv = (m.getTokenVersion() == null ? 0L : m.getTokenVersion()) + 1L;
+                        m.setTokenVersion(nv);
+                        memberRepository.save(m);
+                    });
         }
 
-        // 인증된 경우: 서버측 무효화를 위해 tokenVersion 증가
-        String email = auth.getName();
-        return memberRepository.findByEmail(email)
-                .map(m -> {
-                    long nv = (m.getTokenVersion()==null?0L:m.getTokenVersion()) + 1L;
-                    m.setTokenVersion(nv);
-                    memberRepository.save(m);
-                    return ResponseEntity.status(303) // See Other
-                            .header(HttpHeaders.LOCATION, "/")  // 홈으로 이동
-                            .header(HttpHeaders.SET_COOKIE, del.toString())
-                            .build();
-                })
-                // 유저를 못 찾았어도 쿠키는 제거
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .header(HttpHeaders.SET_COOKIE, del.toString())
-                        .build());
+        // [핵심] 인증 여부와 관계없이, 항상 쿠키를 삭제하고 홈페이지로 리다이렉트 응답을 보냅니다.
+        return ResponseEntity.status(HttpStatus.FOUND) // 302 Found 또는 303 See Other
+                .header(HttpHeaders.LOCATION, "/")  // 홈으로 이동
+                .header(HttpHeaders.SET_COOKIE, del.toString())
+                .build();
     }
 
     @GetMapping("/me")
@@ -171,6 +165,4 @@ public class AuthApiController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("message", "User not found")));
     }
-
-
 }

@@ -69,4 +69,6 @@ public interface CafePhotoRepository extends JpaRepository<CafePhoto, Long> {
     Optional<CafePhoto> findFirstByCafe_IdOrderByIsMainDescIdAsc(Long cafeId);
 
     List<CafePhoto> findByCafe_IdIn(Collection<Long> cafeIds);
+
+    void deleteAllByCafe_Id(Long cafeId);
 }

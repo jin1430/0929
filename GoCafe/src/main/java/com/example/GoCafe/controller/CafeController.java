@@ -442,4 +442,10 @@ public class CafeController {
         ra.addFlashAttribute("msg", "리뷰가 등록되었습니다.");
         return "redirect:/cafes/" + cafeId + "#reviews";
     }
+    @GetMapping("/{id}/manage") // '/cafes' 부분을 삭제
+    public String ownerManage(@PathVariable Long id, Model model) {
+        Cafe cafe = cafeService.findById(id);
+        model.addAttribute("cafe", cafe);
+        return "cafes/owner-manage";
+    }
 }

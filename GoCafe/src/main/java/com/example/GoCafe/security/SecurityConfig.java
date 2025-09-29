@@ -113,9 +113,13 @@ public class SecurityConfig {
 
                         // 보호 구간
                         .requestMatchers("/api/private/**").authenticated()
-                        // NOTE: 기존 정책 유지 — 필요 시 tighten 하세요
+
+                        // ======[수정된 부분]======
+                        // GET /api/** 는 비로그인 사용자도 허용
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
+                        // 그 외 모든 /api/** 요청(POST, PUT, DELETE 등)은 인증된 사용자만 허용
+                        .requestMatchers("/api/**").authenticated()
+                        // =======================
 
                         // 리뷰 작성은 인증 요구
                         .requestMatchers("/reviews/**").authenticated()

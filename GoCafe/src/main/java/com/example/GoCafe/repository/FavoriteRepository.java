@@ -25,4 +25,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     Optional<Favorite> findByMember_IdAndCafe_Id(Long memberId, Long cafeId);
     boolean existsByMember_IdAndCafe_Id(Long memberId, Long cafeId);
     long countByCafe_Id(Long cafeId);
+
+    void deleteAllByCafe_Id(Long cafeId);
 }

@@ -1,6 +1,7 @@
 {{>layout/header}}
 
 <style>
+    /* 스타일은 그대로 유지됩니다 */
     :root{
       --primary-mint:#3aa17e; --primary-mint-dark:#2d8066;
     }
@@ -28,6 +29,14 @@
     .cg-auth-submit:hover{ background:var(--primary-mint-dark); }
     .cg-link{ color:var(--primary-mint); font-weight:600; }
     .cg-auth-tip{ margin-top:12px; color:#6b7280; text-align:center; }
+
+    /* 에러 메시지 스타일 추가 */
+    #error-message {
+        background:#fef2f2; border:1px solid #fecaca; color:#b91c1c;
+        border-radius:12px; padding:12px; text-align:center;
+        margin-bottom: 1rem;
+        display: none; /* 평소에는 숨김 */
+    }
 </style>
 
 <main class="cg-auth-page">
@@ -35,20 +44,16 @@
         <h1 class="cg-auth-title">로그인</h1>
         <p class="cg-auth-sub">CafeGo에 오신 것을 환영합니다.</p>
 
-        {{#error}}
-            <div class="mb-3" style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:12px;text-align:center;">
-                {{.}}
-            </div>
-        {{/error}}
+        <div id="error-message"></div>
 
-        <form method="post" action="/login" class="cg-authform">
-            <label class="cg-label">이메일</label>
-            <input type="email" name="memberEmail" class="cg-input" placeholder="you@email.com" required autofocus>
+        <form id="login-form" class="cg-authform">
+            <label for="email" class="cg-label">이메일</label>
+            <input type="email" id="email" name="email" class="cg-input" placeholder="you@email.com" required autofocus>
 
-            <label class="cg-label">비밀번호</label>
-            <input type="password" name="memberPassword" class="cg-input" placeholder="••••••••" required>
+            <label for="password" class="cg-label">비밀번호</label>
+            <input type="password" id="password" name="password" class="cg-input" placeholder="••••••••" required>
 
-            <button class="cg-btn cg-auth-submit" type="submit">로그인</button>
+            <button id="login-btn" class="cg-btn cg-auth-submit" type="button">로그인</button>
         </form>
 
         <p class="cg-auth-tip">
@@ -56,5 +61,7 @@
         </p>
     </section>
 </main>
+
+<script src="/js/login.js"></script>
 
 {{>layout/footer}}

@@ -6,7 +6,6 @@
     <title>GoCafe</title>
     <link rel="icon" href="/favicon.ico"/>
 
-    <!-- 공용/컴포넌트/테마 순서 -->
     <link rel="stylesheet" href="/css/tw-shim.css"/>
     <link rel="stylesheet" href="/css/detail.css"/>
     <link rel="stylesheet" href="/css/owner-modal.css"/>
@@ -60,25 +59,30 @@
                     </div>
                     <a href="/member/me" class="cg-btn-outline">마이페이지</a>
                     {{#isAdmin}}<a href="/admin" class="cg-btn-outline">관리자</a>{{/isAdmin}}
-                    <form id="logoutForm" action="/api/auth/logout" method="post" style="display:inline;">
-                        <button id="logoutBtn" class="cg-btn-outline" type="button">로그아웃</button>
+
+                    <form id="logout-form" action="/logout" method="post" style="display:inline;">
+                        <button class="cg-btn-outline" type="submit">로그아웃</button>
                     </form>
                 </div>
             {{/isLoggedIn}}
         </div>
     </div>
 </nav>
+
 <script>
-    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-      try {
-        await fetch('/api/auth/logout', { method: 'POST', credentials: 'include', keepalive: true });
-      } finally {
-        try {
-          localStorage.removeItem('AT'); localStorage.removeItem('RT');
-          sessionStorage.removeItem('AT'); sessionStorage.removeItem('RT');
-        } catch {}
-        location.reload();
-      }
+    document.addEventListener('DOMContentLoaded', () => {
+        const logoutForm = document.getElementById('logout-form');
+
+        if (logoutForm) {
+            logoutForm.addEventListener('submit', () => {
+                // [핵심] 서버로 폼을 전송하기 바로 직전에, 로컬 스토리지의 토큰을 삭제합니다.
+                localStorage.removeItem('token');
+            });
+        }
     });
 </script>
+
 {{#flashInfo}}<div class="cg-flash-info">{{flashInfo}}</div>{{/flashInfo}}
+
+</body>
+</html>
