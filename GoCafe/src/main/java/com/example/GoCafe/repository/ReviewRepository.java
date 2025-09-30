@@ -50,4 +50,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Long> findCafeIdsHavingReviews();
 
     void deleteByCafe_Id(Long cafeId);
+    void deleteByMember_Id(Long memberId);
 }

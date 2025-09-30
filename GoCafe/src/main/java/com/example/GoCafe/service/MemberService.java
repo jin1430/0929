@@ -1,7 +1,8 @@
 package com.example.GoCafe.service;
 
+import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.Member;
-import com.example.GoCafe.repository.MemberRepository;
+import com.example.GoCafe.repository.*;
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,18 @@ public class MemberService {
 
     private final MemberRepository repository;
     private final PasswordEncoder passwordEncoder; // BCrypt 빈 등록 가정
+
+    // 회원 탈퇴를 위해 모든 관련 Repository를 주입받습니다.
+    private final ReviewReportRepository reviewReportRepository;
+    private final NotificationRepository notificationRepository;
+    private final MemberMissionRepository memberMissionRepository;
+    private final UserNeedsRepository userNeedsRepository;
+    private final ReviewRepository reviewRepository;
+    private final FavoriteRepository favoriteRepository;
+
+    // Cafe와 그 자식 데이터들을 안전하게 삭제하기 위해 CafeService와 CafeRepository를 주입받습니다.
+    private final CafeService cafeService;
+    private final CafeRepository cafeRepository;
 
     @Transactional(readOnly = true)
     public List<Member> findAll() {
@@ -112,5 +125,29 @@ public class MemberService {
     private void bumpTokenVersionInternal(Member m) {
         Long v = (m.getTokenVersion() == null ? 0L : m.getTokenVersion());
         m.setTokenVersion(v + 1);
+    }
+    @Transactional
+    public void withdraw(Long memberId) {
+        // 0. 삭제할 회원이 존재하는지 확인
+        if (!repository.existsById(memberId)) {
+            throw new IllegalArgumentException("탈퇴할 회원을 찾을 수 없습니다. ID: " + memberId);
+        }
+
+        // 1. 회원이 소유한 카페와 그 카페의 모든 자식 데이터(메뉴, 사진, 리뷰 등)를 먼저 삭제합니다.
+        List<Cafe> ownCafes = cafeRepository.findAllByOwner_Id(memberId);
+        for (Cafe cafe : ownCafes) {
+            cafeService.delete(cafe.getId());
+        }
+
+        // 2. 나머지 자식 레코드를 삭제합니다.
+        reviewReportRepository.deleteByReporter_Id(memberId);
+        notificationRepository.deleteByRecipient_Id(memberId);
+        memberMissionRepository.deleteByMember_Id(memberId);
+        userNeedsRepository.deleteByMember_Id(memberId);
+        reviewRepository.deleteByMember_Id(memberId);
+        favoriteRepository.deleteByMember_Id(memberId);
+
+        // 3. 모든 자식 레코드가 삭제된 후, 마지막으로 회원을 삭제합니다.
+        repository.deleteById(memberId);
     }
 }

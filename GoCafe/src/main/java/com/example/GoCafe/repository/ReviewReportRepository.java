@@ -9,4 +9,5 @@ import java.util.List;
 public interface ReviewReportRepository extends JpaRepository<ReviewReport, Long> {
     List<ReviewReport> findByStatus(ReportStatus status);
     long countByStatus(ReportStatus status);
+    void deleteByReporter_Id(Long memberId);
 }

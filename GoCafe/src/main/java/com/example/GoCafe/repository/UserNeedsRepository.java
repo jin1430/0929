@@ -22,4 +22,5 @@ public interface UserNeedsRepository extends JpaRepository<UserNeeds, Long> {
 
     // 특정 회원의 특정 필요사항(code) 정보를 조회합니다.
     Optional<UserNeeds> findByMemberAndCode(Member member, String code);
+    void deleteByMember_Id(Long memberId);
 }

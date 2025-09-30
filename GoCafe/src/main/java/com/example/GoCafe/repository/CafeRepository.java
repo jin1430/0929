@@ -41,4 +41,9 @@ public interface CafeRepository extends JpaRepository<Cafe, Long> {
 
     // Admin-wide keyword search (all statuses)
     List<Cafe> findByNameContainingOrAddressContaining(String name, String address);
+    // ... 기존 메서드들
+    // Member 엔티티의 owner 필드의 id를 기준으로 삭제
+    void deleteByOwner_Id(Long memberId);
+    // 회원이 소유한 모든 카페를 찾기 위한 메서드 추가
+    List<Cafe> findAllByOwner_Id(Long memberId);
 }

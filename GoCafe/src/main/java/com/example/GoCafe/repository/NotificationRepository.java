@@ -53,4 +53,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<Notification> findDecisionLogs(@Param("memberId") Long memberId,
                                         @Param("prefix") String prefix);
     void deleteByCafe_Id(Long cafeId);
+    // 'member'가 아닌 'recipient' 필드를 기준으로 삭제하도록 메서드 이름 수정
+    void deleteByRecipient_Id(Long memberId);
+
+
 }

@@ -28,4 +28,5 @@ public interface MemberMissionRepository extends JpaRepository<MemberMission, Lo
 
     // 특정 회원이 참여한 미션 중 특정 상태(status)에 있는 정보만 조회합니다.
     List<MemberMission> findByMemberAndStatus(Member member, String status);
+    void deleteByMember_Id(Long memberId);
 }
