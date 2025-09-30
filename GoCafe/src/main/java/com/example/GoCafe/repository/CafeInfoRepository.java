@@ -21,4 +21,5 @@ public interface CafeInfoRepository extends JpaRepository<CafeInfo, Long> {
     List<CafeInfo> findByNoticeMarker(@Param("marker") String marker);
     boolean existsByCafe_Id(Long cafeId);
     void deleteByCafe_Id(Long cafeId);
+
 }

@@ -25,4 +25,5 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
     // 승인 대기(비활성)
     List<Mission> findByActiveYnOrderByIdDesc(String activeYn);
+    void deleteByCafe_Id(Long cafeId);
 }

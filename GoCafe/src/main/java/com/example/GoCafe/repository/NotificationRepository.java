@@ -52,4 +52,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     """)
     List<Notification> findDecisionLogs(@Param("memberId") Long memberId,
                                         @Param("prefix") String prefix);
+    void deleteByCafe_Id(Long cafeId);
 }

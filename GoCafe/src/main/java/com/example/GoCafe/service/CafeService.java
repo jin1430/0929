@@ -36,6 +36,10 @@ public class CafeService {
     private final MenuRepository menuRepository;
     private final FavoriteRepository favoriteRepository;
     private final CafeInfoRepository cafeInfoRepository;
+    private final MissionRepository missionRepository;
+    private final CafeTagRepository cafeTagRepository;
+    private final MenuCategoryRepository menuCategoryRepository;
+    private final NotificationRepository notificationRepository;
     // ...만약 Cafe와 연관된 다른 테이블이 있다면 여기에 Repository를 추가해주세요.
     // ⭐️ ======================================================================
 
@@ -237,26 +241,23 @@ public class CafeService {
     // ⭐️ ====== [수정된 부분] 아래 delete 메서드를 통째로 교체합니다 ======
     @Transactional
     public void delete(Long id) {
-        // 1. 카페가 존재하는지 확인
-        if (!cafeRepository.existsById(id)) {
-            throw new NotFoundException("Cafe not found: " + id);
-        }
+        Cafe cafe = cafeRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("삭제할 카페를 찾을 수 없습니다. ID: " + id));
 
-        // 2. 이 카페를 참조하는 모든 자식 데이터들을 먼저 삭제합니다.
-        //    (주의: 실제 프로젝트의 Repository 메서드 이름에 맞춰야 합니다)
-        //    (만약 deleteAllByCafe_Id 같은 메서드가 없다면 각 Repository에 추가해야 합니다)
-        reviewRepository.deleteAllByCafe_Id(id);
-        menuRepository.deleteAllByCafe_Id(id);
-        cafePhotoRepository.deleteAllByCafe_Id(id);
-        favoriteRepository.deleteAllByCafe_Id(id);
-        cafeInfoRepository.deleteByCafe_Id(id);
-        // ... (만약 CafeTag 등 다른 연관 데이터들도 있다면 모두 삭제 로직 추가) ...
+        // 1. 관련된 모든 자식 레코드를 먼저 삭제합니다.
+        // 각 Repository에 추가한 deleteAllBy... 또는 deleteBy... 메소드를 호출합니다.
+        missionRepository.deleteByCafe_Id(id);
+        menuRepository.deleteByCafe_Id(id);
+        cafeInfoRepository.deleteByCafe_Id(id); // <<-- 이 부분만 기존 메소드 이름으로 수정
+        cafePhotoRepository.deleteByCafe_Id(id);
+        cafeTagRepository.deleteByCafe_Id(id);
+        favoriteRepository.deleteByCafe_Id(id);
+        menuCategoryRepository.deleteByCafe_Id(id);
+        notificationRepository.deleteByCafe_Id(id);
+        reviewRepository.deleteByCafe_Id(id);
 
-        // 3. (선택) 파일 스토리지에 저장된 실제 사진/첨부파일들을 삭제합니다.
-        // fileStorageService.delete("cafes/" + id);
-
-        // 4. 모든 자식 데이터가 정리된 후, 마지막으로 카페를 삭제합니다.
-        cafeRepository.deleteById(id);
+        // 2. 모든 자식 레코드가 삭제된 후, 카페를 삭제합니다.
+        cafeRepository.delete(cafe);
     }
     // ⭐️ ======================================================================
 

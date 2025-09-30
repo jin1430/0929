@@ -70,5 +70,6 @@ public interface CafePhotoRepository extends JpaRepository<CafePhoto, Long> {
 
     List<CafePhoto> findByCafe_IdIn(Collection<Long> cafeIds);
 
-    void deleteAllByCafe_Id(Long cafeId);
+
+    void deleteByCafe_Id(Long cafeId);
 }

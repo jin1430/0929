@@ -49,5 +49,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("select distinct r.cafe.id from Review r")
     List<Long> findCafeIdsHavingReviews();
 
-    void deleteAllByCafe_Id(Long cafeId);
+    void deleteByCafe_Id(Long cafeId);
 }
