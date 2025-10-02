@@ -448,4 +448,12 @@ public class CafeController {
         model.addAttribute("cafe", cafe);
         return "cafes/owner-manage";
     }
+    @PostMapping("/{id}/delete")
+    public String deleteCafe(@PathVariable Long id) {
+        // CafeService에 이미 구현된 삭제 로직을 호출합니다.
+        cafeService.delete(id);
+
+        // 삭제 후 메인 페이지 또는 카페 목록 페이지로 리다이렉트합니다.
+        return "redirect:/";
+    }
 }

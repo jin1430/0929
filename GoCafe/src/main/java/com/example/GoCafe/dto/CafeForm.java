@@ -1,4 +1,3 @@
-// src/main/java/com/example/GoCafe/dto/CafeForm.java
 package com.example.GoCafe.dto;
 
 import com.example.GoCafe.entity.Cafe;
@@ -8,13 +7,16 @@ import java.time.LocalDate;
 
 public class CafeForm {
 
+    /* ===================================
+     * ↓↓ 기존 필드 및 메서드 (그대로 유지) ↓↓
+     * =================================== */
     @NotBlank
     @Size(max = 10)
     private String name;
 
     @NotBlank
     @Size(max = 10)
-    private String businessCode;   // 🔥 폼 name="businessCode"
+    private String businessCode;
 
     @NotBlank
     @Size(max = 60)
@@ -28,15 +30,12 @@ public class CafeForm {
 
     @NotBlank
     @Size(max = 15)
-    private String phoneNumber;    // 🔥 폼 name="phoneNumber"
+    private String phoneNumber;
 
-    // 미입력 가능 → 서버에서 기본값(LocalDate.now()) 처리
     private LocalDate creationDate;
-
-    // 업로더에서 hidden으로 담아올 수도 있게 선택 필드 유지
     private String bizDoc;
 
-    // ===== getters / setters =====
+    // ===== getters / setters (기존 코드) =====
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
@@ -61,7 +60,7 @@ public class CafeForm {
     public String getBizDoc() { return bizDoc; }
     public void setBizDoc(String bizDoc) { this.bizDoc = bizDoc; }
 
-    // ===== 매핑 =====
+    // ===== 매핑 (기존 코드) =====
     public Cafe toEntity() {
         Cafe c = new Cafe();
         c.setName(this.name);
@@ -77,5 +76,25 @@ public class CafeForm {
             try { c.setBizDoc(this.bizDoc); } catch (Throwable ignored) {}
         }
         return c;
+    }
+
+    /* ## ↓↓↓ 여기에 새로운 메서드만 추가하세요! ↓↓↓ ## */
+    /**
+     * Cafe 엔티티의 현재 값을 DTO로 변환합니다.
+     * (수정 폼에 기존 값을 채워주기 위한 용도)
+     * @param cafe 원본 Cafe 엔티티
+     * @return 값이 채워진 CafeForm DTO
+     */
+    public static CafeForm from(Cafe cafe) {
+        CafeForm form = new CafeForm();
+        form.setName(cafe.getName());
+        form.setAddress(cafe.getAddress());
+        form.setLat(cafe.getLat());
+        form.setLon(cafe.getLon());
+        form.setPhoneNumber(cafe.getPhoneNumber());
+        form.setBusinessCode(cafe.getBusinessCode());
+        form.setBizDoc(cafe.getBizDoc());
+        form.setCreationDate(cafe.getCreationDate());
+        return form;
     }
 }

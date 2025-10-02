@@ -1,7 +1,10 @@
 package com.example.GoCafe.service;
 
+import com.example.GoCafe.dto.CafeInfoForm;
+import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.CafeInfo;
 import com.example.GoCafe.repository.CafeInfoRepository;
+import com.example.GoCafe.repository.CafeRepository;
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import java.util.Optional;
 public class CafeInfoService {
 
     private final CafeInfoRepository repository;
+    private final CafeRepository cafeRepository;
 
     @Transactional(readOnly = true)
     public List<CafeInfo> findAll() {
@@ -65,6 +69,26 @@ public class CafeInfoService {
         }
         return repository.save(entity);
     }
+    @Transactional
+    public void createInfo(Long cafeId, CafeInfoForm dto) {
+        // 1. Cafe 엔티티를 Service에서 직접 조회
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("카페를 찾을 수 없습니다. ID: " + cafeId));
 
+        // 2. 새로 추가한 toEntity(cafe) 메서드를 호출
+        CafeInfo cafeInfo = dto.toEntity(cafe);
+
+        // 3. 엔티티 저장
+        repository.save(cafeInfo);
+    }
+
+    @Transactional
+    public void updateInfo(Long cafeId, CafeInfoForm dto) {
+        CafeInfo cafeInfo = repository.findByCafe_Id(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("카페 정보를 찾을 수 없습니다. Cafe ID: " + cafeId));
+
+        // 엔티티에 업데이트 로직이 있다면 그대로 사용
+        cafeInfo.update(dto);
+    }
 
 }

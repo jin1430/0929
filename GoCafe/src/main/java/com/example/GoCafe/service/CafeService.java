@@ -364,4 +364,24 @@ public class CafeService {
         // FileStorageService에 맞는 로더 사용 (예: loadAsBytes, read, getBytes 등 네 구현에 맞춰 호출)
         return fileStorageService.loadAsBytes(path);
     }
+    @Transactional
+    public void updateCafeByOwner(Long cafeId, CafeForm form) {
+        // 1. 수정할 Cafe 엔티티를 조회합니다.
+        Cafe cafe = cafeRepository.findById(cafeId)
+                .orElseThrow(() -> new IllegalArgumentException("수정할 카페를 찾을 수 없습니다. ID: " + cafeId));
+
+        // 2. 폼(DTO)에서 받은 데이터로 엔티티의 값을 변경합니다.
+        cafe.setName(form.getName());
+        cafe.setAddress(form.getAddress());
+        cafe.setPhoneNumber(form.getPhoneNumber());
+        cafe.setBusinessCode(form.getBusinessCode());
+
+        // 위도/경도는 주소 변경 시 함께 변경되어야 하므로, 여기서는 받은 값을 그대로 사용합니다.
+        cafe.setLat(form.getLat());
+        cafe.setLon(form.getLon());
+
+        // cafeRepository.save(cafe)를 호출하지 않아도,
+        // @Transactional에 의해 메서드가 끝나면 변경된 내용이 자동으로 DB에 반영됩니다. (더티 체킹)
+    }
+
 }

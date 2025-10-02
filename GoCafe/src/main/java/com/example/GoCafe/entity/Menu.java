@@ -1,17 +1,16 @@
 package com.example.GoCafe.entity;
 
-import com.pgvector.PGvector;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.data.domain.Vector;
 
 @NoArgsConstructor
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
+@Builder // ## 이 어노테이션만 추가하면 됩니다! ##
 public class Menu {
 
     @Id

@@ -1,5 +1,6 @@
 package com.example.GoCafe.entity;
 
+import com.example.GoCafe.dto.CafeInfoForm;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,4 +40,12 @@ public class CafeInfo {
 
     @Column(name = "holiday", length = 7)
     private String holiday;
+
+    public void update(CafeInfoForm dto) {
+        if (dto.getCafeNotice() != null) this.notice = dto.getCafeNotice();
+        if (dto.getCafeInfo() != null) this.info = dto.getCafeInfo();
+        if (dto.getCafeOpenTime() != null) this.openTime = dto.getCafeOpenTime();
+        if (dto.getCafeCloseTime() != null) this.closeTime = dto.getCafeCloseTime();
+        if (dto.getCafeHoliday() != null) this.holiday = dto.getCafeHoliday();
+    }
 }
