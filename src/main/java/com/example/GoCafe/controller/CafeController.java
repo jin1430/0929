@@ -145,10 +145,11 @@ public class CafeController {
         } catch (ReflectiveOperationException ignored) {}
 
         // 5) CafeInfo 주입
-        // cafeInfoService에서 찾아온 CafeInfo 객체를 'cafeInfo'라는 이름으로 모델에 추가합니다.
-        // 정보가 없으면 아무것도 추가되지 않으므로, 템플릿에서 {{#cafeInfo}}...{{/cafeInfo}}로 안전하게 처리할 수 있습니다.
         cafeInfoService.findByCafeId(cafeId)
-                .ifPresent(ci -> model.addAttribute("cafeInfo", ci));
+                .ifPresent(ci -> {
+                    // 엔티티를 DTO로 변환하여 모델에 추가합니다.
+                    model.addAttribute("cafeInfo", com.example.GoCafe.dto.CafeInfoForm.fromEntity(ci));
+                });
 
         // 6) 사진 갤러리
 //        var photoList = cafePhotoService.list(cafeId).stream()

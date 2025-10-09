@@ -116,7 +116,7 @@
                     <div class="bg-green-50 p-4 rounded-xl">
                         <h3 class="font-semibold text-green-800 mb-2">📍 위치</h3>
                         <p class="text-gray-700 break-words">{{#cafe}}{{address}}{{/cafe}}</p>
-                        {{#info}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1 break-words">{{cafeNotice}}</p>{{/cafeNotice}}{{/info}}
+                        {{#cafeInfo}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1 break-words">{{cafeNotice}}</p>{{/cafeNotice}}{{/cafeInfo}}
                     </div>
                     <div class="bg-green-50 p-4 rounded-xl">
                         <h3 class="font-semibold text-green-800 mb-2">⏰ 영업시간</h3>
@@ -233,7 +233,7 @@
                 <p class="text-gray-700 break-words">{{#cafe}}{{address}}{{/cafe}}</p>
 
                 {{! ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분을 수정합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ }}
-                {{#cafeInfo}}{{#notice}}<p class="text-sm text-gray-500 mt-1 break-words">{{notice}}</p>{{/notice}}{{/cafeInfo}}
+                {{#cafeInfo}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1 break-words">{{cafeNotice}}</p>{{/cafeNotice}}{{/cafeInfo}}
                 {{! ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 수정 끝 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ }}
             </div>
         </div>

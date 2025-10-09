@@ -66,4 +66,18 @@ public class CafeInfoForm {
                 cafeHoliday
         );
     }
+    public static CafeInfoForm fromEntity(CafeInfo entity) {
+        if (entity == null) {
+            return new CafeInfoForm(); // 비어있는 폼 객체 반환
+        }
+        return new CafeInfoForm(
+                entity.getId(),
+                entity.getCafe(),
+                entity.getNotice(),
+                entity.getCafeInfo(),
+                entity.getOpenTime(),
+                entity.getCloseTime(),
+                entity.getHoliday()
+        );
+    }
 }
