@@ -4,110 +4,15 @@
 <main class="max-w-7xl mx-auto px-6 py-8" {{#cafe}}data-cafe-id="{{id}}"{{/cafe}}>
     <section class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 fade-in">
         <div class="image-gallery p-4">
-            <div class="main-image bg-gradient-to-br from-green-100 to-green-200 rounded-xl overflow-hidden flex items-center justify-center">
-                {{#mainPhoto}}
-                    <img src="{{url}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover">
-                {{/mainPhoto}}
-                {{^mainPhoto}}
-                    <div class="text-center">
-                        <div class="text-6xl mb-4">☕</div>
-                        <p class="text-green-700 font-medium">{{#cafe}}{{name}}{{/cafe}}</p>
-                    </div>
-                {{/mainPhoto}}
-            </div>
-
-            {{#thumbPhotos}}
-                <div class="rounded-xl overflow-hidden">
-                    <img src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover" onerror="this.style.display='none'">
-                </div>
-            {{/thumbPhotos}}
-            {{^thumbPhotos}}
-                {{#cafePhotos}}
-                    <div class="rounded-xl overflow-hidden thumb-fallback">
-                        <img src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover" onerror="this.style.display='none'">
-                    </div>
-                {{/cafePhotos}}
-                {{^cafePhotos}}
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="text-3xl mb-2">🌿</div>
-                            <p class="text-green-600 text-sm">인테리어</p>
-                        </div>
-                    </div>
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="text-3xl mb-2">🥐</div>
-                            <p class="text-green-600 text-sm">디저트</p>
-                        </div>
-                    </div>
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="text-3xl mb-2">☕</div>
-                            <p class="text-green-600 text-sm">커피</p>
-                        </div>
-                    </div>
-                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="text-3xl mb-2">🪑</div>
-                            <p class="text-green-600 text-sm">좌석</p>
-                        </div>
-                    </div>
-                {{/cafePhotos}}
-            {{/thumbPhotos}}
         </div>
 
         <div class="p-8">
             <div class="flex items-start justify-between mb-6">
                 <div class="min-w-0">
                     <h1 class="text-3xl font-bold text-gray-800 mb-1 truncate">{{#cafe}}{{name}}{{/cafe}}</h1>
-                    {{! ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분을 수정합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ }}
                     <p class="text-gray-600 mb-4 break-words">
-                        {{#cafeInfo}}{{cafeInfo}}{{/cafeInfo}}{{^cafeInfo}}자연 친화적인 분위기의 스페셜티 카페{{/cafeInfo}}
+                        {{#cafeInfoExists}}{{cafeEntityInfo}}{{/cafeInfoExists}}{{^cafeInfoExists}}자연 친화적인 분위기의 스페셜티 카페{{/cafeInfoExists}}
                     </p>
-
-                    <div class="flex items-center flex-wrap gap-3 text-sm text-gray-600">
-                        <span>조회수 {{#views}}{{views}}{{/views}}{{^views}}0{{/views}}</span>
-                        <span>·</span>
-                        <span>등록 {{#creationDateFmt}}{{creationDateFmt}}{{/creationDateFmt}}{{^creationDateFmt}}{{creationDate}}{{/creationDateFmt}}</span>
-                        <span>·</span>
-                        <span>좋아요 {{cafeGood}} / 아쉬워요 {{cafeBad}}</span>
-                    </div>
-                </div>
-
-                <div class="flex space-x-3 shrink-0">
-                    <form method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/favorite/toggle" class="m-0">
-                        {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                        <button class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors" type="submit">
-                            {{#isFavorited}}❤️ 즐겨찾기 해제{{/isFavorited}}{{^isFavorited}}🤍 즐겨찾기{{/isFavorited}}
-                        </button>
-                    </form>
-
-                    {{#cafe}}
-                        <a class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-colors"
-                           target="_blank"
-                           href="https://map.kakao.com/link/to/{{name}},{{lat}},{{lon}}">
-                            📍 길찾기
-                        </a>
-                        {{#phoneNumber}}
-                            <a class="bg-white text-green-600 px-6 py-3 rounded-xl hover:bg-gray-50 transition-colors border border-green-200"
-                               href="tel:{{phoneNumber}}">
-                                ☎️ 전화
-                            </a>
-                        {{/phoneNumber}}
-                    {{/cafe}}
-                    {{#isLoggedIn}}
-                        <button id="openReviewModal"
-                                type="button"
-                                class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors">
-                            ✍️ 리뷰 작성
-                        </button>
-                    {{/isLoggedIn}}
-                    {{^isLoggedIn}}
-                        <a href="/login"
-                           class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors">
-                            ✍️ 리뷰 작성 (로그인)
-                        </a>
-                    {{/isLoggedIn}}
                 </div>
             </div>
 
@@ -116,38 +21,24 @@
                     <div class="bg-green-50 p-4 rounded-xl">
                         <h3 class="font-semibold text-green-800 mb-2">📍 위치</h3>
                         <p class="text-gray-700 break-words">{{#cafe}}{{address}}{{/cafe}}</p>
-                        {{#cafeInfo}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1 break-words">{{cafeNotice}}</p>{{/cafeNotice}}{{/cafeInfo}}
+                        {{#cafeInfoExists}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1 break-words">{{cafeNotice}}</p>{{/cafeNotice}}{{/cafeInfoExists}}
                     </div>
+
                     <div class="bg-green-50 p-4 rounded-xl">
                         <h3 class="font-semibold text-green-800 mb-2">⏰ 영업시간</h3>
-                        {{#cafeInfo}}
-                            <p class="text-gray-700">오픈: {{openTime}}</p>
-                            <p class="text-gray-700">마감: {{closeTime}}</p>
-                            {{#holiday}}<p class="text-sm text-gray-500">휴무: {{holiday}}</p>{{/holiday}}
-                        {{/cafeInfo}}
-                        {{^cafeInfo}}
+                        {{#cafeInfoExists}}
+                            <p class="text-gray-700">오픈: {{cafeOpenTime}}</p>
+                            <p class="text-gray-700">마감: {{cafeCloseTime}}</p>
+                            {{#cafeHoliday}}<p class="text-sm text-gray-500">휴무: {{cafeHoliday}}</p>{{/cafeHoliday}}
+                        {{/cafeInfoExists}}
+                        {{^cafeInfoExists}}
                             <p class="text-gray-500">영업정보가 아직 없어요.</p>
-                        {{/cafeInfo}}
+                        {{/cafeInfoExists}}
                     </div>
+
                     <div class="bg-green-50 p-4 rounded-xl col-span-2">
                         <h3 class="font-semibold text-green-800 mb-2">📞 연락처</h3>
                         <p class="text-gray-700">{{#cafe}}{{phoneNumber}}{{/cafe}}</p>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl">
-                        <h3 class="font-semibold mb-4 text-lg">🏷️ 대표 태그</h3>
-                        <div class="flex flex-wrap gap-2">
-                            {{#cafeTags}}
-                                <span class="bg-white/20 border border-white/30 text-white px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap">
-                                    {{tagCode}}
-                                </span>
-                            {{/cafeTags}}
-                            {{^cafeTags}}
-                                <span class="text-sm text-green-100">대표 태그가 없어요.</span>
-                            {{/cafeTags}}
-                        </div>
                     </div>
                 </div>
             </div>
@@ -155,232 +46,39 @@
     </section>
 
     <section class="bg-white rounded-2xl shadow-lg mb-8 fade-in">
-        <div class="border-b border-gray-200">
-            <nav class="flex space-x-8 px-8">
-                <button type="button" class="tab-button py-4 px-2 border-b-2 font-medium text-sm tab-active" data-tab="menu">메뉴</button>
-                <button type="button" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="reviews">리뷰 ({{reviewsCount}})</button>
-                <button type="button" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="photos">사진</button>
-                <button type="button" class="tab-button py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium text-sm" data-tab="map">지도</button>
-                {{#isOwner}}<button type="button" id="ownerEditToggle" class="px-4 py-2 rounded-xl border">점주 편집</button>{{/isOwner}}
-            </nav>
-        </div>
-
-        <div id="menu-tab" class="tab-content p-8">
-            <ul class="grid md:grid-cols-2 gap-6">
-                {{#menus}}
-                    <li class="flex justify-between items-center p-4 bg-green-50 rounded-xl">
-                        <div class="min-w-0">
-                            <h4 class="font-medium text-gray-800 truncate">{{menuName}}</h4>
-                            {{#menuPrice}}<p class="text-sm text-gray-600">{{menuPrice}}</p>{{/menuPrice}}
-                        </div>
-                        <img src="{{menuPhoto}}" alt="{{menuName}}" class="w-20 h-20 object-cover rounded-lg" onerror="this.onerror=null;this.src='/images/placeholder-cafe.jpg'">
-                    </li>
-                {{/menus}}
-                {{^menus}}
-                    <li class="text-gray-500">등록된 메뉴가 없어요.</li>
-                {{/menus}}
-            </ul>
-        </div>
-
-        <div id="reviews-tab" class="tab-content p-8 hidden">
-            <section class="bg-white rounded-2xl shadow p-6 mb-8">
-                <h2 class="text-xl font-bold mb-4">리뷰</h2>
-                {{#reviews}}
-                    <article class="border-b border-gray-100 py-4">
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="text-sm text-gray-600 truncate">{{nickname}} · {{createdAt}}</div>
-                            <form method="post" class="m-0 flex items-center gap-2 shrink-0">
-                                {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                                <button type="submit" formaction="/reviews/{{id}}/good" class="cg-btn cg-btn--sm cg-btn--success">👍 {{good}}</button>
-                                <button type="submit" formaction="/reviews/{{id}}/bad" class="cg-btn cg-btn--sm cg-btn--danger">👎 {{bad}}</button>
-                            </form>
-                        </div>
-                        <p class="mt-2 text-gray-800 whitespace-pre-line break-words">{{content}}</p>
-                        {{#photos}}
-                            {{#url}}
-                                <div class="grid grid-cols-3 gap-2 mt-3">
-                                    <img src="{{url}}" alt="review photo" class="w-full h-28 object-cover rounded-md">
-                                </div>
-                            {{/url}}
-                        {{/photos}}
-                    </article>
-                {{/reviews}}
-                {{^reviews}}<div class="text-gray-500">아직 리뷰가 없습니다.</div>{{/reviews}}
-            </section>
-        </div>
-
-        <div id="photos-tab" class="tab-content p-8 hidden">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {{#cafePhotos}}
-                    <div class="bg-gradient-to-br from-green-100 to-green-200 aspect-square rounded-xl overflow-hidden">
-                        <img src="{{cafePhotoUrl}}" alt="{{#cafe}}{{name}}{{/cafe}}" class="w-full h-full object-cover">
-                    </div>
-                {{/cafePhotos}}
-                {{^cafePhotos}}
-                    <div class="bg-gradient-to-br from-green-100 to-green-200 aspect-square rounded-xl flex items-center justify-center">
-                        <div class="text-center">
-                            <div class="text-4xl mb-2">☕</div>
-                            <p class="text-green-700 text-sm">사진이 없어요</p>
-                        </div>
-                    </div>
-                {{/cafePhotos}}
-            </div>
-        </div>
-
-        <div id="map-tab" class="tab-content p-8 hidden">
-            <div class="bg-green-50 p-4 rounded-xl">
-                <h3 class="font-semibold text-green-800 mb-2">📍 위치</h3>
-                <p class="text-gray-700 break-words">{{#cafe}}{{address}}{{/cafe}}</p>
-
-                {{! ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분을 수정합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ }}
-                {{#cafeInfo}}{{#cafeNotice}}<p class="text-sm text-gray-500 mt-1 break-words">{{cafeNotice}}</p>{{/cafeNotice}}{{/cafeInfo}}
-                {{! ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 수정 끝 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ }}
-            </div>
-        </div>
     </section>
 
-    <section id="similar-section" class="fade-in hidden">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">비슷한 카페 추천</h2>
-        <div id="similar-grid" class="grid md:grid-cols-3 gap-6"></div>
-    </section>
-
-    {{#isLoggedIn}}
-        {{>partials/review-modal}}
-    {{/isLoggedIn}}
-    {{^isLoggedIn}}
-        <a href="/login"
-           class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition-colors">
-            ✍️ 리뷰 작성
-        </a>
-    {{/isLoggedIn}}
-</main>
-{{! =============================================================== }}
-{{! ======================= 이 부분을 교체합니다 ======================= }}
-{{! =============================================================== }}
-{{! ▼▼▼▼▼ 모달 부분 전체 수정 ▼▼▼▼▼ }}
-{{#isOwner}}
-    <dialog id="ownerModal" class="rounded-2xl p-0 w-full max-w-3xl shadow-xl border">
-        <div class="sticky top-0 bg-white z-10">
-            <div class="flex items-center justify-between px-6 py-4 border-b">
-                <h3 class="text-xl font-bold">점주 편집</h3>
-                <button id="ownerModalClose" class="text-gray-500 hover:text-gray-700 text-2xl leading-none" type="button">&times;</button>
-            </div>
-            <nav class="flex gap-4 px-6 border-b bg-gray-50">
-                <button class="owner-tab tab-active py-3 border-b-2 font-semibold" data-tab="info" type="button">카페 정보</button>
-                <button class="owner-tab py-3 border-b-2 border-transparent text-gray-500" data-tab="menu" type="button">메뉴 관리</button>
-                <button class="owner-tab py-3 border-b-2 border-transparent text-gray-500" data-tab="photos" type="button">사진 관리</button>
-                <button class="owner-tab py-3 border-b-2 border-transparent text-gray-500" data-tab="manage" type="button">카페 관리</button>
-            </nav>
-        </div>
-
-        <div class="p-6 max-h-[60vh] overflow-y-auto">
-            <section id="owner-tab-info" class="owner-tab-panel">
-                <form id="cafeInfoForm" method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/info">
-                    {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <label class="block md:col-span-2"><span class="text-sm text-gray-700">한줄 소개 (500자 이내)</span>
-                            {{! ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ value 부분을 수정합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ }}
-                            <input name="cafeInfo" maxlength="500" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfo}}{{cafeInfo}}{{/cafeInfo}}" placeholder="예: 자연 친화적인 분위기의 스페셜티 카페">
-                        </label>
-                        <label class="block"><span class="text-sm text-gray-700">오픈 시간</span>
-                            <input name="cafeOpenTime" maxlength="7" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfo}}{{openTime}}{{/cafeInfo}}" placeholder="예: 09:00">
-                        </label>
-                        <label class="block"><span class="text-sm text-gray-700">마감 시간</span>
-                            <input name="cafeCloseTime" maxlength="7" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfo}}{{closeTime}}{{/cafeInfo}}" placeholder="예: 22:00">
-                        </label>
-                        <label class="block md:col-span-2"><span class="text-sm text-gray-700">휴무일</span>
-                            <input name="cafeHoliday" maxlength="20" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfo}}{{holiday}}{{/cafeInfo}}" placeholder="예: 매주 화요일">
-                        </label>
-                        {{! ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 수정 끝 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ }}
-                    </div>
-                    <div class="mt-6 flex justify-end gap-3">
-                        <button type="button" class="px-4 py-2 rounded-lg border" id="ownerModalCancelBtn">취소</button>
-                        <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">정보 저장</button>
-                    </div>
-                </form>
-            </section>
-
-            <section id="owner-tab-menu" class="owner-tab-panel hidden">
-                {{! ▼▼▼▼▼ action 경로를 수정하고, hidden input을 추가합니다 ▼▼▼▼▼ }}
-                <form id="menuAddForm" class="mb-6 p-4 border rounded-lg bg-gray-50" method="post" enctype="multipart/form-data"
-                      action="/cafes/menus/add">
-                    <input type="hidden" name="cafeId" value="{{#cafe}}{{id}}{{/cafe}}">
-                    {{! ▲▲▲▲▲ 수정 끝 ▲▲▲▲▲ }}
-                    <h4 class="font-semibold mb-3">새 메뉴 추가</h4>
-                    {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                        <label class="block"><span class="text-sm text-gray-700">메뉴명</span>
-                            <input name="name" required maxlength="12" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="아메리카노">
-                        </label>
-                        <label class="block"><span class="text-sm text-gray-700">가격</span>
-                            <input name="price" type="number" min="0" required class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="4500">
-                        </label>
-                        <label class="block"><span class="text-sm text-gray-700">사진 파일</span>
-                            <input name="file" type="file" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
-                        </label>
-                    </div>
-                    <div class="mt-4 flex justify-end">
-                        <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">메뉴 추가</button>
-                    </div>
-                </form>
-                <ul id="menuList" class="grid md:grid-cols-2 gap-4">
-                    {{#menus}}
-                        <li class="flex justify-between items-center p-4 bg-green-50 rounded-xl" data-menu-id="{{id}}">
-                            <div class="flex items-center gap-3"><img src="{{menuPhoto}}" alt="{{menuName}}" class="w-16 h-16 object-cover rounded-md"><div><div class="font-semibold text-gray-800">{{menuName}}</div><div class="text-gray-600 text-sm">{{menuPrice}}</div></div></div>
-                            <form method="post" action="/cafes/menus/{{id}}/delete" onsubmit="return confirm('삭제하시겠어요?')">
-                                {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                                <button class="px-3 py-2 rounded-lg border text-red-600 border-red-200 hover:bg-red-50" type="submit">삭제</button>
-                            </form>
-                        </li>
-                    {{/menus}}
-                </ul>
-            </section>
-
-            <section id="owner-tab-photos" class="owner-tab-panel hidden">
-                <form id="photoAddForm" class="mb-6 p-4 border rounded-lg bg-gray-50" method="post" enctype="multipart/form-data" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/photos">
-                    <h4 class="font-semibold mb-3">새 사진 추가 (여러 장 선택 가능)</h4>
-                    {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                    <input name="files" type="file" accept="image/*" multiple required class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
-                    <div class="mt-4 flex justify-end"><button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">사진 업로드</button></div>
-                </form>
-                <div id="photoList" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {{#cafePhotos}}
-                        <div class="relative group border rounded-lg overflow-hidden">
-                            <img src="{{cafePhotoUrl}}" class="w-full h-40 object-cover">
-                            <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {{^isMain}}<form method="post" action="/cafes/photos/{{id}}/main"><button class="text-white text-sm bg-green-600 px-3 py-1 rounded-full" type="submit">대표로 지정</button></form>{{/isMain}}
-                                {{#isMain}}<span class="text-white text-sm bg-yellow-500 px-3 py-1 rounded-full">대표 사진</span>{{/isMain}}
-                                <form method="post" action="/cafes/photos/{{id}}/delete" onsubmit="return confirm('삭제하시겠어요?')"><button class="text-white text-sm bg-red-600 px-3 py-1 rounded-full" type="submit">삭제</button></form>
-                            </div>
+    {{#isOwner}}
+        <dialog id="ownerModal" class="rounded-2xl p-0 w-full max-w-3xl shadow-xl border">
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                <section id="owner-tab-info" class="owner-tab-panel">
+                    <form id="cafeInfoForm" method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/info">
+                        {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="block md:col-span-2"><span class="text-sm text-gray-700">한줄 소개 (500자 이내)</span>
+                                <input name="cafeInfo" maxlength="500" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfoExists}}{{cafeEntityInfo}}{{/cafeInfoExists}}" placeholder="예: 자연 친화적인 분위기의 스페셜티 카페">
+                            </label>
+                            <label class="block"><span class="text-sm text-gray-700">오픈 시간</span>
+                                <input name="cafeOpenTime" maxlength="7" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfoExists}}{{cafeOpenTime}}{{/cafeInfoExists}}" placeholder="예: 09:00">
+                            </label>
+                            <label class="block"><span class="text-sm text-gray-700">마감 시간</span>
+                                <input name="cafeCloseTime" maxlength="7" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfoExists}}{{cafeCloseTime}}{{/cafeInfoExists}}" placeholder="예: 22:00">
+                            </label>
+                            <label class="block md:col-span-2"><span class="text-sm text-gray-700">휴무일</span>
+                                <input name="cafeHoliday" maxlength="20" class="mt-1 w-full border rounded-lg px-3 py-2" value="{{#cafeInfoExists}}{{cafeHoliday}}{{/cafeInfoExists}}" placeholder="예: 매주 화요일">
+                            </label>
                         </div>
-                    {{/cafePhotos}}
-                </div>
-            </section>
+                        <div class="mt-6 flex justify-end gap-3">
+                            <button type="button" class="px-4 py-2 rounded-lg border" id="ownerModalCancelBtn">취소</button>
+                            <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">정보 저장</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </dialog>
+    {{/isOwner}}
 
-            <section id="owner-tab-manage" class="owner-tab-panel hidden">
-                <h4 class="font-semibold mb-3 text-lg text-red-700">카페 삭제</h4>
-                <div class="p-4 border border-red-200 rounded-lg bg-red-50">
-                    <p class="text-red-800">카페를 삭제하면 모든 메뉴, 사진, 리뷰 등 관련 데이터가 영구적으로 삭제되며 복구할 수 없습니다. 신중하게 결정해주세요.</p>
-                    <div class="mt-4 flex justify-end">
-                        <form method="post" action="/cafes/{{#cafe}}{{id}}{{/cafe}}/delete" onsubmit="return confirm('정말로 카페를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')">
-                            {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
-                            <button class="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700" type="submit">카페 영구 삭제</button>
-                        </form>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </dialog>
-    <style>
-        #ownerModal::backdrop { background: rgba(0,0,0,.45); }
-    </style>
-{{/isOwner}}
-{{! ======================= 교체 끝 ======================= }}
 
-{{! 모달 backdrop 스타일 }}
-<style>
-    #ownerModal::backdrop { background: rgba(0,0,0,.45); }
-</style>
 <script defer src="/js/detail.js"></script>
 <script>
     // thumb-fallback가 많으면 4장만 보여주기 (서버 제한 없을 때)

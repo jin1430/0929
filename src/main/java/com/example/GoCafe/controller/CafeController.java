@@ -3,7 +3,7 @@ package com.example.GoCafe.controller;
 import com.example.GoCafe.domain.RoleKind;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // import 문 추가 확인
 import org.springframework.security.access.AccessDeniedException; // import 문 추가
-
+import com.example.GoCafe.entity.CafeInfo;
 import com.example.GoCafe.domain.CafeStatus;
 import com.example.GoCafe.dto.CafeCardForm;
 import com.example.GoCafe.dto.CafeForm;
@@ -145,11 +145,20 @@ public class CafeController {
         } catch (ReflectiveOperationException ignored) {}
 
         // 5) CafeInfo 주입
-        cafeInfoService.findByCafeId(cafeId)
-                .ifPresent(ci -> {
-                    // 엔티티를 DTO로 변환하여 모델에 추가합니다.
-                    model.addAttribute("cafeInfo", com.example.GoCafe.dto.CafeInfoForm.fromEntity(ci));
-                });
+        // ★★★ 이 부분을 수정합니다 ★★★
+        // cafeInfo 객체 대신, 각 필드 값을 개별 키로 모델에 추가합니다.
+        Optional<CafeInfo> cafeInfoOpt = cafeInfoService.findByCafeId(cafeId);
+        if (cafeInfoOpt.isPresent()) {
+            CafeInfo ci = cafeInfoOpt.get();
+            model.addAttribute("cafeInfoExists", true); // cafeInfo 객체의 존재 여부를 알리는 플래그
+            model.addAttribute("cafeEntityInfo", ci.getCafeInfo());
+            model.addAttribute("cafeOpenTime", ci.getOpenTime());
+            model.addAttribute("cafeCloseTime", ci.getCloseTime());
+            model.addAttribute("cafeHoliday", ci.getHoliday());
+            model.addAttribute("cafeNotice", ci.getNotice());
+        } else {
+            model.addAttribute("cafeInfoExists", false);
+        }
 
         // 6) 사진 갤러리
 //        var photoList = cafePhotoService.list(cafeId).stream()
