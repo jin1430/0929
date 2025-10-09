@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public class Mission {
     @Column(name="MISSION_ID") private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name="CAFE_ID", nullable=false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Cafe cafe;
 
     @Column(length=100, nullable=false) private String title;

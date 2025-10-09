@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +23,9 @@ public class MemberMission {
     @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="MISSION_ID", nullable=false)
     private Mission mission;
 
-    @ManyToOne(fetch=FetchType.LAZY) @JoinColumn(name="MEMBER_ID", nullable=false)
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="MEMBER_ID", nullable=false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member member;
 
     @Column(length=20, nullable=false) private String status; // REQUESTED/ACCEPTED/COMPLETED/CANCELED

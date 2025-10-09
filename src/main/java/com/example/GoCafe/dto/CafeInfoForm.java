@@ -5,70 +5,39 @@ import com.example.GoCafe.entity.CafeInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter; // Setter 추가
 
 @Getter
+@Setter // Setter 추가
 @NoArgsConstructor
 @AllArgsConstructor
 public class CafeInfoForm {
 
     private Long cafeInfoId;
     private Cafe cafe;
-    private String cafeNotice;
+    private String notice; // 필드명 통일
     private String cafeInfo;
-    private String cafeOpenTime;
-    private String cafeCloseTime;
-    private String cafeHoliday;
+    private String openTime;   // ★★★ 필드명 변경 ★★★
+    private String closeTime;  // ★★★ 필드명 변경 ★★★
+    private String holiday;    // ★★★ 필드명 변경 ★★★
 
-    // ============== Setter 메서드 수정/추가 (공백 처리) =================
-
-    private String toNullIfBlank(String s) {
-        return (s == null || s.isBlank()) ? null : s.trim();
-    }
-
-    public void setCafeInfoId(Long cafeInfoId) {
-        this.cafeInfoId = cafeInfoId;
-    }
-
-    public void setCafe(Cafe cafe) {
-        this.cafe = cafe;
-    }
-
-    public void setCafeNotice(String cafeNotice) {
-        this.cafeNotice = toNullIfBlank(cafeNotice);
-    }
-
-    public void setCafeInfo(String cafeInfo) {
-        this.cafeInfo = toNullIfBlank(cafeInfo);
-    }
-
-    public void setCafeOpenTime(String cafeOpenTime) {
-        this.cafeOpenTime = toNullIfBlank(cafeOpenTime);
-    }
-
-    public void setCafeCloseTime(String cafeCloseTime) {
-        this.cafeCloseTime = toNullIfBlank(cafeCloseTime);
-    }
-
-    public void setCafeHoliday(String cafeHoliday) {
-        this.cafeHoliday = toNullIfBlank(cafeHoliday);
-    }
-
-    // =======================================================
+    // ============== toEntity, fromEntity 메소드 수정 =================
 
     public CafeInfo toEntity() {
         return new CafeInfo(
-                cafeInfoId,
-                cafe,
-                cafeNotice,
-                cafeInfo,
-                cafeOpenTime,
-                cafeCloseTime,
-                cafeHoliday
+                this.cafeInfoId,
+                this.cafe,
+                this.notice,
+                this.cafeInfo,
+                this.openTime,
+                this.closeTime,
+                this.holiday
         );
     }
+
     public static CafeInfoForm fromEntity(CafeInfo entity) {
         if (entity == null) {
-            return new CafeInfoForm(); // 비어있는 폼 객체 반환
+            return new CafeInfoForm();
         }
         return new CafeInfoForm(
                 entity.getId(),

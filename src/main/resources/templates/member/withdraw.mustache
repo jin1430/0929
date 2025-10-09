@@ -21,11 +21,18 @@
             <div class="cg-card">
                 <div class="cg-card__body">
                     <p>계정 <b>{{email}}</b> 을(를) 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
-                    <div style="margin-top:16px;">
-                        <button id="btnWithdraw" class="cg-btn" style="background:#dc2626;">탈퇴하기</button>
+
+                    <form method="POST" action="/member/withdraw" style="margin-top:16px;">
+                        {{#_csrf}}
+                            <input type="hidden" name="{{parameterName}}" value="{{token}}">
+                        {{/_csrf}}
+
+                        <button type="submit" class="cg-btn" style="background:#dc2626;" onclick="return confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                            탈퇴하기
+                        </button>
 
                         <a href="/member/me" class="cg-btn-ghost" style="margin-left:8px;">취소</a>
-                    </div>
+                    </form>
                 </div>
             </div>
         </section>

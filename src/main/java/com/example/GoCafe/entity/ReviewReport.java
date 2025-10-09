@@ -3,6 +3,8 @@ package com.example.GoCafe.entity;
 import com.example.GoCafe.domain.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -25,6 +27,7 @@ public class ReviewReport {
     // 신고자
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "member_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Member reporter;
 
     // 신고 사유
