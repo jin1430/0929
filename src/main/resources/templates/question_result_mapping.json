@@ -1,0 +1,1039 @@
+[
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "hongdae",
+    "title": "스터디 러버",
+    "description": "오전 집중형, 모던한 공간에서 커피와 생산성을 중시해요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.45,
+      "VIBE.모던/미니멀": 1.25,
+      "DRINK.아메리카노": 1.3,
+      "DRINK.라떼": 1.2,
+      "FACILITY.와이파이": 1.4,
+      "FACILITY.콘센트": 1.4,
+      "FOOD.브런치": 1.15,
+      "PRICE.중간": 1.0,
+      "MUSIC.클래식": 1.05
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "hapjeong",
+    "title": "브런치 집중형",
+    "description": "오전 브런치와 라떼로 힘을 내고, 네트워크/콘센트가 필수예요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.4,
+      "FOOD.브런치": 1.35,
+      "DRINK.라떼": 1.25,
+      "DRINK.아메리카노": 1.2,
+      "FACILITY.와이파이": 1.35,
+      "FACILITY.콘센트": 1.35,
+      "PRICE.중간": 1.05,
+      "VIBE.모던/미니멀": 1.2,
+      "MUSIC.클래식": 1.05
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "아늑함",
+    "factor": "price",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "조용+가성비 스터디",
+    "description": "오후 장기 체류를 위한 가성비, 아늑함과 조용한 음악을 원해요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.45,
+      "VIBE.아늑함": 1.3,
+      "PRICE.저렴": 1.35,
+      "DRINK.아메리카노": 1.2,
+      "FACILITY.와이파이": 1.3,
+      "FACILITY.콘센트": 1.3,
+      "FOOD.쿠키": 1.1,
+      "MUSIC.클래식": 1.1
+    }
+  },
+  {
+    "purpose": "회의",
+    "vibe": "모던/미니멀",
+    "factor": "location",
+    "time": "afternoon",
+    "area": "hongdae",
+    "title": "팀과제 회의형",
+    "description": "그룹 좌석과 네트워크, 예약 편의가 중요한 회의형 수요예요.",
+    "weights": {
+      "PURPOSE.회의": 1.45,
+      "FACILITY.와이파이": 1.35,
+      "FACILITY.콘센트": 1.3,
+      "DRINK.아메리카노": 1.15,
+      "FOOD.샌드위치": 1.2,
+      "PRICE.중간": 1.0,
+      "VIBE.모던/미니멀": 1.2,
+      "FACILITY.예약가능": 1.15
+    }
+  },
+  {
+    "purpose": "회의",
+    "vibe": "인더스트리얼/도심감성",
+    "factor": "location",
+    "time": "afternoon",
+    "area": "hapjeong",
+    "title": "캠퍼스 팀플형",
+    "description": "실용 좌석과 와이파이, 인더스트리얼 감성이 포인트예요.",
+    "weights": {
+      "PURPOSE.회의": 1.4,
+      "FACILITY.와이파이": 1.35,
+      "FACILITY.콘센트": 1.3,
+      "VIBE.인더스트리얼/도심감성": 1.2,
+      "FOOD.샌드위치": 1.15,
+      "DRINK.아메리카노": 1.2,
+      "PRICE.중간": 1.0,
+      "FACILITY.예약가능": 1.1
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "모던/미니멀",
+    "factor": "atmosphere",
+    "time": "weekend",
+    "area": "hongdae",
+    "title": "포토존 데이트",
+    "description": "주말 데이트, 비주얼과 디저트가 핵심이에요.",
+    "weights": {
+      "PURPOSE.데이트": 1.4,
+      "VIBE.모던/미니멀": 1.3,
+      "FACILITY.포토존": 1.45,
+      "FOOD.케이크": 1.25,
+      "DRINK.라떼": 1.25,
+      "MUSIC.팝": 1.2,
+      "PRICE.프리미엄": 1.1,
+      "PURPOSE.사진": 1.3
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "레트로/빈티지",
+    "factor": "atmosphere",
+    "time": "evening",
+    "area": "sangsu",
+    "title": "레트로 감성커플",
+    "description": "저녁 레트로 무드, 달달한 페이스트리와 티가 어울려요.",
+    "weights": {
+      "PURPOSE.데이트": 1.4,
+      "VIBE.레트로/빈티지": 1.35,
+      "FOOD.베이커리": 1.2,
+      "DRINK.라떼": 1.2,
+      "DRINK.차": 1.15,
+      "MUSIC.팝": 1.15,
+      "PRICE.중간": 1.0,
+      "PURPOSE.사진": 1.2
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "모던/미니멀",
+    "factor": "atmosphere",
+    "time": "evening",
+    "area": "hapjeong",
+    "title": "야경 뷰맛집",
+    "description": "야경·포토 좌석에서 여유를 즐겨요.",
+    "weights": {
+      "PURPOSE.데이트": 1.4,
+      "VIBE.모던/미니멀": 1.25,
+      "FACILITY.포토존": 1.3,
+      "FOOD.케이크": 1.2,
+      "DRINK.콜드브루": 1.2,
+      "MUSIC.팝": 1.2,
+      "PRICE.프리미엄": 1.1
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "afternoon",
+    "area": "anywhere",
+    "title": "프리미엄 스페셜티",
+    "description": "스페셜티 라인업과 , 프리미엄을 즐겨요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.4,
+      "DRINK.아메리카노": 1.35,
+      "DRINK.콜드브루": 1.3,
+      "DRINK.라떼": 1.25,
+      "PRICE.프리미엄": 1.25,
+      "VIBE.모던/미니멀": 1.2,
+      "MUSIC.클래식": 1.05
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "자연",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "anywhere",
+    "title": "핸드드립 집중러",
+    "description": "식물 많은 조용한 공간에서 핸드드립을 즐겨요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.4,
+      "DRINK.아메리카노": 1.3,
+      "DRINK.차": 1.1,
+      "VIBE.자연": 1.25,
+      "MUSIC.클래식": 1.1,
+      "PRICE.중간": 1.05,
+      "FOOD.쿠키": 1.1
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "아늑함",
+    "factor": "atmosphere",
+    "time": "afternoon",
+    "area": "hongdae",
+    "title": "수다 떨기 딱좋음",
+    "description": "달달 디저트·대화-friendly 음악이 좋아요.",
+    "weights": {
+      "PURPOSE.수다": 1.45,
+      "VIBE.아늑함": 1.3,
+      "DRINK.라떼": 1.2,
+      "FOOD.와플": 1.2,
+      "MUSIC.K-pop": 1.15,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "모던/미니멀",
+    "factor": "atmosphere",
+    "time": "weekend",
+    "area": "hongdae",
+    "title": "활기찬 K-팝 카페",
+    "description": "주말 친구모임, 밝은 음악·컬러풀 디저트를 원해요.",
+    "weights": {
+      "PURPOSE.수다": 1.45,
+      "MUSIC.K-pop": 1.35,
+      "VIBE.모던/미니멀": 1.25,
+      "DRINK.스무디": 1.2,
+      "FOOD.마카롱": 1.2,
+      "FACILITY.포토존": 1.2,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "사진",
+    "vibe": "모던/미니멀",
+    "factor": "atmosphere",
+    "time": "weekend",
+    "area": "hongdae",
+    "title": "사진맛집 헌터",
+    "description": "포토가 최우선, 화려한 비주얼과 디저트를 선호해요.",
+    "weights": {
+      "PURPOSE.사진": 1.45,
+      "FACILITY.포토존": 1.5,
+      "VIBE.모던/미니멀": 1.25,
+      "FOOD.케이크": 1.2,
+      "DRINK.라떼": 1.2,
+      "MUSIC.팝": 1.15,
+      "PRICE.프리미엄": 1.1
+    }
+  },
+  {
+    "purpose": "사진",
+    "vibe": "레트로/빈티지",
+    "factor": "atmosphere",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "빈티지 포토러",
+    "description": "레트로 소품/색감 촬영 포인트를 찾아요.",
+    "weights": {
+      "PURPOSE.사진": 1.4,
+      "VIBE.레트로/빈티지": 1.35,
+      "FOOD.베이커리": 1.15,
+      "DRINK.차": 1.2,
+      "MUSIC.팝": 1.1,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "회의",
+    "vibe": "모던/미니멀",
+    "factor": "location",
+    "time": "morning",
+    "area": "hapjeong",
+    "title": "포멀 비즈 미팅",
+    "description": "오전 미팅, 예약//주차가 중요해요.",
+    "weights": {
+      "PURPOSE.회의": 1.45,
+      "FACILITY.와이파이": 1.35,
+      "FACILITY.콘센트": 1.3,
+      "FACILITY.예약가능": 1.2,
+      "DRINK.아메리카노": 1.2,
+      "FOOD.샌드위치": 1.15,
+      "PRICE.중간": 1.0,
+      "VIBE.모던/미니멀": 1.2
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "모던/미니멀",
+    "factor": "price",
+    "time": "afternoon",
+    "area": "hongdae",
+    "title": "라이트 톡 & 워크",
+    "description": "가성비와 회전, 라이트 스낵을 원해요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.4,
+      "PRICE.저렴": 1.3,
+      "FACILITY.와이파이": 1.3,
+      "DRINK.아메리카노": 1.2,
+      "FOOD.쿠키": 1.1,
+      "VIBE.모던/미니멀": 1.15
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "아늑함",
+    "factor": "price",
+    "time": "weekend",
+    "area": "sangsu",
+    "title": "주말 장기체류",
+    "description": "주말 장시간 머무름 대비 가성비와 편안함을 원해요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.45,
+      "VIBE.아늑함": 1.3,
+      "PRICE.저렴": 1.35,
+      "FACILITY.와이파이": 1.3,
+      "DRINK.라떼": 1.15,
+      "FOOD.와플": 1.1
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "모던/미니멀",
+    "factor": "dessert",
+    "time": "morning",
+    "area": "hapjeong",
+    "title": "브런치 데이트",
+    "description": "오전 데이트는 브런치+라떼 조합을 즐겨요.",
+    "weights": {
+      "PURPOSE.데이트": 1.35,
+      "FOOD.브런치": 1.4,
+      "FOOD.케이크": 1.2,
+      "DRINK.라떼": 1.25,
+      "VIBE.모던/미니멀": 1.2,
+      "PRICE.중간": 1.05,
+      "MUSIC.팝": 1.1
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "자연",
+    "factor": "dessert",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "티 타임 커플",
+    "description": "식물 많은 여유 공간에서 티·페이스트리를 곁들여요.",
+    "weights": {
+      "PURPOSE.데이트": 1.35,
+      "DRINK.차": 1.35,
+      "FOOD.베이커리": 1.2,
+      "VIBE.자연": 1.25,
+      "PRICE.중간": 1.0,
+      "MUSIC.팝": 1.1
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "인더스트리얼/도심감성",
+    "factor": "coffee",
+    "time": "evening",
+    "area": "hongdae",
+    "title": "퇴근 후 콜드브루",
+    "description": "저녁 콜드브루와 , 인더스트리얼 무드를 선호해요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.4,
+      "DRINK.콜드브루": 1.35,
+      "DRINK.아메리카노": 1.2,
+      "VIBE.인더스트리얼/도심감성": 1.25,
+      "MUSIC.힙합": 1.2,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "evening",
+    "area": "anywhere",
+    "title": "디카페인 야근케어",
+    "description": "저녁엔 디카페인으로 집중을 이어가요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.4,
+      "DRINK.디카페인": 1.4,
+      "FACILITY.와이파이": 1.3,
+      "VIBE.모던/미니멀": 1.2,
+      "FOOD.쿠키": 1.1,
+      "MUSIC.클래식": 1.1,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "아이동반",
+    "vibe": "아늑함",
+    "factor": "location",
+    "time": "afternoon",
+    "area": "anywhere",
+    "title": "키즈 프렌들리",
+    "description": "유아편의 · 논커피/디저트를 중시해요.",
+    "weights": {
+      "PURPOSE.아이동반": 1.45,
+      "FACILITY.매장내화장실": 1.35,
+      "FACILITY.유모차/휠체어": 1.4,
+      "FOOD.아이스크림": 1.2,
+      "DRINK.논커피": 1.2,
+      "PRICE.중간": 1.0,
+      "VIBE.아늑함": 1.2
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "자연",
+    "factor": "location",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "펫 동반 산책코스",
+    "description": "반려동물 동반, 산책 연계가 되는 곳을 찾아요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.3,
+      "FACILITY.반려동물": 1.45,
+      "VIBE.자연": 1.25,
+      "DRINK.차": 1.2,
+      "PRICE.중간": 1.0,
+      "FOOD.와플": 1.1
+    }
+  },
+  {
+    "purpose": "회의",
+    "vibe": "모던/미니멀",
+    "factor": "location",
+    "time": "morning",
+    "area": "hapjeong",
+    "title": "포멀 비즈 미팅(주차)",
+    "description": "주차/예약/4인 좌석으로 대외 미팅에 적합해요.",
+    "weights": {
+      "PURPOSE.회의": 1.45,
+      "FACILITY.예약가능": 1.25,
+      "FACILITY.무료주차": 1.3,
+      "DRINK.아메리카노": 1.2,
+      "FOOD.샌드위치": 1.15,
+      "PRICE.프리미엄": 1.1,
+      "VIBE.모던/미니멀": 1.2
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "아늑함",
+    "factor": "location",
+    "time": "weekend",
+    "area": "anywhere",
+    "title": "파킹 중요 수다",
+    "description": "차량 이동 모임, 소파 좌석과 아늑함을 선호해요.",
+    "weights": {
+      "PURPOSE.수다": 1.4,
+      "FACILITY.무료주차": 1.4,
+      "FOOD.베이커리": 1.15,
+      "DRINK.라떼": 1.15,
+      "VIBE.아늑함": 1.2,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "레트로/빈티지",
+    "factor": "price",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "소탈한 로컬 감성",
+    "description": "레트로 로컬 가성비와 바을 선호해요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.35,
+      "VIBE.레트로/빈티지": 1.3,
+      "PRICE.저렴": 1.35,
+      "DRINK.아메리카노": 1.2,
+      "FOOD.베이커리": 1.15,
+      "MUSIC.팝": 1.1
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "모던/미니멀",
+    "factor": "dessert",
+    "time": "weekend",
+    "area": "hapjeong",
+    "title": "모던+프리미엄 디저트",
+    "description": "인스타블 프리미엄 디저트를 즐겨요.",
+    "weights": {
+      "PURPOSE.데이트": 1.35,
+      "FOOD.케이크": 1.35,
+      "FOOD.마카롱": 1.25,
+      "DRINK.라떼": 1.25,
+      "VIBE.모던/미니멀": 1.25,
+      "PRICE.프리미엄": 1.15,
+      "FACILITY.포토존": 1.25
+    }
+  },
+  {
+    "purpose": "사진",
+    "vibe": "인더스트리얼/도심감성",
+    "factor": "atmosphere",
+    "time": "weekend",
+    "area": "hongdae",
+    "title": "루프탑 포토감성",
+    "description": "루프탑·포토 중심의 주말 나들이예요.",
+    "weights": {
+      "PURPOSE.사진": 1.4,
+      "PURPOSE.데이트": 1.25,
+      "FACILITY.포토존": 1.45,
+      "VIBE.인더스트리얼/도심감성": 1.25,
+      "DRINK.콜드브루": 1.2,
+      "FOOD.와플": 1.15,
+      "MUSIC.팝": 1.15,
+      "PRICE.프리미엄": 1.1
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "아늑함",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "anywhere",
+    "title": "브금 클래식 집중",
+    "description": "클래식 배경에서 몰입을 극대화해요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.45,
+      "MUSIC.클래식": 1.35,
+      "VIBE.아늑함": 1.25,
+      "DRINK.아메리카노": 1.25,
+      "FACILITY.와이파이": 1.3,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "afternoon",
+    "area": "hapjeong",
+    "title": "라떼 아트 즐기는 날",
+    "description": "라떼아트와 비주얼을 즐겨요.",
+    "weights": {
+      "PURPOSE.데이트": 1.3,
+      "DRINK.라떼": 1.4,
+      "DRINK.아메리카노": 1.2,
+      "FOOD.케이크": 1.15,
+      "VIBE.모던/미니멀": 1.2,
+      "PRICE.중간": 1.05,
+      "FACILITY.포토존": 1.2
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "아늑함",
+    "factor": "dessert",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "티·디저트 하이티",
+    "description": "티 페어링 디저트를 즐겨요.",
+    "weights": {
+      "PURPOSE.데이트": 1.2,
+      "PURPOSE.수다": 1.25,
+      "DRINK.차": 1.4,
+      "FOOD.케이크": 1.25,
+      "FOOD.마카롱": 1.2,
+      "VIBE.아늑함": 1.25,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "afternoon",
+    "area": "hongdae",
+    "title": "콜드브루 연구회",
+    "description": "콜드브루 라인업과 바을 선호해요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.4,
+      "DRINK.콜드브루": 1.45,
+      "DRINK.아메리카노": 1.2,
+      "VIBE.모던/미니멀": 1.2,
+      "PRICE.중간": 1.0,
+      "FOOD.쿠키": 1.1
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "모던/미니멀",
+    "factor": "location",
+    "time": "afternoon",
+    "area": "hongdae",
+    "title": "헤비러닝 노트북러",
+    "description": "배터리·와이파이가 최우선이에요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.45,
+      "FACILITY.와이파이": 1.4,
+      "FACILITY.콘센트": 1.4,
+      "DRINK.아메리카노": 1.25,
+      "PRICE.중간": 1.0,
+      "FOOD.샌드위치": 1.15
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "모던/미니멀",
+    "factor": "atmosphere",
+    "time": "evening",
+    "area": "hapjeong",
+    "title": "바 테이블 토크",
+    "description": "바형 좌석에서 캐주얼 대화를 즐겨요.",
+    "weights": {
+      "PURPOSE.수다": 1.4,
+      "MUSIC.팝": 1.25,
+      "DRINK.논커피": 1.15,
+      "DRINK.스무디": 1.15,
+      "FOOD.쿠키": 1.1,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "모던/미니멀",
+    "factor": "atmosphere",
+    "time": "morning",
+    "area": "anywhere",
+    "title": "미니멀·화이트톤",
+    "description": "미니멀한 채광과 화이트톤을 선호해요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.35,
+      "VIBE.모던/미니멀": 1.3,
+      "DRINK.아메리카노": 1.25,
+      "MUSIC.클래식": 1.1,
+      "PRICE.중간": 1.0,
+      "FOOD.베이커리": 1.1
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "자연",
+    "factor": "atmosphere",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "숲속 힐링타임",
+    "description": "식물/우드 톤에서 마음치유를 원해요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.35,
+      "VIBE.자연": 1.35,
+      "DRINK.차": 1.25,
+      "FOOD.와플": 1.15,
+      "PRICE.중간": 1.0,
+      "MUSIC.클래식": 1.1
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "인더스트리얼/도심감성",
+    "factor": "atmosphere",
+    "time": "evening",
+    "area": "hongdae",
+    "title": "인더+힙합 무드",
+    "description": "밤 감성 힙합과 산뜻한 커피를 즐겨요.",
+    "weights": {
+      "PURPOSE.수다": 1.45,
+      "VIBE.인더스트리얼/도심감성": 1.3,
+      "MUSIC.힙합": 1.35,
+      "DRINK.콜드브루": 1.15,
+      "FOOD.쿠키": 1.1,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "레트로/빈티지",
+    "factor": "dessert",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "로컬 빵맛집",
+    "description": "수제 베이커리 중심의 스팟을 찾아요.",
+    "weights": {
+      "PURPOSE.수다": 1.25,
+      "PURPOSE.데이트": 1.2,
+      "FOOD.베이커리": 1.4,
+      "FOOD.와플": 1.2,
+      "DRINK.라떼": 1.2,
+      "VIBE.레트로/빈티지": 1.25,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "사진",
+    "vibe": "모던/미니멀",
+    "factor": "dessert",
+    "time": "weekend",
+    "area": "hongdae",
+    "title": "맥런+셀카",
+    "description": "컬러풀 디저트·포토를 원해요.",
+    "weights": {
+      "PURPOSE.사진": 1.35,
+      "PURPOSE.수다": 1.25,
+      "FOOD.마카롱": 1.35,
+      "FACILITY.포토존": 1.4,
+      "DRINK.라떼": 1.2,
+      "VIBE.모던/미니멀": 1.2,
+      "PRICE.중간": 1.05
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "레트로/빈티지",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "hapjeong",
+    "title": "클래식 스터디살롱",
+    "description": "빈티지 살롱 감성에서 집중해요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.45,
+      "VIBE.레트로/빈티지": 1.25,
+      "MUSIC.클래식": 1.3,
+      "DRINK.아메리카노": 1.25,
+      "PRICE.중간": 1.0,
+      "FOOD.쿠키": 1.1
+    }
+  },
+  {
+    "purpose": "아이동반",
+    "vibe": "아늑함",
+    "factor": "location",
+    "time": "weekend",
+    "area": "anywhere",
+    "title": "워킹맘/대가족",
+    "description": "편의시설과 4인 좌석이 핵심이에요.",
+    "weights": {
+      "PURPOSE.아이동반": 1.45,
+      "FACILITY.매장내화장실": 1.35,
+      "FACILITY.유모차/휠체어": 1.4,
+      "DRINK.논커피": 1.2,
+      "FOOD.아이스크림": 1.2,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "evening",
+    "area": "hapjeong",
+    "title": "프리미엄 데이트+리저브",
+    "description": "스페셜티/리저브급 라인업을 즐겨요.",
+    "weights": {
+      "PURPOSE.데이트": 1.35,
+      "DRINK.아메리카노": 1.35,
+      "DRINK.콜드브루": 1.3,
+      "PRICE.프리미엄": 1.25,
+      "VIBE.모던/미니멀": 1.25,
+      "FACILITY.포토존": 1.2
+    }
+  },
+  {
+    "purpose": "회의",
+    "vibe": "모던/미니멀",
+    "factor": "dessert",
+    "time": "morning",
+    "area": "hongdae",
+    "title": "브런치 팀모임",
+    "description": "브런치와 그룹 좌석으로 가벼운 미팅을 해요.",
+    "weights": {
+      "PURPOSE.회의": 1.4,
+      "FOOD.브런치": 1.4,
+      "DRINK.라떼": 1.2,
+      "FACILITY.와이파이": 1.3,
+      "PRICE.중간": 1.05
+    }
+  },
+  {
+    "purpose": "회의",
+    "vibe": "모던/미니멀",
+    "factor": "price",
+    "time": "afternoon",
+    "area": "anywhere",
+    "title": "라이트 스낵 미팅",
+    "description": "비용 효율과 실용을 선호해요.",
+    "weights": {
+      "PURPOSE.회의": 1.4,
+      "PRICE.저렴": 1.3,
+      "FOOD.샌드위치": 1.2,
+      "DRINK.아메리카노": 1.15,
+      "FACILITY.와이파이": 1.3
+    }
+  },
+  {
+    "purpose": "사진",
+    "vibe": "모던/미니멀",
+    "factor": "atmosphere",
+    "time": "evening",
+    "area": "hongdae",
+    "title": "저녁 사진 레이트",
+    "description": "야간 조명 포토룩을 즐겨요.",
+    "weights": {
+      "PURPOSE.사진": 1.4,
+      "PURPOSE.데이트": 1.25,
+      "FACILITY.포토존": 1.45,
+      "VIBE.모던/미니멀": 1.25,
+      "DRINK.라떼": 1.2,
+      "FOOD.케이크": 1.2,
+      "PRICE.프리미엄": 1.1
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "아늑함",
+    "factor": "atmosphere",
+    "time": "afternoon",
+    "area": "anywhere",
+    "title": "티·책·혼커",
+    "description": "카페인 부담 없이 독서·휴식을 즐겨요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.35,
+      "DRINK.차": 1.35,
+      "VIBE.아늑함": 1.3,
+      "MUSIC.클래식": 1.15,
+      "FOOD.쿠키": 1.1,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "아늑함",
+    "factor": "atmosphere",
+    "time": "weekend",
+    "area": "sangsu",
+    "title": "주말 소파수다",
+    "description": "소파 중심의 편한 담소를 즐겨요.",
+    "weights": {
+      "PURPOSE.수다": 1.45,
+      "VIBE.아늑함": 1.3,
+      "DRINK.라떼": 1.2,
+      "FOOD.와플": 1.2,
+      "MUSIC.팝": 1.15,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "회의",
+    "vibe": "모던/미니멀",
+    "factor": "price",
+    "time": "afternoon",
+    "area": "hapjeong",
+    "title": "포멀·프리미엄 회의",
+    "description": "프리미엄급 환경과 편의를 선호해요.",
+    "weights": {
+      "PURPOSE.회의": 1.45,
+      "PRICE.프리미엄": 1.25,
+      "FACILITY.예약가능": 1.25,
+      "FACILITY.무료주차": 1.25,
+      "DRINK.아메리카노": 1.2,
+      "FOOD.샌드위치": 1.2
+    }
+  },
+  {
+    "purpose": "아이동반",
+    "vibe": "아늑함",
+    "factor": "dessert",
+    "time": "afternoon",
+    "area": "anywhere",
+    "title": "아이스크림 키즈하이",
+    "description": "아이 선호 메뉴와 편의를 중요하게 봐요.",
+    "weights": {
+      "PURPOSE.아이동반": 1.45,
+      "FOOD.아이스크림": 1.35,
+      "DRINK.논커피": 1.25,
+      "VIBE.아늑함": 1.25,
+      "FACILITY.매장내화장실": 1.35,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "사진",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "afternoon",
+    "area": "hongdae",
+    "title": "커피·사진 하이브리드",
+    "description": "사진과 커피의 균형을 원해요.",
+    "weights": {
+      "PURPOSE.사진": 1.35,
+      "PURPOSE.혼자 커피": 1.25,
+      "DRINK.콜드브루": 1.3,
+      "FACILITY.포토존": 1.35,
+      "VIBE.모던/미니멀": 1.2,
+      "FOOD.케이크": 1.15,
+      "PRICE.중간": 1.05
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "레트로/빈티지",
+    "factor": "dessert",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "레트로 샌드 티타임",
+    "description": "가벼운 회의+수다에 어울려요.",
+    "weights": {
+      "PURPOSE.수다": 1.25,
+      "PURPOSE.회의": 1.2,
+      "FOOD.샌드위치": 1.3,
+      "DRINK.차": 1.25,
+      "VIBE.레트로/빈티지": 1.25,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "모던/미니멀",
+    "factor": "dessert",
+    "time": "afternoon",
+    "area": "hapjeong",
+    "title": "헬시 스무디 모임",
+    "description": "건강 지향 음료와 캐주얼 모임을 선호해요.",
+    "weights": {
+      "PURPOSE.수다": 1.4,
+      "DRINK.스무디": 1.35,
+      "FOOD.쿠키": 1.15,
+      "VIBE.모던/미니멀": 1.2,
+      "MUSIC.팝": 1.2,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "혼자 커피",
+    "vibe": "인더스트리얼/도심감성",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "hongdae",
+    "title": "프리버드",
+    "description": "리듬감 있는 바 좌석에서 시작해요.",
+    "weights": {
+      "PURPOSE.혼자 커피": 1.35,
+      "DRINK.아메리카노": 1.25,
+      "VIBE.인더스트리얼/도심감성": 1.25,
+      "PRICE.중간": 1.0,
+      "MUSIC.힙합": 1.15
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "아늑함",
+    "factor": "location",
+    "time": "afternoon",
+    "area": "sangsu",
+    "title": "삼삼오오 4인 테이블",
+    "description": "4인 중심의 모임 테이블을 선호해요.",
+    "weights": {
+      "PURPOSE.수다": 1.45,
+      "VIBE.아늑함": 1.25,
+      "DRINK.라떼": 1.2,
+      "FOOD.와플": 1.15,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "데이트",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "hapjeong",
+    "title": "브런치+프리미엄 커피",
+    "description": "업무/데이트 겸용의 브런치+프리미엄 커피예요.",
+    "weights": {
+      "PURPOSE.데이트": 1.2,
+      "PURPOSE.회의": 1.2,
+      "FOOD.브런치": 1.35,
+      "DRINK.콜드브루": 1.3,
+      "DRINK.아메리카노": 1.25,
+      "PRICE.프리미엄": 1.15,
+      "VIBE.모던/미니멀": 1.2
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "모던/미니멀",
+    "factor": "coffee",
+    "time": "evening",
+    "area": "anywhere",
+    "title": "저녁 디카페인 수다",
+    "description": "늦은 시간, 디카페인으로 부담을 줄여요.",
+    "weights": {
+      "PURPOSE.수다": 1.4,
+      "DRINK.디카페인": 1.4,
+      "MUSIC.팝": 1.2,
+      "FOOD.쿠키": 1.1,
+      "VIBE.모던/미니멀": 1.15,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "사진",
+    "vibe": "레트로/빈티지",
+    "factor": "atmosphere",
+    "time": "weekend",
+    "area": "hongdae",
+    "title": "사진+키덜트 무드",
+    "description": "레트로 소품 포토를 즐겨요.",
+    "weights": {
+      "PURPOSE.사진": 1.4,
+      "VIBE.레트로/빈티지": 1.3,
+      "FACILITY.포토존": 1.4,
+      "FOOD.케이크": 1.2,
+      "DRINK.라떼": 1.2,
+      "MUSIC.팝": 1.15,
+      "PRICE.중간": 1.05
+    }
+  },
+  {
+    "purpose": "공부/작업/독서",
+    "vibe": "자연",
+    "factor": "coffee",
+    "time": "morning",
+    "area": "sangsu",
+    "title": "자연광 스터디",
+    "description": "자연광·녹음으로 피로를 낮춰요.",
+    "weights": {
+      "PURPOSE.공부/작업/독서": 1.45,
+      "VIBE.자연": 1.3,
+      "DRINK.아메리카노": 1.25,
+      "FACILITY.와이파이": 1.3,
+      "FOOD.베이커리": 1.1,
+      "PRICE.중간": 1.0
+    }
+  },
+  {
+    "purpose": "수다",
+    "vibe": "모던/미니멀",
+    "factor": "price",
+    "time": "afternoon",
+    "area": "anywhere",
+    "title": "가격최우선 모임",
+    "description": "예산 제약 강한 모임이에요.",
+    "weights": {
+      "PURPOSE.수다": 1.25,
+      "PURPOSE.회의": 1.2,
+      "PRICE.저렴": 1.45,
+      "DRINK.논커피": 1.15,
+      "FOOD.쿠키": 1.1,
+      "VIBE.모던/미니멀": 1.1
+    }
+  }
+]

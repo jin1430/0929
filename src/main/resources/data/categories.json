@@ -1,0 +1,7 @@
+[
+  { "code": "AMBIENCE", "name": "분위기",   "minSelect": 1, "maxSelect": 2, "desc": "공간 분위기 선호" },
+  { "code": "MENU",     "name": "메뉴",     "minSelect": 1, "maxSelect": 2, "desc": "음료/디저트 취향" },
+  { "code": "PRICE",    "name": "가격대",   "minSelect": 1, "maxSelect": 1, "desc": "지불 의향 범위" },
+  { "code": "NOISE",    "name": "소음/붐빔", "minSelect": 1, "maxSelect": 1, "desc": "조용함/활기 선호" },
+  { "code": "ACCESS",   "name": "접근성",   "minSelect": 1, "maxSelect": 1, "desc": "거리/주차/대중교통" }
+]

@@ -1,0 +1,121 @@
+{{! cafes/owner-modal.mustache – <dialog> 팝업 }}
+{{#isOwner}}
+    <dialog id="ownerModal" class="rounded-2xl p-0 w-full max-w-3xl">
+        <form method="dialog">
+            <div class="flex items-center justify-between px-6 py-4 border-b">
+                <h3 class="text-xl font-bold">점주 편집</h3>
+                <button id="ownerModalClose" class="text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+            </div>
+        </form>
+
+        <nav class="flex gap-4 px-6 pt-4 border-b">
+            <button class="owner-tab tab-active py-3 border-b-2 font-semibold" data-tab="info">카페 정보</button>
+            <button class="owner-tab py-3 border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="menu">메뉴 관리</button>
+        </nav>
+
+        <div class="p-6 space-y-8">
+
+            <!-- CafeInfo -->
+            <section id="owner-tab-info" class="owner-tab-panel">
+                <form id="cafeInfoForm" method="post"
+                      action="/owner/cafes/{{#cafe}}{{id}}{{/cafe}}/info{{#info}}/update{{/info}}{{^info}}/create{{/info}}">
+                    {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="block">
+                            <span class="text-sm text-gray-700">공지</span>
+                            <input name="cafeNotice" maxlength="20" class="mt-1 w-full border rounded-lg px-3 py-2"
+                                   value="{{#info}}{{notice}}{{/info}}" placeholder="ex) 성수기 대기">
+                        </label>
+
+                        <label class="block md:col-span-2">
+                            <span class="text-sm text-gray-700">한줄 소개</span>
+                            <input name="cafeInfo" maxlength="500" class="mt-1 w-full border rounded-lg px-3 py-2"
+                                   value="{{#info}}{{info}}{{/info}}" placeholder="자연 친화 스페셜티 카페">
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm text-gray-700">오픈</span>
+                            <input name="cafeOpenTime" maxlength="7" class="mt-1 w-full border rounded-lg px-3 py-2"
+                                   value="{{#info}}{{openTime}}{{/info}}" placeholder="09:00">
+                        </label>
+
+                        <label class="block">
+                            <span class="text-sm text-gray-700">마감</span>
+                            <input name="cafeCloseTime" maxlength="7" class="mt-1 w-full border rounded-lg px-3 py-2"
+                                   value="{{#info}}{{closeTime}}{{/info}}" placeholder="22:00">
+                        </label>
+
+                        <label class="block md:col-span-2">
+                            <span class="text-sm text-gray-700">휴무</span>
+                            <input name="cafeHoliday" maxlength="7" class="mt-1 w-full border rounded-lg px-3 py-2"
+                                   value="{{#info}}{{holiday}}{{/info}}" placeholder="화요일">
+                        </label>
+                    </div>
+
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button type="button" class="px-4 py-2 rounded-lg border" id="cafeInfoCancelBtn">취소</button>
+                        <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">
+                            {{#info}}정보 수정{{/info}}{{^info}}정보 등록{{/info}}
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Menu -->
+            <section id="owner-tab-menu" class="owner-tab-panel hidden">
+                <form id="menuAddForm" class="mb-6" method="post" enctype="multipart/form-data"
+                      action="/owner/cafes/{{#cafe}}{{id}}{{/cafe}}/menus">
+                    {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                        <label class="block">
+                            <span class="text-sm text-gray-700">메뉴명</span>
+                            <input name="menuName" required maxlength="12" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="아메리카노">
+                        </label>
+                        <label class="block">
+                            <span class="text-sm text-gray-700">가격</span>
+                            <input name="menuPrice" type="number" min="0" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="4500">
+                        </label>
+                        <label class="block">
+                            <span class="text-sm text-gray-700">사진 파일</span>
+                            <input name="menuPhoto" type="file" accept="image/*" class="mt-1 w-full border rounded-lg px-3 py-2">
+                            <small class="text-gray-500">또는 URL 입력: <input name="photoUrl" class="border rounded px-2 py-1 ml-1" placeholder="https://..."></small>
+                        </label>
+                    </div>
+                    <div class="flex items-center gap-4 mt-3">
+                        <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="isNew"> 신메뉴</label>
+                        <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="isRecommended"> 추천</label>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">메뉴 추가</button>
+                    </div>
+                </form>
+
+                <ul id="menuList" class="grid md:grid-cols-2 gap-4">
+                    {{#menus}}
+                        <li class="flex justify-between items-center p-4 bg-green-50 rounded-xl">
+                            <div class="flex items-center gap-3">
+                                <img src="{{photo}}" alt="{{name}}" class="w-16 h-16 object-cover rounded-md"
+                                     onerror="this.onerror=null;this.src='/images/placeholder-cafe.jpg'">
+                                <div>
+                                    <div class="font-semibold text-gray-800">{{name}}</div>
+                                    <div class="text-gray-600 text-sm">{{price}}</div>
+                                </div>
+                            </div>
+                            <form method="post" action="/owner/cafes/{{#cafe}}{{id}}{{/cafe}}/menus/{{id}}/delete"
+                                  onsubmit="return confirm('삭제하시겠어요?')">
+                                {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+                                <button class="px-3 py-2 rounded-lg border text-red-600 border-red-200 hover:bg-red-50" type="submit">삭제</button>
+                            </form>
+                        </li>
+                    {{/menus}}
+                    {{^menus}}<li class="text-gray-500">등록된 메뉴가 없습니다.</li>{{/menus}}
+                </ul>
+            </section>
+
+        </div>
+    </dialog>
+    <style>
+        #ownerModal::backdrop { background: rgba(0,0,0,.45); }
+    </style>
+{{/isOwner}}

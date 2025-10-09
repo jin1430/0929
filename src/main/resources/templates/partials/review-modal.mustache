@@ -1,0 +1,206 @@
+<div id="reviewModal" class="cg-modal review-modal--lg hidden" aria-hidden="true">
+    <div class="cg-modal__backdrop"></div>
+    <div class="cg-modal__panel" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+        <div class="cg-modal__header">
+            <h3 id="reviewModalTitle" class="text-lg font-semibold">리뷰 작성</h3>
+            <button type="button" id="closeReviewModal" class="cg-modal__close" aria-label="닫기">✕</button>
+        </div>
+
+        <form id="reviewForm" class="space-y-4" action="/reviews/new" method="post" enctype="multipart/form-data">
+            {{#_csrf}}<input type="hidden" name="{{parameterName}}" value="{{token}}">{{/_csrf}}
+            <input type="hidden" name="cafeId" value="{{#cafe}}{{id}}{{/cafe}}"/>
+
+            <!-- 평점 -->
+            <div>
+                <label class="block text-sm font-medium mb-1">평점</label>
+                <div id="ratingStars" class="flex gap-1 text-2xl cursor-pointer" aria-label="평점 선택">
+                    <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+                </div>
+                <input type="hidden" name="rating" id="ratingInput" value="5"/>
+            </div>
+
+            <!-- 내용 -->
+            <div>
+                <label class="block text-sm font-medium mb-1" for="reviewContent">내용</label>
+                <textarea id="reviewContent" name="reviewContent" rows="5" required
+                          class="w-full border rounded-xl p-3"
+                          placeholder="카페 분위기, 메뉴, 소음 등 경험을 들려주세요."></textarea>
+            </div>
+
+            <!-- 태그 선택 (FORM 아님! 중첩 방지) -->
+            <div id="needs-section" class="mt-6">
+                <h4 class="font-semibold text-gray-800 mb-2">이번 방문은 어떤 목적/분위기였나요? <span class="text-gray-400 text-sm">(선택)</span></h4>
+
+                <!-- VIBE -->
+                <div class="mb-8 mt-8">
+                    <h3 class="cg-panel__title mb-3">카페의 테마가 어땠나요?</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="VIBE" data-name="레트로/빈티지">레트로/빈티지</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="VIBE" data-name="모던/미니멀">모던/미니멀</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="VIBE" data-name="아늑함">아늑함</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="VIBE" data-name="인더스트리얼/도심감성">인더스트리얼/도심감성</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="VIBE" data-name="자연">자연</button>
+                    </div>
+                </div>
+                <div class="cg-divider"></div>
+
+                <!-- PURPOSE -->
+                <div class="mb-8 mt-8">
+                    <h3 class="cg-panel__title mb-3">카페에 뭐하러 갔나요?</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PURPOSE" data-name="공부/작업/독서">공부/작업/독서</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PURPOSE" data-name="데이트">데이트</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PURPOSE" data-name="사진">사진</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PURPOSE" data-name="수다">수다</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PURPOSE" data-name="아이동반">아이동반</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PURPOSE" data-name="혼자 커피">혼자 커피</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PURPOSE" data-name="회의">회의</button>
+                    </div>
+                </div>
+                <div class="cg-divider"></div>
+
+                <!-- LIGHT_VIEW -->
+                <div class="mb-8 mt-8">
+                    <h3 class="cg-panel__title mb-3">카페의 뷰는 어땠나요?</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="LIGHT_VIEW" data-name="루프탑">루프탑</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="LIGHT_VIEW" data-name="시티뷰">시티뷰</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="LIGHT_VIEW" data-name="자연광">자연광</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="LIGHT_VIEW" data-name="테라스">테라스</button>
+                    </div>
+                </div>
+                <div class="cg-divider"></div>
+
+                <!-- MUSIC -->
+                <div class="mb-8 mt-8">
+                    <h3 class="cg-panel__title mb-3">어떤 음악이 재생되었나요?</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="MUSIC" data-name="K-pop">K-pop</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="MUSIC" data-name="클래식/재즈">클래식/재즈</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="MUSIC" data-name="팝">팝</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="MUSIC" data-name="힙합">힙합</button>
+                    </div>
+                </div>
+                <div class="cg-divider"></div>
+
+                <!-- PRICE -->
+                <div class="mb-8 mt-8">
+                    <h3 class="cg-panel__title mb-3">카페의 전반적 가격은 어땠나요?</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PRICE" data-name="저렴">저렴</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PRICE" data-name="중간">중간</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="PRICE" data-name="프리미엄">프리미엄</button>
+                    </div>
+                </div>
+                <div class="cg-divider"></div>
+
+                <!-- FACILITY -->
+                <div class="mb-8 mt-8">
+                    <h3 class="cg-panel__title mb-3">카페의 편의 시설은 어떤 것이 있었나요?</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="무료주차">무료주차</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="반려동물">반려동물</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="예약 가능">예약 가능</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="와이파이">와이파이</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="콘센트">콘센트</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="포토존">포토존</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="화장실 내부">화장실 내부</button>
+                        <button class="cg-chip cg-tag-btn" type="button" data-code="FACILITY" data-name="휠체어/유모차">휠체어/유모차</button>
+                    </div>
+                </div>
+
+                <!-- 여기로 숨김 인풋 생성 -->
+                <div id="modal-hidden-inputs"></div>
+            </div>
+
+            <!-- 사진 -->
+            <div>
+                <label class="block text-sm font-medium mb-1" for="photos">사진 (최대 6장)</label>
+                <input id="photos" name="photos" type="file" accept="image/*" multiple class="w-full"/>
+                <div id="photoPreview" class="grid grid-cols-3 gap-2 mt-2"></div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" id="cancelReview" class="px-4 py-2 rounded-xl border">취소</button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-green-600 text-white hover:bg-green-700">등록</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (() => {
+      const modal = document.getElementById('reviewModal');
+      if (!modal) return;
+
+      const form    = modal.querySelector('#reviewForm');
+      const hidden  = modal.querySelector('#modal-hidden-inputs');
+      const section = modal.querySelector('#needs-section');
+      const SELECTED = 'is-selected';
+      const MAX = 5;
+
+      // [이벤트 위임] 태그 버튼 클릭 처리 (+ 최대 5개 제한)
+      section.addEventListener('click', (e) => {
+        const btn = e.target.closest('.cg-tag-btn, .tag-btn');
+        if (!btn) return;
+
+        const selected = section.querySelectorAll('.' + SELECTED);
+        const isOn = btn.classList.contains(SELECTED);
+
+        // 선택을 켤 때만 제한 검사
+        if (!isOn && selected.length >= MAX) {
+          // 가벼운 피드백(선택 초과)
+          btn.animate([{transform:'scale(1.0)'},{transform:'scale(0.96)'},{transform:'scale(1.0)'}], {duration:180});
+          return;
+        }
+
+        btn.classList.toggle(SELECTED);
+        btn.setAttribute('aria-pressed', btn.classList.contains(SELECTED) ? 'true' : 'false');
+      });
+
+      // 제출 시 hidden inputs 재구성
+      form.addEventListener('submit', () => {
+        if (!hidden) return;
+        hidden.innerHTML = '';
+
+        // 선택된 것만 추출 (중복 방지)
+        const picked = Array.from(section.querySelectorAll('.' + SELECTED));
+        const seen = new Set();
+
+        picked.forEach(btn => {
+          const code = btn.dataset.code?.trim();     // 카테고리 코드 (예: VIBE)
+          // 현재는 data-name 사용 중. 서버가 태그 코드를 원한다면 data-tagcode로 바꿔 사용:
+          const valueRight = (btn.dataset.tagcode ?? btn.dataset.name)?.trim();
+          if (!code || !valueRight) return;
+
+          const key = code + '|' + valueRight;
+          if (seen.has(key)) return;
+          seen.add(key);
+
+          const i = document.createElement('input');
+          i.type = 'hidden';
+          i.name = 'tags';
+          i.value = key; // 예: "VIBE|아늑함" 또는 "VIBE|COZY"
+          hidden.appendChild(i);
+        });
+      });
+    })();
+</script>
+
+<style>
+    .cg-chip { border: 1px solid #e5e7eb; border-radius: 9999px; padding: 8px 14px; font-size: 14px; background: #fff; transition: all .15s ease; }
+    .cg-chip:hover { transform: translateY(-1px); }
+    .cg-chip.is-selected { border-color: #14b8a6; background: #ecfeff; box-shadow: 0 0 0 2px rgba(20,184,166,.15) inset; font-weight: 600; }
+
+    /* 리뷰 모달 확대 */
+    .review-modal--lg .cg-modal__panel{
+      max-width: 960px;
+      width: calc(100% - 48px);
+      padding: 24px 24px 28px;
+      max-height: min(90vh, 820px);
+      overflow: auto;
+    }
+    @media (min-width: 1280px){
+      .review-modal--lg .cg-modal__panel{ max-width: 1040px; }
+    }
+</style>

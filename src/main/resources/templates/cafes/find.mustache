@@ -1,0 +1,116 @@
+{{>layout/header}}
+{{>partials/onboarding}}
+
+<main id="page-cafes"
+      class="page active bg-gray-50 min-h-screen"
+      data-initial-region="{{initialRegion}}"
+      data-initial-sort="{{initialSort}}">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- 헤더 -->
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">카페 찾기</h1>
+            <p class="text-gray-600">원하는 조건으로 카페를 찾아보세요</p>
+        </header>
+
+        <!-- 필터 바 -->
+        <section class="filter-bar mb-8">
+            <form class="cg-filter-row mb-6" method="get" action="/cafes" style="gap:12px">
+                <select name="region" class="cg-select" id="regionSelect">
+                    <option value="">전체 지역</option>
+                    <option value="합정">합정</option>
+                    <option value="연트럴파크">연트럴파크</option>
+                    <option value="홍대">홍대</option>
+                    <option value="상수">상수</option>
+                </select>
+
+                <select name="sort" class="cg-select" id="sortSelect">
+                    <option value="latest">최신순</option>
+                    <option value="popular">인기순</option>
+                </select>
+
+                <input id="cafe-search" type="text" name="q" class="cg-input"
+                       placeholder="지역이나 카페명을 검색해보세요..."
+                       value="{{initialQuery}}" style="flex:1;min-width:240px"/>
+
+                <button type="submit" class="cg-btn cg-btn--primary">검색</button>
+            </form>
+
+            <!-- 태그 필터 (클라이언트 렌더로 채움) -->
+            <div id="tag-filters" class="flex flex-wrap gap-2">
+                {{#initialTags}}<span class="cg-chip selected" data-tag="{{.}}">#{{.}}</span>{{/initialTags}}
+            </div>
+        </section>
+
+        <div class="quick-actions">
+            <a class="cg-btn cg-btn--primary cg-btn--xl" href="/recommend/questions">
+                질문 받아 카페 찾기
+            </a>
+            <a class="cg-btn cg-btn--primary cg-btn--xl" href="/recommend/gender">
+                성별 맞춤 카페 찾기
+            </a>
+            <a class="cg-btn cg-btn--primary cg-btn--xl" href="/recommend/age">
+                연령 맞춤 카페 찾기
+            </a>
+            <a class="cg-btn cg-btn--primary cg-btn--xl" href="/recommend/needs">
+                내게 맞는 카페 찾기
+            </a>
+        </div>
+
+        <!-- 리스트 -->
+        <section>
+            {{#recommendedBy}}
+                <h2 style="font-size: 32px; font-weight: 700;">{{recommendedBy}}</h2>
+                <p class="cg-meta">{{hotSubtitle}}</p>
+            {{/recommendedBy}}
+
+            {{#didAnswer}}
+                <h3>{{myTitle}}</h3>
+                <p>{{myDescription}}</p>
+            {{/didAnswer}}
+
+            <div id="cafe-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                {{#cafeCards}}
+                    <a class="block bg-white rounded-2xl shadow hover:shadow-md transition overflow-hidden"
+                       href="/cafes/{{id}}" style="text-decoration:none;color:inherit">
+                        {{#photoUrl}}
+                            <div class="h-44 bg-gray-100"><img src="{{photoUrl}}" alt="{{name}}" class="w-full h-full object-cover"/></div>
+                        {{/photoUrl}}
+                        {{^photoUrl}}
+                            <div class="h-44 bg-gray-100 flex items-center justify-center text-3xl">☕</div>
+                        {{/photoUrl}}
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-semibold text-lg text-gray-800">{{name}}</h3>
+                                <span class="text-xs text-gray-500">조회수 {{#views}}{{views}}{{/views}}{{^views}}0{{/views}}</span>
+                            </div>
+                            <p class="text-sm text-gray-500 break-words">{{address}}</p>
+                        </div>
+                    </a>
+                {{/cafeCards}}
+                {{^cafeCards}}<div class="col-span-full text-gray-500">검색 결과가 없습니다.</div>{{/cafeCards}}
+            </div>
+        </section>
+    </div>
+</main>
+
+<script defer src="/js/cafes.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelector('.cg-onboarding')?.classList.add('hidden');
+
+      const root = document.getElementById('page-cafes');
+      const region = (root?.dataset.initialRegion || '').trim();
+      const sort   = (root?.dataset.initialSort || '').trim();
+      const rs = document.getElementById('regionSelect');
+      const ss = document.getElementById('sortSelect');
+      if (rs && region) rs.value = region;
+      if (ss && sort)   ss.value = sort;
+
+      if (window.initCafeSearch) window.initCafeSearch();
+    });
+     document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.cg-onboarding')?.classList.add('hidden');
+  });
+</script>
+
+{{>layout/footer}}

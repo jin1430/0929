@@ -1,0 +1,47 @@
+﻿category_code,category_label,tag_code,tag_label,weight_male_new,weight_female_new
+DRINK,커피/음료,americano,아메리카노,1.4,1.1
+DRINK,커피/음료,coldbrew,콜드브루,0.9,0.9
+DRINK,커피/음료,decaf,디카페인,0.9,1.15
+DRINK,커피/음료,latte,라떼,0.9,1.35
+DRINK,커피/음료,noncoffee,논커피,1,1.1
+DRINK,커피/음료,smoothie,스무디,1,1.2
+DRINK,커피/음료,tea,차,0.9,1.45
+FACILITY,편의/시설,free_parking,무료주차,1.25,0.9
+FACILITY,편의/시설,outlet,콘센트,1.3,1.2
+FACILITY,편의/시설,pet,반려동물,0.8,1.1
+FACILITY,편의/시설,photo_zone,포토존,1,1.4
+FACILITY,편의/시설,reservation_available,예약 가능,0.8,1.1
+FACILITY,편의/시설,toilet_inside,화장실 내부,0.8,1
+FACILITY,편의/시설,wheelchair_stroller,휠체어/유모차,0.8,0.9
+FACILITY,편의/시설,wifi,와이파이,1.35,1.2
+FOOD,디저트/푸드,bakery,베이커리,0.8,1.25
+FOOD,디저트/푸드,brunch,브런치,1,1.25
+FOOD,디저트/푸드,cake,케이크,0.95,1.4
+FOOD,디저트/푸드,cookie,쿠키,0.85,1.3
+FOOD,디저트/푸드,icecream,아이스크림,1,1.25
+FOOD,디저트/푸드,macaron,마카롱,1,1.15
+FOOD,디저트/푸드,sandwich,샌드위치,1,1.15
+FOOD,디저트/푸드,waffle,와플,0.8,1.3
+LIGHT_VIEW,조명/채광/뷰,city_view,시티뷰,1,1.4
+LIGHT_VIEW,조명/채광/뷰,natural_light_good,자연광,1,0.8
+LIGHT_VIEW,조명/채광/뷰,rooftop,루프탑,1,1.3
+LIGHT_VIEW,조명/채광/뷰,terrace,테라스,1,1.35
+MUSIC,음악,genre_classic,클래식/재즈,0.8,1.25
+MUSIC,음악,genre_hiphop,힙합,1.2,0.8
+MUSIC,음악,genre_kpop,K-pop,0.8,1.2
+MUSIC,음악,genre_pop,팝,1.1,0.9
+PRICE,가격대,price_high,프리미엄,0.7,0.9
+PRICE,가격대,price_low,저렴,1.25,1.15
+PRICE,가격대,price_mid,중간,0.9,1.05
+PURPOSE,목적/이용상황,chatting,수다,0.8,1.4
+PURPOSE,목적/이용상황,date,데이트,0.9,1.35
+PURPOSE,목적/이용상황,meeting,회의,1.3,0.85
+PURPOSE,목적/이용상황,photo_spot,사진,0.8,1.2
+PURPOSE,목적/이용상황,solo_coffee,혼자 커피,1.15,0.8
+PURPOSE,목적/이용상황,with_kids,아이동반,0.8,1.2
+PURPOSE,목적/이용상황,work_study,공부/작업/독서,1.45,0.9
+VIBE,분위기,cozy,아늑함,0.95,1.25
+VIBE,분위기,industrial,인더스트리얼/도심감성,1.05,1.25
+VIBE,분위기,modern,모던/미니멀,1,1.15
+VIBE,분위기,nature,자연,0.95,1.25
+VIBE,분위기,retro,레트로/빈티지,1.1,0.8

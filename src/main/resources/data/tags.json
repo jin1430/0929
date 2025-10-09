@@ -1,0 +1,21 @@
+[
+  { "category": "AMBIENCE", "code": "COZY",    "name": "아늑함",           "examples": "따뜻한 조명, 소파" },
+  { "category": "AMBIENCE", "code": "MINIMAL", "name": "모던/미니멀",      "examples": "화이트톤, 심플" },
+  { "category": "AMBIENCE", "code": "NATURE",  "name": "자연",             "examples": "식물, 채광" },
+  { "category": "AMBIENCE", "code": "VINTAGE", "name": "레트로/빈티지",    "examples": "앤틱 소품" },
+
+  { "category": "MENU",     "code": "AMERICANO","name": "아메리카노",     "examples": "깔끔한 산미" },
+  { "category": "MENU",     "code": "LATTE",   "name": "라떼",             "examples": "부드러운 우유" },
+  { "category": "MENU",     "code": "DESSERT", "name": "디저트 다양",      "examples": "케이크/스콘" },
+
+  { "category": "PRICE",    "code": "PREMIUM", "name": "프리미엄",         "examples": "높은 가격대" },
+  { "category": "PRICE",    "code": "MID",     "name": "중간",             "examples": "보통 가격대" },
+  { "category": "PRICE",    "code": "LOW",     "name": "저렴",             "examples": "가성비" },
+
+  { "category": "NOISE",    "code": "QUIET",   "name": "조용함",           "examples": "집중/독서" },
+  { "category": "NOISE",    "code": "BUZZ",    "name": "활기/북적",        "examples": "수다/활기" },
+
+  { "category": "ACCESS",   "code": "NEAR",    "name": "가까움",           "examples": "집/회사 근처" },
+  { "category": "ACCESS",   "code": "PARK",    "name": "주차 용이",        "examples": "주차 가능" },
+  { "category": "ACCESS",   "code": "TRANSIT", "name": "대중교통 접근성",  "examples": "역세권" }
+]

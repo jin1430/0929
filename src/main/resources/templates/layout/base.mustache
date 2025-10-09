@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>{{#title}}{{{.}}} | CafeGo{{/title}}{{^title}}CafeGo{{/title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/cg-bridge.css"/>
+    <style>
+        body{font-family:'Noto Sans KR',sans-serif;background:#fafafa}
+        .nav-item{position:relative;transition:all .3s}
+        .nav-item.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:3px;background:var(--primary-mint);border-radius:2px}
+    </style>
+
+</head>
+<body>
+{{> layout/header }}
+
+{{#body}}{{/body}}
+
+{{> layout/footer }}
+
+</body>
+</html>

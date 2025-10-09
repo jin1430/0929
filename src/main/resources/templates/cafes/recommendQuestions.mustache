@@ -1,0 +1,264 @@
+{{>layout/header}}
+
+<form id="quiz-form" action="/recommend/questions/result" method="get">
+
+    <main id="page-onboarding" class="bg-gray-50 min-h-screen">
+        <section class="py-16">
+            <div class="max-w-3xl mx-auto bg-white rounded-2xl p-8 shadow card-shadow">
+                <!-- 헤더 -->
+                <div class="text-center mb-10">
+                    <div class="w-16 h-16 primary-gradient rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">☕</div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">당신만의 완벽한 카페를 찾아드릴게요!</h2>
+                    <p class="text-gray-600">몇 가지 질문에 답해주시면 취향에 맞는 카페를 추천해드립니다</p>
+                </div>
+
+                <!-- 진행 표시 -->
+                <div class="flex items-center justify-center mb-8">
+                    <div class="flex space-x-2" id="step-dots">
+                        <div class="w-3 h-3 bg-teal-500 rounded-full step-indicator" data-step="1"></div>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full step-indicator" data-step="2"></div>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full step-indicator" data-step="3"></div>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full step-indicator" data-step="4"></div>
+                        <div class="w-3 h-3 bg-gray-300 rounded-full step-indicator" data-step="5"></div>
+                    </div>
+                    <span class="ml-4 text-sm text-gray-500" id="step-counter">1 / 5</span>
+                </div>
+
+                <!-- 질문 1 -->
+                <div class="onboarding-step active" id="step-1">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">주로 카페에 어떤 목적으로 가시나요?</h3>
+                    <div class="opt-row">
+                        <button type="button" class="onboarding-option" data-value="study">
+                            <div class="text-4xl mb-2">📚</div>
+                            <div class="font-medium text-gray-800">공부/업무</div>
+                            <div class="text-sm text-gray-500 mt-1">조용하고 집중할 수 있는</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="date">
+                            <div class="text-4xl mb-2">💕</div>
+                            <div class="font-medium text-gray-800">데이트</div>
+                            <div class="text-sm text-gray-500 mt-1">분위기 좋고 로맨틱한</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="friends">
+                            <div class="text-4xl mb-2">👥</div>
+                            <div class="font-medium text-gray-800">친구들과 수다</div>
+                            <div class="text-sm text-gray-500 mt-1">활기차고 편안한</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="alone">
+                            <div class="text-4xl mb-2">☕</div>
+                            <div class="font-medium text-gray-800">혼자만의 시간</div>
+                            <div class="text-sm text-gray-500 mt-1">아늑하고 편안한</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 질문 2 -->
+                <div class="onboarding-step" id="step-2">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">어떤 분위기의 카페를 선호하시나요?</h3>
+                    <div class="opt-row">
+                        <button type="button" class="onboarding-option" data-value="modern">
+                            <div class="text-4xl mb-2">🏢</div>
+                            <div class="font-medium">모던하고 세련된</div>
+                            <div class="text-sm text-gray-500 mt-1">깔끔하고 미니멀한</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="cozy">
+                            <div class="text-4xl mb-2">🏠</div>
+                            <div class="font-medium">아늑하고 따뜻한</div>
+                            <div class="text-sm text-gray-500 mt-1">집 같은 편안함</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="vintage">
+                            <div class="text-4xl mb-2">📻</div>
+                            <div class="font-medium">빈티지하고 독특한</div>
+                            <div class="text-sm text-gray-500 mt-1">개성 있고 특별한</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="nature">
+                            <div class="text-4xl mb-2">🌿</div>
+                            <div class="font-medium">자연친화적인</div>
+                            <div class="text-sm text-gray-500 mt-1">식물과 자연 소재</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 질문 3 -->
+                <div class="onboarding-step" id="step-3">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">카페 선택 시 가장 중요한 요소는?</h3>
+                    <div class="opt-row">
+                        <button type="button" class="onboarding-option wide" data-value="coffee">
+                            <div class="opt-line"><span class="text-2xl mr-3">☕</span><span><b>커피 맛과 품질</b><br><small class="text-gray-500">스페셜티 커피, 원두의 품질</small></span></div>
+                        </button>
+                        <button type="button" class="onboarding-option wide" data-value="atmosphere">
+                            <div class="opt-line"><span class="text-2xl mr-3">🎵</span><span><b>분위기와 인테리어</b><br><small class="text-gray-500">예쁜 공간, 포토존</small></span></div>
+                        </button>
+                        <button type="button" class="onboarding-option wide" data-value="location">
+                            <div class="opt-line"><span class="text-2xl mr-3">📍</span><span><b>접근성과 위치</b><br><small class="text-gray-500">교통편, 주차 편의성</small></span></div>
+                        </button>
+                        <button type="button" class="onboarding-option wide" data-value="price">
+                            <div class="opt-line"><span class="text-2xl mr-3">💰</span><span><b>가격 대비 만족도</b><br><small class="text-gray-500">합리적인 가격</small></span></div>
+                        </button>
+                        <button type="button" class="onboarding-option wide" data-value="dessert">
+                            <div class="opt-line"><span class="text-2xl mr-3">🧁</span><span><b>디저트와 음식</b><br><small class="text-gray-500">케이크, 브런치 메뉴</small></span></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 질문 4 -->
+                <div class="onboarding-step" id="step-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">주로 언제 카페를 이용하시나요?</h3>
+                    <div class="opt-row">
+                        <button type="button" class="onboarding-option" data-value="morning">
+                            <div class="text-4xl mb-2">🌅</div>
+                            <div class="font-medium">오전 (7-11시)</div>
+                            <div class="text-sm text-gray-500 mt-1">모닝커피, 브런치</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="afternoon">
+                            <div class="text-4xl mb-2">☀️</div>
+                            <div class="font-medium">오후 (12-17시)</div>
+                            <div class="text-sm text-gray-500 mt-1">점심 후 휴식</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="evening">
+                            <div class="text-4xl mb-2">🌆</div>
+                            <div class="font-medium">저녁 (18-21시)</div>
+                            <div class="text-sm text-gray-500 mt-1">퇴근 후 여유</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="weekend">
+                            <div class="text-4xl mb-2">🎉</div>
+                            <div class="font-medium">주말</div>
+                            <div class="text-sm text-gray-500 mt-1">여유로운 휴일</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 질문 5 -->
+                <div class="onboarding-step" id="step-5">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">주로 어느 지역의 카페를 이용하시나요?</h3>
+                    <div class="opt-row">
+                        <button type="button" class="onboarding-option" data-value="hongdae">
+                            <div class="text-4xl mb-2">🎨</div>
+                            <div class="font-medium">홍대/연트럴파크</div>
+                            <div class="text-sm text-gray-500 mt-1">젊고 활기찬 분위기</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="hapjeong">
+                            <div class="text-4xl mb-2">🏢</div>
+                            <div class="font-medium">합정</div>
+                            <div class="text-sm text-gray-500 mt-1">비즈니스 중심가</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="sangsu">
+                            <div class="text-4xl mb-2">🏛️</div>
+                            <div class="font-medium">상수</div>
+                            <div class="text-sm text-gray-500 mt-1">전통과 현대의 조화</div>
+                        </button>
+                        <button type="button" class="onboarding-option" data-value="anywhere">
+                            <div class="text-4xl mb-2">🗺️</div>
+                            <div class="font-medium">상관없음</div>
+                            <div class="text-sm text-gray-500 mt-1">어디든 좋아요</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 하단 버튼 -->
+                <div class="btn-row">
+                    <button type="button" id="prev-btn" onclick="prevStep()" class="btn-outline hidden">이전</button>
+                    <button type="button" id="complete-btn" onclick="completeOnboarding()" class="btn-primary hidden">카페 추천받기</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <input type="hidden" name="purpose" id="inp-purpose">
+    <input type="hidden" name="vibe"    id="inp-vibe">
+    <input type="hidden" name="factor"  id="inp-factor">
+    <input type="hidden" name="time"    id="inp-time">
+    <input type="hidden" name="area"    id="inp-area">
+</form>
+
+{{>layout/footer}}
+
+<style>
+    .card-shadow{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06);}
+    .card-shadow:hover{box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04);}
+    .opt-row{ display:flex; flex-wrap:wrap; gap:16px 18px; justify-content:center; }
+    .onboarding-option{ display:flex; flex-direction:column; align-items:center; text-align:center;
+      padding:20px; border:2px solid #e5e7eb; border-radius:16px; background:#fff; min-width:200px; transition:all .2s ease; }
+    .onboarding-option:hover{ border-color:#14b8a6; background:#f0fdfa; }
+    .onboarding-option.wide{ min-width:280px; align-items:flex-start; text-align:left; }
+    .opt-line{ display:flex; align-items:flex-start; }
+    .step-indicator.active{ background:#14b8a6; }
+    .btn-row{ display:flex; gap:14px; justify-content:center; align-items:center; margin-top:24px; flex-wrap:wrap; }
+    .btn-primary{ background:#3aa17e; color:#fff; padding:12px 20px; border-radius:16px; font-weight:600; transition:.2s; }
+    .btn-primary:hover{ background:#2d8066; transform:translateY(-1px); }
+    .btn-gray{ background:#e5e7eb; color:#4b5563; padding:12px 20px; border-radius:16px; font-weight:600; cursor:not-allowed; }
+    .btn-gray.enabled{ cursor:pointer; }
+    .btn-outline{ border:1px solid #d1d5db; color:#374151; background:#fff; padding:12px 20px; border-radius:16px; font-weight:600; }
+    .btn-outline:hover{ background:#f9fafb; }
+    .btn-link{ background:transparent; color:#6b7280; padding:12px 16px; border-radius:12px; }
+    .btn-link:hover{ color:#374151; text-decoration:underline; }
+    .onboarding-step{ display:none; }
+    .onboarding-step.active{ display:block; }
+    .onboarding-option.selected{ border-color:#0ea5e9; background:#ecfeff; }
+</style>
+
+<script>
+    let step = 1, total = 5;
+
+    const mapValue = (step, v) => {
+      if (step === 1) return ({study:'work_study', date:'date', friends:'chatting', alone:'solo_coffee'})[v] || v;
+      if (step === 2) return ({modern:'modern', cozy:'cozy', vintage:'retro', nature:'nature'})[v] || v;
+      return v;
+    };
+
+    function writeHidden(stepNum, value){
+      const mapped = mapValue(stepNum, value);
+      if (stepNum === 1) document.getElementById('inp-purpose').value = mapped;
+      if (stepNum === 2) document.getElementById('inp-vibe').value    = mapped;
+      if (stepNum === 3) document.getElementById('inp-factor').value  = mapped;
+      if (stepNum === 4) document.getElementById('inp-time').value    = mapped;
+      if (stepNum === 5) document.getElementById('inp-area').value    = mapped;
+    }
+
+    function showStep(n){
+      document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
+      document.getElementById('step-'+n)?.classList.add('active');
+      document.getElementById('step-counter').textContent = n + ' / ' + total;
+      document.querySelectorAll('.step-indicator').forEach(dot => {
+        const idx = parseInt(dot.dataset.step,10);
+        const on = idx <= n;
+        dot.classList.toggle('active', on);
+        dot.classList.toggle('bg-teal-500', on);
+        dot.classList.toggle('bg-gray-300', !on);
+      });
+      document.getElementById('prev-btn').classList.toggle('hidden', n === 1);
+      document.getElementById('next-btn').classList.toggle('hidden', n === total);
+      document.getElementById('complete-btn').classList.toggle('hidden', n !== total);
+    }
+
+    function nextStep(){ if(step < total){ step++; showStep(step); } }
+    function prevStep(){ if(step > 1){ step--; showStep(step); } }
+
+    // 마지막 스텝에서 선택 즉시 결과로 이동
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.onboarding-option');
+      if(!btn) return;
+      e.preventDefault();
+
+      const parent = btn.closest('.onboarding-step');
+      parent.querySelectorAll('.onboarding-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      const stepNum = parseInt(parent.id.split('-')[1], 10);
+      writeHidden(stepNum, btn.dataset.value);
+
+      if (stepNum < total) {
+        // 다음 스텝으로
+        step = stepNum + 1;
+        showStep(step);
+      } else {
+        // 마지막 스텝이면 바로 GET 제출 → /recommend/questions/result?purpose=...&vibe=...
+        document.getElementById('quiz-form').submit();
+      }
+    });
+
+    // 하단 버튼들에 type="button" 필수 (자동 submit 방지)
+    // (템플릿 쪽에서 이미 type 지정했으면 생략)
+
+    // 초기 표시
+    showStep(1);
+</script>

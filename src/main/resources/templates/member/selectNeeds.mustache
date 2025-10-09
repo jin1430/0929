@@ -1,0 +1,179 @@
+{{>layout/header}}
+
+<main id="page-select-needs" class="bg-gray-50 min-h-screen">
+  <section class="py-12">
+    <div class="max-w-3xl mx-auto bg-white rounded-2xl p-8 shadow card-shadow">
+
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 primary-gradient rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">✨</div>
+        <h2 class="text-2xl font-bold text-gray-800">나의 취향 선택</h2>
+        <p class="text-gray-600 mt-2">카테고리별로 해당되는 태그를 선택하세요. 저장 시 선택된 항목은 기본 가중치 <strong>1</strong>로 기록됩니다.</p>
+      </div>
+
+      <div class="cg-notice-panel mb-6">태그 버튼을 클릭하여 선택/해제하세요. (다중 선택 가능)</div>
+
+      <form id="needs-form" action="/member/select/needs" method="post">
+        {{#_csrf}}
+        <input type="hidden" name="{{parameterName}}" value="{{token}}">
+        {{/_csrf}}
+        <!-- ========== 카테고리: VIBE (VIBE) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">VIBE</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="VIBE" data-name="레트로/빈티지" aria-pressed="false">레트로/빈티지</button>
+            <button class="cg-chip tag-btn" type="button" data-code="VIBE" data-name="모던/미니멀" aria-pressed="false">모던/미니멀</button>
+            <button class="cg-chip tag-btn" type="button" data-code="VIBE" data-name="아늑함" aria-pressed="false">아늑함</button>
+            <button class="cg-chip tag-btn" type="button" data-code="VIBE" data-name="인더스트리얼/도심감성" aria-pressed="false">인더스트리얼/도심감성</button>
+            <button class="cg-chip tag-btn" type="button" data-code="VIBE" data-name="자연" aria-pressed="false">자연</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <!-- ========== 카테고리: PURPOSE (PURPOSE) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">PURPOSE</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="PURPOSE" data-name="공부/작업/독서" aria-pressed="false">공부/작업/독서</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PURPOSE" data-name="데이트" aria-pressed="false">데이트</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PURPOSE" data-name="사진" aria-pressed="false">사진</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PURPOSE" data-name="수다" aria-pressed="false">수다</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PURPOSE" data-name="아이동반" aria-pressed="false">아이동반</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PURPOSE" data-name="혼자 커피" aria-pressed="false">혼자 커피</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PURPOSE" data-name="회의" aria-pressed="false">회의</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <!-- ========== 카테고리: LIGHT_VIEW (LIGHT_VIEW) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">LIGHT_VIEW</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="LIGHT_VIEW" data-name="루프탑" aria-pressed="false">루프탑</button>
+            <button class="cg-chip tag-btn" type="button" data-code="LIGHT_VIEW" data-name="시티뷰" aria-pressed="false">시티뷰</button>
+            <button class="cg-chip tag-btn" type="button" data-code="LIGHT_VIEW" data-name="자연광" aria-pressed="false">자연광</button>
+            <button class="cg-chip tag-btn" type="button" data-code="LIGHT_VIEW" data-name="테라스" aria-pressed="false">테라스</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <!-- ========== 카테고리: MUSIC (MUSIC) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">MUSIC</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="MUSIC" data-name="K-pop" aria-pressed="false">K-pop</button>
+            <button class="cg-chip tag-btn" type="button" data-code="MUSIC" data-name="클래식/재즈" aria-pressed="false">클래식/재즈</button>
+            <button class="cg-chip tag-btn" type="button" data-code="MUSIC" data-name="팝" aria-pressed="false">팝</button>
+            <button class="cg-chip tag-btn" type="button" data-code="MUSIC" data-name="힙합" aria-pressed="false">힙합</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <!-- ========== 카테고리: DRINK (DRINK) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">DRINK</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="DRINK" data-name="논커피" aria-pressed="false">논커피</button>
+            <button class="cg-chip tag-btn" type="button" data-code="DRINK" data-name="디카페인" aria-pressed="false">디카페인</button>
+            <button class="cg-chip tag-btn" type="button" data-code="DRINK" data-name="라떼" aria-pressed="false">라떼</button>
+            <button class="cg-chip tag-btn" type="button" data-code="DRINK" data-name="스무디" aria-pressed="false">스무디</button>
+            <button class="cg-chip tag-btn" type="button" data-code="DRINK" data-name="아메리카노" aria-pressed="false">아메리카노</button>
+            <button class="cg-chip tag-btn" type="button" data-code="DRINK" data-name="차" aria-pressed="false">차</button>
+            <button class="cg-chip tag-btn" type="button" data-code="DRINK" data-name="콜드브루" aria-pressed="false">콜드브루</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <!-- ========== 카테고리: FOOD (FOOD) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">FOOD</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="마카롱" aria-pressed="false">마카롱</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="베이커리" aria-pressed="false">베이커리</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="브런치" aria-pressed="false">브런치</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="샌드위치" aria-pressed="false">샌드위치</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="아이스크림" aria-pressed="false">아이스크림</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="와플" aria-pressed="false">와플</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="케이크" aria-pressed="false">케이크</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FOOD" data-name="쿠키" aria-pressed="false">쿠키</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <!-- ========== 카테고리: PRICE (PRICE) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">PRICE</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="PRICE" data-name="저렴" aria-pressed="false">저렴</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PRICE" data-name="중간" aria-pressed="false">중간</button>
+            <button class="cg-chip tag-btn" type="button" data-code="PRICE" data-name="프리미엄" aria-pressed="false">프리미엄</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <!-- ========== 카테고리: FACILITY (FACILITY) ========== -->
+        <div class="mb-8 mt-8">
+          <h3 class="cg-panel__title mb-3">FACILITY</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="무료주차" aria-pressed="false">무료주차</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="반려동물" aria-pressed="false">반려동물</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="예약 가능" aria-pressed="false">예약 가능</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="와이파이" aria-pressed="false">와이파이</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="콘센트" aria-pressed="false">콘센트</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="포토존" aria-pressed="false">포토존</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="화장실 내부" aria-pressed="false">화장실 내부</button>
+            <button class="cg-chip tag-btn" type="button" data-code="FACILITY" data-name="휠체어/유모차" aria-pressed="false">휠체어/유모차</button>
+          </div>
+        </div>
+        <div class="cg-divider"></div>
+        <div id="hidden-inputs"></div>
+
+        <div class="mt-10 flex items-center justify-between">
+          <a class="cg-btn-outline" href="/member/needs">취소</a>
+          <div class="flex items-center gap-3">
+            <button id="btn-reset" class="cg-btn-outline" type="button">전체 초기화</button>
+            <button id="btn-submit" class="cg-btn cg-btn--primary" type="submit">선택 완료</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </section>
+</main>
+
+{{>layout/footer}}
+
+<style>
+  .cg-chip { border: 1px solid #e5e7eb; border-radius: 9999px; padding: 8px 14px; font-size: 14px; background: #fff; transition: all .15s ease; }
+  .cg-chip:hover { transform: translateY(-1px); }
+  .cg-chip.is-selected { border-color: #14b8a6; background: #ecfeff; box-shadow: 0 0 0 2px rgba(20,184,166,.15) inset; font-weight: 600; }
+</style>
+
+<script>
+(function () {
+  const $form = document.getElementById('needs-form');
+  const $hidden = document.getElementById('hidden-inputs');
+  const $reset = document.getElementById('btn-reset');
+  const SELECTED_CLASS = 'is-selected';
+
+  document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selected = btn.classList.toggle(SELECTED_CLASS);
+      btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+  });
+
+  $reset.addEventListener('click', () => {
+    document.querySelectorAll('.tag-btn.' + SELECTED_CLASS).forEach(btn => {
+      btn.classList.remove(SELECTED_CLASS);
+      btn.setAttribute('aria-pressed', 'false');
+    });
+  });
+
+  $form.addEventListener('submit', () => {
+    $hidden.innerHTML = '';
+    const selected = Array.from(document.querySelectorAll('.tag-btn.' + SELECTED_CLASS));
+    selected.forEach((btn) => {
+      const code = btn.getAttribute('data-code');
+      const name = btn.getAttribute('data-name');
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'tags';
+      input.value = code + '|' + name; // 서버에서 weight=1.0로 저장
+      $hidden.appendChild(input);
+    });
+  });
+})();
+</script>

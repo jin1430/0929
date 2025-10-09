@@ -1,0 +1,76 @@
+{{> layout/header}}
+
+<section class="cg-section">
+    <div class="cg-container">
+
+        <!-- 페이지 헤더 -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">🎯 카페 미션</h1>
+            <p class="text-gray-600">
+                참여 가능한 미션을 확인하고, 상세 페이지에서 조건을 확인한 뒤 도전해 보세요.
+                {{#loggedIn}}
+                    <span class="cg-badge ml-2">로그인됨</span>
+                    {{#isPro}}<span class="cg-badge ml-2">PRO</span>{{/isPro}}
+                {{/loggedIn}}
+                {{^loggedIn}}
+                    <a class="cg-link ml-2" href="/login">로그인</a> 후 참여할 수 있어요.
+                {{/loggedIn}}
+            </p>
+        </div>
+
+        <!-- 요약 카드 -->
+        <div class="cg-grid cg-grid-3 mb-8">
+            <div class="cg-card center" style="flex-direction:column">
+                <div class="text-3xl" style="font-weight:800">
+                    {{#missionCount}}{{missionCount}}{{/missionCount}}{{^missionCount}}{{missions.size}}{{/missionCount}}
+                </div>
+                <div class="small">진행중인 미션</div>
+            </div>
+            <div class="cg-card center" style="flex-direction:column">
+                <div class="text-3xl" style="font-weight:800">
+                    {{#isPro}}PRO{{/isPro}}{{^isPro}}일반{{/isPro}}
+                </div>
+                <div class="small">내 권한( {{roleKind}} )</div>
+            </div>
+            <div class="cg-card center" style="flex-direction:column">
+                <div class="text-3xl" style="font-weight:800">D-?</div>
+                <div class="small">가까운 마감</div>
+            </div>
+        </div>
+
+        <!-- 미션 카드 리스트 -->
+        <div class="cg-grid cg-grid-3">
+            {{#missions}}
+                <article class="cg-card">
+                    <div class="flex items-start justify-between">
+                        <h3 class="text-xl font-bold text-gray-800">{{title}}</h3>
+                        {{#sponsored}}<span class="cg-badge">스폰서</span>{{/sponsored}}
+                        {{#sponsoredYn}}<span class="cg-badge">스폰서</span>{{/sponsoredYn}}
+                    </div>
+
+                    <div class="small mt-2">
+                        {{#cafeId}}카페 ID: {{cafeId}} · {{/cafeId}}
+                        {{#difficulty}}난이도: {{difficulty}} · {{/difficulty}}
+                        {{#dueDate}}마감: {{dueDate}}{{/dueDate}}
+                    </div>
+
+                    <p class="mt-3">
+                        {{#summary}}{{summary}}{{/summary}}
+                        {{^summary}}{{#description}}{{description}}{{/description}}{{/summary}}
+                    </p>
+
+                    <div class="mt-4 flex gap-2">
+                        <a class="cg-btn cg-btn--ghost" href="/missions/{{id}}">자세히</a>
+                    </div>
+                </article>
+            {{/missions}}
+
+            {{^missions}}
+                <div class="small">참여 가능한 미션이 없습니다.</div>
+            {{/missions}}
+        </div>
+
+    </div>
+</section>
+
+{{> layout/footer}}

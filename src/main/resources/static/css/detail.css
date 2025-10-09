@@ -1,0 +1,97 @@
+/* detail.css : 카페 상세 전용 커스텀 스타일 */
+/* Tailwind 유틸은 레이아웃에서 로드된다고 가정 */
+
+body { font-family: 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; }
+
+.card-hover { transition: all 0.25s ease; }
+.card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(16,185,129,.15); }
+
+.image-gallery { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; height: 400px; }
+.image-gallery .main-image { grid-row: 1 / 3; }
+
+.tab-active { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+
+.rating-star { color: #fbbf24; }
+
+.fade-in { animation: fadeInUp .5s ease-out forwards; opacity: 0; transform: translateY(12px); }
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+.review-card { border-left: 4px solid #10b981; }
+
+/* 유틸 */
+.hidden { display: none; }
+.cg-MAVLink { display:flex; gap:16px; align-items:center; }
+.cg-MAVLink li { display:block; }
+.cg-MAVLink a { display:inline-block; white-space:nowrap; }
+/* 임시 패치: JS 없어도 보이도록 */
+.fade-in { opacity: 1 !important; transform: none !important; }
+/* ===== Modal ===== */
+.cg-modal.hidden { display: none; }
+.cg-modal { position: fixed; inset: 0; z-index: 60; }
+.cg-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.4); backdrop-filter: blur(2px); }
+.cg-modal__panel {
+  position: absolute; inset: 0; margin: auto; max-width: 640px; width: calc(100% - 32px);
+  background:#fff; border-radius:16px; padding:16px 16px 20px; box-shadow:0 10px 30px rgba(0,0,0,.18);
+  height:max-content;
+}
+.cg-modal__header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.cg-modal__close { border:0; background:transparent; font-size:18px; line-height:1; cursor:pointer; }
+
+/* 리뷰 텍스트 안전 처리 */
+.review-card p { white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; }
+
+/* JS 실패시 화면 숨김 방지(응급) */
+.fade-in { opacity: 1; transform: none; }
+
+/* 탭 이미지 안정성 */
+.tab-content img { max-width: 100%; height: auto; display: block; }
+
+/* ===== Tag chips hard fix ===== */
+/* 태그 칩 컨테이너(지금 마크업: <div class="flex flex-wrap gap-2">) 높이 늘어남 방지 */
+.flex.flex-wrap.gap-2 { align-items: flex-start; }
+
+/* 칩(지금 마크업: class="... rounded-full text-sm ...")에 강제 1줄 + 한글 줄바꿈 금지 + 말줄임 */
+.rounded-full.text-sm {
+  display: inline-flex;         /* stretch 방지, 내용기준 너비 */
+  align-items: center;
+  white-space: nowrap;          /* 공백 줄바꿈 금지 */
+  word-break: keep-all;         /* 한글 글자단위 줄바꿈 금지 (핵심) */
+  overflow: hidden;             /* 넘치면 감춤 */
+  text-overflow: ellipsis;      /* 말줄임 */
+  max-width: 100%;
+  line-height: 1.25rem;         /* text-sm 라인하이트 보정 */
+}
+
+/* 숫자( (5) ) 간격/가독성 보정 */
+.rounded-full.text-sm small {
+  margin-left: .25rem;
+  opacity: .7;
+}
+
+/* 태그 배경/테두리/호버 감성 조금 업그레이드(선택) */
+.rounded-full.text-sm {
+  background: #E6FBF4;          /* 연한 민트 */
+  border: 1px solid #B8F2E1;    /* 아주 연한 테두리 */
+  color: #0F766E;               /* 글자: 딥그린 */
+  padding: .25rem .625rem;      /* px-2.5 정도 */
+  border-radius: 9999px;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+}
+.rounded-full.text-sm:hover {
+  background: #D9F8EF;
+  box-shadow: 0 2px 6px rgba(16,185,129,.12);
+  transform: translateY(-1px);
+}
+
+/* 모바일에서 너무 길면 줄여서 말줄임 */
+@media (max-width: 640px) {
+  .rounded-full.text-sm { max-width: 14rem; }
+}
+/* 태블릿에서 적당히 제한 (원하면 값 조절) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .rounded-full.text-sm { max-width: 16rem; }
+}
+/* 데스크톱에선 컨테이너 폭 한도까지 */
+@media (min-width: 1025px) {
+  .rounded-full.text-sm { max-width: 18rem; }
+}
