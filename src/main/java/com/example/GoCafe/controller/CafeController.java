@@ -144,21 +144,12 @@ public class CafeController {
             }
         } catch (ReflectiveOperationException ignored) {}
 
-        // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분을 원래 코드로 되돌립니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
         // 5) CafeInfo 주입
-        var cafeInfoOpt = cafeInfoService.findByCafeId(cafeId);
-        if (cafeInfoOpt.isPresent()) {
-            var ci = cafeInfoOpt.get();
-            model.addAttribute("info", true);
-            model.addAttribute("cafeOpenTime",  ci.getOpenTime());
-            model.addAttribute("cafeCloseTime", ci.getCloseTime());
-            model.addAttribute("cafeHoliday",   ci.getHoliday());
-            model.addAttribute("cafeNotice",    ci.getNotice());
-            model.addAttribute("cafeInfo",      ci.getInfo());
-        } else {
-            model.addAttribute("info", false);
-        }
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 복구 끝 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        // cafeInfoService에서 찾아온 CafeInfo 객체를 'cafeInfo'라는 이름으로 모델에 추가합니다.
+        // 정보가 없으면 아무것도 추가되지 않으므로, 템플릿에서 {{#cafeInfo}}...{{/cafeInfo}}로 안전하게 처리할 수 있습니다.
+        cafeInfoService.findByCafeId(cafeId)
+                .ifPresent(ci -> model.addAttribute("cafeInfo", ci));
+
         // 6) 사진 갤러리
 //        var photoList = cafePhotoService.list(cafeId).stream()
 //                .map(p -> new LinkedHashMap<String, Object>() {{

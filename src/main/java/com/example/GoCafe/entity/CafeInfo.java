@@ -29,7 +29,7 @@ public class CafeInfo {
     private String notice;
 
     @Column(name = "description", length = 500) // 변경
-    private String info;
+    private String cafeInfo;
 
     @Column(name = "open_time", length = 7)
     private String openTime;
