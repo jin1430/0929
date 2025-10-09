@@ -1,10 +1,49 @@
 {{>layout/header}}
 
+<!-- 페이지 전용 스타일 (필요시 cg-bridge.css에 옮겨도 됩니다) -->
+<style>
+    :root{
+      --primary-mint:#3aa17e; --primary-mint-dark:#2d8066;
+    }
+    .cg-auth-page{
+      display:flex; align-items:center; justify-content:center;
+      min-height:calc(100vh - 320px); /* 헤더+푸터 공간 제외한 대략 높이 */
+      padding:48px 16px;
+    }
+    .cg-auth-card{
+      width:100%; max-width:520px; background:#fff; border-radius:16px;
+      box-shadow:0 10px 25px rgba(0,0,0,.08); padding:32px;
+    }
+    .cg-auth-title{ font-size:28px; font-weight:800; color:#111827; margin-bottom:6px; text-align:center;}
+    .cg-auth-sub{ color:#6b7280; margin-bottom:20px; text-align:center;}
+    .cg-authform{ display:flex; flex-direction:column; gap:12px; }
+    .cg-label{ font-size:14px; color:#374151; font-weight:600; margin-top:6px; }
+    .cg-input{
+      height:48px; border:1px solid #e5e7eb; border-radius:12px; padding:0 14px; outline:none; width:100%;
+    }
+    .cg-input:focus{ border-color:var(--primary-mint); box-shadow:0 0 0 3px rgba(20,184,166,.15); }
+    .cg-auth-submit{
+      height:48px; background:var(--primary-mint); color:#fff; border-radius:12px;
+      font-weight:700; margin-top:8px; width:100%;
+    }
+    .cg-auth-submit:hover{ background:var(--primary-mint-dark); }
+    .cg-link{ color:var(--primary-mint); font-weight:600; }
+    .cg-auth-tip{ margin-top:12px; color:#6b7280; text-align:center; }
+    .cg-inline{ display:flex; gap:12px; align-items:center; }
+</style>
+
 <main class="cg-auth-page">
     <section class="cg-auth-card">
         <h1 class="cg-auth-title">회원가입</h1>
         <p class="cg-auth-sub">필수 정보를 입력해 계정을 생성하세요.</p>
 
+        {{#error}}
+            <div class="mb-3" style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:12px;text-align:center;">
+                {{.}}
+            </div>
+        {{/error}}
+
+        <!-- 서버가 받는 엔드포인트에 맞춰 action 조정 (/signup 또는 /register) -->
         <form id="signupPageForm" class="cg-authform" method="post" action="/signup">
             <label class="cg-label">이메일</label>
             <input class="cg-input" name="email" type="email" placeholder="you@example.com" required/>
@@ -16,12 +55,12 @@
             <input class="cg-input" name="age" type="number" min="1" max="120" placeholder="예: 26" required/>
 
             <label class="cg-label">성별</label>
-            <div style="display:flex; gap:12px; align-items:center;">
-                <label style="display:flex; gap:6px; align-items:center;">
+            <div class="cg-inline">
+                <label class="cg-inline" style="gap:6px;">
                     <input type="radio" name="gender" value="M" required/>
                     <span>남자</span>
                 </label>
-                <label style="display:flex; gap:6px; align-items:center;">
+                <label class="cg-inline" style="gap:6px;">
                     <input type="radio" name="gender" value="F" required/>
                     <span>여자</span>
                 </label>
@@ -36,11 +75,9 @@
             <button class="cg-btn cg-auth-submit" type="submit">회원가입</button>
         </form>
 
-        {{#error}}
-            <p class="cg-auth-tip" style="color:#c62828">{{error}}</p>
-        {{/error}}
-
-        <p class="cg-auth-tip">이미 계정이 있으신가요? <a class="cg-link" href="/login">로그인</a></p>
+        <p class="cg-auth-tip">
+            이미 계정이 있으신가요? <a class="cg-link" href="/login">로그인</a>
+        </p>
     </section>
 </main>
 

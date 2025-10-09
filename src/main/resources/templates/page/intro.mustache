@@ -114,10 +114,15 @@
         </div>
     </section>
 
-    <section class="cta fade">
-        <p style="color:var(--muted);margin-bottom:12px">아직 회원이 아니신가요?</p>
-        <a href="/signup"><button class="btn-lg" type="button">회원가입하고 시작하기 🚀</button></a>
-    </section>
+    {{^isLoggedIn}}
+        <section class="cta fade">
+            <p style="color:var(--muted);margin-bottom:12px">아직 회원이 아니신가요?</p>
+            <a href="/signup"><button class="btn-lg" type="button">회원가입하고 시작하기 🚀</button></a>
+        </section>
+    {{/isLoggedIn}}
+    {{#isLoggedIn}}
+        <div style="height: 96px;"></div>
+    {{/isLoggedIn}}
 </main>
 
 {{>layout/footer}}

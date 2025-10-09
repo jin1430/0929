@@ -10,22 +10,35 @@ import java.util.List;
 
 @Repository
 public interface CafeRepository extends JpaRepository<Cafe, Long> {
-    List<Cafe> findByStatus(CafeStatus status);
+
+    // ✅ 엔티티 필드명 'cafeStatus'에 맞춰 수정
+    List<Cafe> findByCafeStatus(CafeStatus status);
 
     boolean existsByName(String cafeName);
-    boolean existsByNumber(String cafeNumber);
+
+    // ✅ 엔티티 필드명 'phoneNumber'에 맞춰 수정
+    boolean existsByPhoneNumber(String phoneNumber);
 
     List<Cafe> findTop8ByOrderByViewsDesc();
 
-    // ✅ [추가] 상태(status)를 기준으로 조회수(views)가 높은 순으로 카페를 찾는 메소드
-    List<Cafe> findByStatusOrderByViewsDesc(CafeStatus status, Pageable pageable);
+    // ✅ 엔티티 필드명 'cafeStatus'에 맞춰 수정
+    List<Cafe> findByCafeStatusOrderByViewsDesc(CafeStatus status, Pageable pageable);
 
-
-    // ✅ [추가] 상태(status)와 검색어(keyword)를 기준으로 카페를 찾는 메소드
-    List<Cafe> findByStatusAndNameContainingOrStatusAndAddressContaining(
+    // ✅ 엔티티 필드명 'cafeStatus'에 맞춰 수정
+    List<Cafe> findByCafeStatusAndNameContainingOrCafeStatusAndAddressContaining(
             CafeStatus status1, String name, CafeStatus status2, String address);
 
-    // 추가
-    long countByStatus(CafeStatus status);
+    // ✅ 엔티티 필드명 'cafeStatus'에 맞춰 수정
+    long countByCafeStatus(CafeStatus status);
+
     boolean existsByAddress(String address);
+
+    // Owner-visible (pending included)
+    List<Cafe> findByOwner_IdAndCafeStatus(Long ownerId, com.example.GoCafe.domain.CafeStatus status);
+
+    // Keyword search within owner's cafés by status
+    List<Cafe> findByOwner_IdAndCafeStatusAndNameContainingOrOwner_IdAndCafeStatusAndAddressContaining(Long ownerId1, CafeStatus status1, String name, Long ownerId2, CafeStatus status2, String address);
+
+    // Admin-wide keyword search (all statuses)
+    List<Cafe> findByNameContainingOrAddressContaining(String name, String address);
 }

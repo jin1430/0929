@@ -15,19 +15,21 @@ import org.hibernate.annotations.OnDeleteAction;
                 @UniqueConstraint(name = "ux_review_photo_order", columnNames = {"review_id", "sort_index"})
         }
 )
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ReviewPhoto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_photo_id", nullable = false, unique = true)
-    private Long id; // 기존: reviewPhotoId
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) // 반드시 리뷰에 속함
     @JoinColumn(name = "review_id", nullable = false)    // FK 컬럼
     @OnDelete(action = OnDeleteAction.CASCADE)           // 리뷰 삭제 시 사진도 삭제
-    private Review review; // 기존: Long reviewId
+    private Review review;
 
     @Column(name = "photo_url", nullable = false, length = 1024) // 기존: review_photo_url
     private String url;

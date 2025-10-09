@@ -21,7 +21,7 @@ public class CafeTagForm {
         CafeTag entity = new CafeTag();
         entity.setCafe(cafe);
         entity.setCategoryCode(categoryCode);
-        entity.setCode(code);
+        entity.setTagCode(code);
         return entity;
     }
 }

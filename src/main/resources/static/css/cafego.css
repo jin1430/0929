@@ -241,3 +241,33 @@ body{
     border:2px solid #fff; color:#fff; font-weight:700;
     padding:12px 22px; border-radius:12px; display:inline-flex; align-items:center; gap:8px;
   }
+
+/* Hero CTA 전용: 어떤 상위 flex/grid 영향에도 중앙 정렬 보장 */
+.hero-ctas{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:12px;
+  margin-top:14px;
+  text-align:center; /* flex가 깨질 때의 폴백 */
+}
+.hero-cta{
+  min-width:160px; height:48px;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:12px; font-weight:700;
+}
+@media (max-width:640px){
+  .hero-ctas{ flex-wrap:wrap; }
+  .hero-cta{ min-width:140px; height:44px; }
+}
+
+.modal{display:none;position:fixed;inset:0;width:100%;height:100%;
+  background:rgba(0,0,0,.5);z-index:1000;backdrop-filter:blur(5px)}
+.modal.active{display:flex;align-items:center;justify-content:center}
+.onboarding-step{display:none}
+.onboarding-step.active{display:block}
+.onboarding-option{transition:all .3s ease}
+.onboarding-option.selected{border-color:#3aa17e;background:#f0fdf9;transform:scale(1.02)}
+.step-indicator.active{background:#3aa17e}
+.tag-chip{background:#ccfbef;border:1px solid #a5f3e7;transition:.2s}
+.tag-chip.selected{background:#3aa17e;color:#fff;border-color:#3aa17e}

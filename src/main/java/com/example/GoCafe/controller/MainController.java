@@ -9,11 +9,7 @@ import com.example.GoCafe.entity.Member;
 import com.example.GoCafe.entity.Review;
 import com.example.GoCafe.repository.CafeInfoRepository;
 import com.example.GoCafe.repository.MemberRepository;
-import com.example.GoCafe.service.CafePhotoService;
-import com.example.GoCafe.service.CafeService;
-import com.example.GoCafe.service.CafeTagService;
-import com.example.GoCafe.service.ProGateService;
-import com.example.GoCafe.service.ReviewService;
+import com.example.GoCafe.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -35,6 +31,7 @@ public class MainController {
     private final CafeTagService cafeTagService;
     private final ReviewService reviewService;
     private final CafePhotoService cafePhotoService;
+    private final MemberService memberService;
 
     // ✅ 미션/컨텍스트
     private final CafeInfoRepository cafeInfoRepository;
@@ -45,20 +42,18 @@ public class MainController {
 
     @GetMapping({"/main"})
     public String main(Model model, Authentication auth) {
-        // 1) 인기 카페(Top 8 by views) → cafeCards
-        List<Cafe> topCafes = cafeService.findApprovedTopByViews(8);
+        // 1) 인기 카페(Top 12 by views) → cafeCards
+        List<Cafe> topCafes = cafeService.findApprovedTopByViews(12);
         List<CafeCardForm> cafeCards = buildCafeCards(topCafes);
+        if (cafeCards.size() > 12) {
+            cafeCards = cafeCards.subList(0, 12);
+        }
         model.addAttribute("cafeCards", cafeCards);
-
         // (과도기별칭) 과거 hotCafes를 보던 템플릿 대비
         model.addAttribute("hotCafes", cafeCards);
 
-        // 2) 태그(최대 24개)
-        List<CafeTag> cafeTags = cafeTagService.findAll().stream()
-                .filter(Objects::nonNull)
-                .limit(24)
-                .collect(Collectors.toList());
-        model.addAttribute("cafeTags", cafeTags);
+        // 2) 태그(최대 24개) → Map으로 변환(호환 키 포함: tagCode/label + code/cnt/count)
+        model.addAttribute("cafeTags", buildHomeTags(24));
 
         // 3) 최신 리뷰(최신 6개) → latestReviews (뷰용 경량 DTO)
         List<Review> recentReviews = reviewService.findAll().stream()
@@ -90,21 +85,27 @@ public class MainController {
                          Model model,
                          Authentication auth) {
 
-        // 1) 검색 결과 카페 → cafeCards 로 통일
-        List<Cafe> results = cafeService.searchApproved(q);
+        // 로그인/권한에 따라 가시성 분기: 승인 + (내 소유 PENDING), 관리자면 전체
+        Long meId = null;
+        if (auth != null && auth.isAuthenticated()) {
+            Member me = memberService.findByEmail(auth.getName());
+            if (me != null) meId = me.getId();
+        }
+        boolean isAdmin = (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().contains("ADMIN")));
+
+        List<Cafe> results = cafeService.searchVisible(q, meId, isAdmin);
         List<CafeCardForm> cafeCards = buildCafeCards(results);
+        if (cafeCards.size() > 12) {
+            cafeCards = cafeCards.subList(0, 12);
+        }
         model.addAttribute("cafeCards", cafeCards);
 
-        // (과도기별칭) 검색 페이지에서 쓰던 이름들도 잠시 유지
-        model.addAttribute("trendingCafes", results); // 필요 없으면 제거 가능
+        // (과도기별칭)
+        model.addAttribute("trendingCafes", results);
         model.addAttribute("hotCafes", cafeCards);
 
-        // 2) 태그(최대 24개)
-        List<CafeTag> tags = cafeTagService.findAll().stream()
-                .filter(Objects::nonNull)
-                .limit(24)
-                .collect(Collectors.toList());
-        model.addAttribute("cafeTags", tags);
+        // 2) 태그(최대 24개) → Map으로 변환(호환 키 포함)
+        model.addAttribute("cafeTags", buildHomeTags(24));
 
         // 3) 최신 리뷰(최신 6개) → latestReviews
         List<Review> recent = reviewService.findAll().stream()
@@ -113,7 +114,6 @@ public class MainController {
                 .limit(6)
                 .collect(Collectors.toList());
         model.addAttribute("latestReviews", toLatestReviewCards(recent));
-
         // (과도기별칭)
         model.addAttribute("recentReviews", recent);
 
@@ -160,11 +160,39 @@ public class MainController {
                             c.getId(),
                             c.getName(),
                             c.getAddress(),
-                            c.getNumber(),
-                            c.getCode(),
+                            c.getPhoneNumber(),
+                            c.getBusinessCode(),
                             c.getViews(),
                             safeUrl
                     );
+                })
+                .collect(Collectors.toList());
+    }
+
+    /** 홈/검색 태그용 데이터: CafeTag 엔티티 → Map으로 변환 (호환 키 포함) */
+    private List<Map<String, Object>> buildHomeTags(int limit) {
+        List<CafeTag> src = cafeTagService.findAll();
+        if (src == null || src.isEmpty()) return Collections.emptyList();
+
+        return src.stream()
+                .filter(Objects::nonNull)
+                .limit(limit <= 0 ? 24 : limit)
+                .map(t -> {
+                    String code = safeStr(getSafe(() -> t.getTagCode()));
+                    String label = safeStr(getSafe(() -> t.getTagCode()));
+                    if (label.isBlank()) label = code;
+                    // count/cnt는 홈 칩에선 보이지 않지만, 호환 키로 함께 내려둠
+                    Integer cnt = getSafe(() -> t.getRankNo()); // 없다면 null
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("tagCode", code);   // 새 표준 키
+                    m.put("label", label);    // 표시용
+                    // 호환 키
+                    m.put("code", code);
+                    if (cnt != null) {
+                        m.put("count", cnt);
+                        m.put("cnt", cnt);
+                    }
+                    return m;
                 })
                 .collect(Collectors.toList());
     }
@@ -271,4 +299,15 @@ public class MainController {
         String t = s.replaceAll("\\s+", " ").trim();
         return t.length() > n ? t.substring(0, n) + "…" : t;
     }
+
+    private static String safeStr(String s) {
+        return (s == null) ? "" : s;
+    }
+
+    private static <T> T getSafe(SupplierThrowing<T> fn) {
+        try { return fn.get(); } catch (Throwable ignore) { return null; }
+    }
+
+    @FunctionalInterface
+    private interface SupplierThrowing<T> { T get() throws Exception; }
 }

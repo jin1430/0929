@@ -1,60 +1,76 @@
 package com.example.GoCafe.service;
 
 import com.example.GoCafe.entity.Member;
+import com.example.GoCafe.entity.UserNeeds;
 import com.example.GoCafe.repository.MemberRepository;
+import com.example.GoCafe.repository.UserNeedsRepository;
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.*;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import org.springframework.security.core.Authentication;
+
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository repository;
+    private final MemberRepository memberRepository;
+    private final UserNeedsRepository userNeedsRepository;
     private final PasswordEncoder passwordEncoder; // BCrypt 빈 등록 가정
+
+    private final ObjectMapper om = new ObjectMapper();
+    private static final String CODE_IMPORTANCE = "__IMPORTANCE__";
 
     @Transactional(readOnly = true)
     public List<Member> findAll() {
-        return repository.findAll();
+        return memberRepository.findAll();
     }
 
     @Transactional(readOnly = true)
     public Member findById(Long id) {
-        return repository.findById(id)
+        return memberRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found: " + id));
     }
 
     @Transactional
     public Member create(Member entity) {
         EntityIdUtil.setId(entity, null);
-        return repository.save(entity);
+        return memberRepository.save(entity);
     }
 
     @Transactional
     public Member update(Long id, Member entity) {
-        if (!repository.existsById(id)) {
+        if (!memberRepository.existsById(id)) {
             throw new NotFoundException("User not found: " + id);
         }
         EntityIdUtil.setId(entity, id);
-        return repository.save(entity);
+        return memberRepository.save(entity);
     }
 
     @Transactional
     public void delete(Long id) {
-        if (!repository.existsById(id)) {
+        if (!memberRepository.existsById(id)) {
             throw new NotFoundException("User not found: " + id);
         }
-        repository.deleteById(id);
+        memberRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
-        return repository.findByEmail(email)
+        return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User not found by email: " + email));
     }
 
@@ -78,7 +94,7 @@ public class MemberService {
         // 닉네임 변경 중복 체크
         if (nickname != null && !nickname.isBlank()
                 && !nickname.equals(m.getNickname())
-                && repository.existsByNickname(nickname)) {
+                && memberRepository.existsByNickname(nickname)) {
             throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
         }
 
@@ -113,4 +129,5 @@ public class MemberService {
         Long v = (m.getTokenVersion() == null ? 0L : m.getTokenVersion());
         m.setTokenVersion(v + 1);
     }
+
 }

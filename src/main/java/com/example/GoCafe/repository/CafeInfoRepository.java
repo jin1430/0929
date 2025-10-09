@@ -19,5 +19,6 @@ public interface CafeInfoRepository extends JpaRepository<CafeInfo, Long> {
       order by ci.id desc
     """)
     List<CafeInfo> findByNoticeMarker(@Param("marker") String marker);
+    boolean existsByCafe_Id(Long cafeId);
 
 }

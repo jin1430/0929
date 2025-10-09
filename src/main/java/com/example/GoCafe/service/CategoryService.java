@@ -1,7 +1,7 @@
 package com.example.GoCafe.service;
 
 import com.example.GoCafe.entity.MenuCategory;
-import com.example.GoCafe.repository.CategoryRepository;
+import com.example.GoCafe.repository.MenuCategoryRepository; // ✅ 오타 수정
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final CategoryRepository repository;
+    // ✅ MeauCategoryRepository -> MenuCategoryRepository로 오타 수정
+    private final MenuCategoryRepository repository;
 
     @Transactional(readOnly = true)
     public List<MenuCategory> findAll() {

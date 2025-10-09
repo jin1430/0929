@@ -10,19 +10,20 @@ import com.example.GoCafe.repository.MemberRepository;
 import com.example.GoCafe.service.FileStorageService;
 import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Comparator;
 import java.util.List;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/cafes")
+@RequestMapping("/cafes")
 public class CafePhotoController {
 
     private final CafeRepository cafeRepository;
@@ -34,18 +35,18 @@ public class CafePhotoController {
     @PostMapping("/{cafeId}/photos")
     @Transactional
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<CafePhoto>> upload(@PathVariable Long cafeId,
-                                                  @RequestParam("files") List<MultipartFile> files,
-                                                  @RequestParam(value = "setMain", defaultValue = "false") boolean setMain,
-                                                  Authentication auth) throws Exception {
+    public String upload(@PathVariable Long cafeId,
+                         @RequestParam("files") List<MultipartFile> files,
+                         @RequestParam(value = "setMain", defaultValue = "false") boolean setMain,
+                         Authentication auth,
+                         RedirectAttributes ra) throws Exception {
+
         Cafe cafe = cafeRepository.findById(cafeId).orElseThrow(() -> new NotFoundException("카페 없음"));
         ensureOwner(auth, cafe);
 
-        // 기존 사진/대표 존재 여부
         List<CafePhoto> existing = cafePhotoRepository.findByCafe_Id(cafeId);
-        boolean hasMain = existing.stream().anyMatch(p -> Boolean.TRUE.equals(p.getMain()));
+        boolean hasMain = existing.stream().anyMatch(p -> Boolean.TRUE.equals(p.getIsMain()));
 
-        // sortIndex 기준 next 값
         int nextOrder = existing.stream()
                 .map(CafePhoto::getSortIndex)
                 .max(Comparator.nullsFirst(Integer::compareTo))
@@ -54,9 +55,7 @@ public class CafePhotoController {
         boolean mainAssignedThisRound = false;
 
         for (MultipartFile f : files) {
-            // 파일 저장 (FileStorageService 구현에 따라 메서드명이 save/store 다를 수 있음)
-            // save(...)가 StoredFile(meta)를 돌려준다는 가정. 만약 String(url)만 준다면 그에 맞춰 아래 두 줄 수정.
-            var sf = storage.store(f, "cafes/" + cafeId); // url(), originalName(), contentType(), sizeBytes()
+            var sf = storage.store(f, "cafes/" + cafeId); // 실제 파일 저장
 
             CafePhoto img = new CafePhoto();
             img.setCafe(cafe);
@@ -66,88 +65,97 @@ public class CafePhotoController {
             img.setSizeBytes(sf.sizeBytes());
             img.setSortIndex(nextOrder++);
 
-            // 대표 지정 규칙: (1) setMain=true면 이번 업로드 중 첫 장을 대표로, (2) 기존 대표가 없으면 첫 장을 대표로
+            // 대표 지정 규칙
             if ((!hasMain && !mainAssignedThisRound) || (setMain && !mainAssignedThisRound)) {
-                // 기존 대표 해제
-                cafePhotoRepository.findByCafe_IdAndMainTrue(cafeId).ifPresent(prev -> {
-                    prev.setMain(false);
+                cafePhotoRepository.findByCafe_IdAndIsMainTrue(cafeId).ifPresent(prev -> {
+                    prev.setIsMain(false);
                     cafePhotoRepository.save(prev);
                 });
-                img.setMain(true);
+                img.setIsMain(true);
                 mainAssignedThisRound = true;
                 hasMain = true;
             } else {
-                img.setMain(false);
+                img.setIsMain(false);
             }
 
             cafePhotoRepository.save(img);
         }
 
-        // 업로드 후 정렬된 전체 목록 반환
-        return ResponseEntity.ok(cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafeId));
+        ra.addFlashAttribute("toast", "사진이 업로드되었습니다.");
+        return "redirect:/cafes/" + cafeId; // ✅ 상세 페이지로 이동
     }
 
     // ====== 대표 설정 (점주만) ===============================================
-    @PatchMapping("/photos/{photoId}/main")
+    // HTML 폼 호환을 위해 PATCH 대신 POST 사용
+    @PostMapping("/photos/{photoId}/main")
     @Transactional
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<CafePhoto>> setMain(@PathVariable Long photoId, Authentication auth) {
+    public String setMain(@PathVariable Long photoId,
+                          Authentication auth,
+                          RedirectAttributes ra) {
+
         CafePhoto target = cafePhotoRepository.findById(photoId)
                 .orElseThrow(() -> new NotFoundException("사진 없음"));
         Cafe cafe = target.getCafe();
         ensureOwner(auth, cafe);
 
-        // 기존 대표 해제
-        cafePhotoRepository.findByCafe_IdAndMainTrue(cafe.getId()).ifPresent(prev -> {
+        cafePhotoRepository.findByCafe_IdAndIsMainTrue(cafe.getId()).ifPresent(prev -> {
             if (!prev.getId().equals(photoId)) {
-                prev.setMain(false);
+                prev.setIsMain(false);
                 cafePhotoRepository.save(prev);
             }
         });
 
-        // 대상 대표 지정
-        target.setMain(true);
+        target.setIsMain(true);
         cafePhotoRepository.save(target);
 
-        return ResponseEntity.ok(cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafe.getId()));
+        ra.addFlashAttribute("toast", "대표 사진이 변경되었습니다.");
+        return "redirect:/cafes/" + cafe.getId(); // ✅ 상세로
     }
 
-    // ====== 목록 조회 (누구나) ================================================
+    // ====== 목록 조회 (뷰에 직접 바인딩하거나, AJAX가 필요하면 @ResponseBody로 전환) ======
     @GetMapping("/{cafeId}/photos")
-    public List<CafePhoto> list(@PathVariable Long cafeId) {
-        return cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafeId);
+    public String list(@PathVariable Long cafeId,
+                       org.springframework.ui.Model model) {
+        List<CafePhoto> photos = cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafeId);
+        model.addAttribute("photos", photos);
+        model.addAttribute("cafeId", cafeId);
+        return "cafe/photos"; // 예: templates/cafe/photos.mustache
     }
 
     // ====== 삭제 (점주만) =====================================================
-    @DeleteMapping("/photos/{photoId}")
+    // DELETE 대신 POST 사용(폼 호환)
+    @PostMapping("/photos/{photoId}/delete")
     @Transactional
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<CafePhoto>> delete(@PathVariable Long photoId, Authentication auth) {
+    public String delete(@PathVariable Long photoId,
+                         Authentication auth,
+                         RedirectAttributes ra) {
+
         CafePhoto target = cafePhotoRepository.findById(photoId)
                 .orElseThrow(() -> new NotFoundException("사진 없음"));
         Cafe cafe = target.getCafe();
         ensureOwner(auth, cafe);
 
-        // 파일 실제 삭제 (구현돼 있으면)
         try { storage.delete(target.getUrl()); } catch (Throwable ignored) {}
 
-        boolean wasMain = Boolean.TRUE.equals(target.getMain());
+        boolean wasMain = Boolean.TRUE.equals(target.getIsMain());
         cafePhotoRepository.delete(target);
 
-        // 대표가 사라졌다면 첫 번째 사진을 대표로
         if (wasMain) {
-            cafePhotoRepository.findByCafe_IdAndMainTrue(cafe.getId()).orElseGet(() -> {
+            cafePhotoRepository.findByCafe_IdAndIsMainTrue(cafe.getId()).orElseGet(() -> {
                 var list = cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafe.getId());
                 if (!list.isEmpty()) {
                     CafePhoto first = list.get(0);
-                    first.setMain(true);
+                    first.setIsMain(true);
                     cafePhotoRepository.save(first);
                 }
                 return null;
             });
         }
 
-        return ResponseEntity.ok(cafePhotoRepository.findByCafe_IdOrderBySortIndexAsc(cafe.getId()));
+        ra.addFlashAttribute("toast", "사진이 삭제되었습니다.");
+        return "redirect:/cafes/" + cafe.getId(); // ✅ 상세로
     }
 
     // ====== 소유자/관리자 확인 ===============================================
@@ -155,7 +163,6 @@ public class CafePhotoController {
         if (auth == null || !auth.isAuthenticated()) {
             throw new org.springframework.security.access.AccessDeniedException("로그인이 필요합니다.");
         }
-
         String email = auth.getName();
         Member me = memberRepository.findByEmail(email).orElse(null);
 

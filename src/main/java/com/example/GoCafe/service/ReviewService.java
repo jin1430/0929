@@ -7,10 +7,12 @@ import com.example.GoCafe.entity.Cafe;
 import com.example.GoCafe.entity.CafeInfo;
 import com.example.GoCafe.entity.Review;
 import com.example.GoCafe.entity.ReviewTag;
+import com.example.GoCafe.event.ReviewChangedEvent;
 import com.example.GoCafe.repository.*;
 import com.example.GoCafe.support.EntityIdUtil;
 import com.example.GoCafe.support.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class ReviewService {
     private final CafeInfoRepository cafeInfoRepository;
     private final CafeRepository cafeRepository;
     private final MemberRepository memberRepository;
+    private final ApplicationEventPublisher publisher;
+
 
     @Transactional(readOnly = true)
     public List<Review> findAll() {
@@ -116,7 +120,7 @@ public class ReviewService {
         String cafeName = (cafe != null ? cafe.getName() : "(알 수 없음)");
 
         // 카페 사진 url
-        String cafeMainPhotoUrl = cafePhotoRepository.findMainPhoto(cafe.getId()).getUrl();
+        String cafeMainPhotoUrl = String.valueOf(cafePhotoRepository.findMainPhoto(cafe.getId()).get());
         try {
             // 예시: c.getCafeThumb() 가 있으면 /images/cafe/{file} 로 만든다
             var method = Cafe.class.getMethod("getCafeThumb");
@@ -163,14 +167,34 @@ public class ReviewService {
         r.setCafe(cafeRepository.getReferenceById(form.getCafeId()));
         r.setMember(memberRepository.getReferenceById(memberId));
 
-        // ⬇️ 아래 3줄은 네 엔티티/폼 필드명에 맞게 필요하면 이름만 바꿔줘!
-        r.setContent(form.getReviewContent());         // 예: form.getText() / r.setText(...)
-        r.setSentiment(
-                form.getSentiment() != null ? form.getSentiment() : "GOOD"
-        );                                       // 감성 필드명 다르면 맞게 변경
+        // content(또는 text/reviewContent 등) 세팅
+        String content = null;
+        try { content = (String) ReviewCreateForm.class.getMethod("getReviewContent").invoke(form); } catch (Exception ignored) {}
+        if (content == null) {
+            try { content = (String) ReviewCreateForm.class.getMethod("getContent").invoke(form); } catch (Exception ignored) {}
+        }
+        if (content == null) content = "";
+        try { Review.class.getMethod("setContent", String.class).invoke(r, content); } catch (Exception e) { /* 엔티티 필드명이 다르면 알려줘 */ }
+
+        // rating 있으면 세팅(선택 필드)
+        Integer rating = null;
+        try { Object v = ReviewCreateForm.class.getMethod("getRating").invoke(form); if (v != null) rating = (Integer) v; } catch (Exception ignored) {}
+        if (rating != null) {
+            try { Review.class.getMethod("setRating", Integer.class).invoke(r, rating); } catch (Exception ignored) {}
+            try { Review.class.getMethod("setRating", int.class).invoke(r, rating); } catch (Exception ignored) {}
+        }
+
+        // sentiment 기본값 GOOD
+        String sentiment = "GOOD";
+        try {
+            Object v = ReviewCreateForm.class.getMethod("getSentiment").invoke(form);
+            if (v != null) sentiment = String.valueOf(v);
+        } catch (Exception ignored) {}
+        try { Review.class.getMethod("setSentiment", String.class).invoke(r, sentiment); } catch (Exception ignored) {}
 
         return r;
     }
+
     private String extractTagCode(ReviewTag t) {
         try { Object v = ReviewTag.class.getMethod("getTagCode").invoke(t); if (v!=null) return v.toString(); } catch (Exception ignored) {}
         try { Object v = ReviewTag.class.getMethod("getCode").invoke(t);    if (v!=null) return v.toString(); } catch (Exception ignored) {}
@@ -185,4 +209,10 @@ public class ReviewService {
         try { ReviewTag.class.getMethod("setTag", String.class).invoke(t, code);     return; } catch (Exception ignored) {}
         // 위 세터가 아무것도 없다면, 프로젝트의 실제 필드명을 알려줘. 그에 맞게 한 줄만 바꿔 줄게.
     }
+
+    private void afterChanged(Long cafeId) {
+        publisher.publishEvent(new ReviewChangedEvent(cafeId));
+    }
+
+
 }

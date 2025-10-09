@@ -26,9 +26,9 @@ public class UserNeeds {
     @Column(name = "category_code", length = 20)
     private String categoryCode;
 
-    @Column(name = "code", length = 20)
+    @Column(name = "needs_code", length = 20) // 필드 및 컬럼명 변경
     private String code;
 
-    @Column(name = "is_necessary", nullable = false)
-    private boolean necessary;
+    @Column(name = "weight", nullable = false)
+    private Double weight;
 }

@@ -1,37 +1,60 @@
 {{>layout/header}}
-<link rel="stylesheet" href="/css/alert.css">
 
-<main class="cg-container" style="max-width:1100px;margin:0 auto;padding:24px 16px;">
-    {{#msg}}
-        <div class="cg-alert cg-alert-warn" role="alert" aria-live="polite">
-            {{msg}}
-        </div>
-    {{/msg}}
-    {{#error}}
-        <div class="cg-alert cg-alert-error" role="alert" aria-live="polite">
-            {{error}}
-        </div>
-    {{/error}}
-    <main class="cg-auth-page">
-        <section class="cg-auth-card">
-            <h1 class="cg-auth-title">로그인</h1>
-            <p class="cg-auth-sub">이메일과 비밀번호를 입력하세요.</p>
+<style>
+    :root{
+      --primary-mint:#3aa17e; --primary-mint-dark:#2d8066;
+    }
+    .cg-auth-page{
+      display:flex; align-items:center; justify-content:center;
+      min-height:calc(100vh - 320px);
+      padding:48px 16px;
+    }
+    .cg-auth-card{
+      width:100%; max-width:520px; background:#fff; border-radius:16px;
+      box-shadow:0 10px 25px rgba(0,0,0,.08); padding:32px;
+    }
+    .cg-auth-title{ font-size:28px; font-weight:800; color:#111827; margin-bottom:6px; text-align:center;}
+    .cg-auth-sub{ color:#6b7280; margin-bottom:20px; text-align:center;}
+    .cg-authform{ display:flex; flex-direction:column; gap:12px; }
+    .cg-label{ font-size:14px; color:#374151; font-weight:600; margin-top:6px; }
+    .cg-input{
+      height:48px; border:1px solid #e5e7eb; border-radius:12px; padding:0 14px; outline:none; width:100%;
+    }
+    .cg-input:focus{ border-color:var(--primary-mint); box-shadow:0 0 0 3px rgba(20,184,166,.15); }
+    .cg-auth-submit{
+      height:48px; background:var(--primary-mint); color:#fff; border-radius:12px;
+      font-weight:700; margin-top:8px; width:100%;
+    }
+    .cg-auth-submit:hover{ background:var(--primary-mint-dark); }
+    .cg-link{ color:var(--primary-mint); font-weight:600; }
+    .cg-auth-tip{ margin-top:12px; color:#6b7280; text-align:center; }
+</style>
 
-            <form id="loginPageForm" class="cg-authform" method="post" action="/login">
-                <label class="cg-label">이메일</label>
-                <input class="cg-input" name="memberEmail" type="email" placeholder="you@example.com" required/>
+<main class="cg-auth-page">
+    <section class="cg-auth-card">
+        <h1 class="cg-auth-title">로그인</h1>
+        <p class="cg-auth-sub">CafeGo에 오신 것을 환영합니다.</p>
 
-                <label class="cg-label">비밀번호</label>
-                <input class="cg-input" name="memberPassword" type="password" placeholder="••••••••" required/>
+        {{#error}}
+            <div class="mb-3" style="background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:12px;text-align:center;">
+                {{.}}
+            </div>
+        {{/error}}
 
-                <button class="cg-btn cg-auth-submit" type="submit">로그인</button>
-            </form>
+        <form method="post" action="/login" class="cg-authform">
+            <label class="cg-label">이메일</label>
+            <input type="email" name="memberEmail" class="cg-input" placeholder="you@email.com" required autofocus>
 
-            {{#error}}
-                <p class="cg-auth-tip" style="color:#c62828">{{error}}</p>
-            {{/error}}
-            <p class="cg-auth-tip">아직 계정이 없으신가요? <a class="cg-link" href="/signup">회원가입</a></p>
-        </section>
-    </main>
-    <script src="/js/alert.js"></script>
+            <label class="cg-label">비밀번호</label>
+            <input type="password" name="memberPassword" class="cg-input" placeholder="••••••••" required>
+
+            <button class="cg-btn cg-auth-submit" type="submit">로그인</button>
+        </form>
+
+        <p class="cg-auth-tip">
+            계정이 없으신가요? <a class="cg-link" href="/signup">회원가입</a>
+        </p>
+    </section>
+</main>
+
 {{>layout/footer}}

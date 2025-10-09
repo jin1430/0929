@@ -18,14 +18,14 @@ import java.util.List;
 public class Member {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Oracle 12c+ IDENTITY 가정
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", nullable = false, unique = true)
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 100)
+    @Column(name = "hashed_password", nullable = false, length = 100) // 필드 및 컬럼명 변경
     private String password;
 
     // 닉네임 길이 8: 영문/숫자 8자 내 권장(한글은 바이트 초과 주의)
@@ -40,7 +40,7 @@ public class Member {
     private String gender;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role_kind", nullable = false, length = 20)
+    @Column(name = "role_kind", nullable = false, length = 20)  // MEMBER/OWNER/ADMIN
     private RoleKind roleKind;
 
     @CreationTimestamp
