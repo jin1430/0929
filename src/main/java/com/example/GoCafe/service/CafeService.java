@@ -1,6 +1,9 @@
 // src/main/java/com/example/GoCafe/service/CafeService.java
 package com.example.GoCafe.service;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 import com.example.GoCafe.domain.CafeStatus;
 import com.example.GoCafe.domain.RoleKind;
 import com.example.GoCafe.dto.CafeForm;
@@ -234,16 +237,39 @@ public class CafeService {
     }
 
     /* =========================
-     *           DELETE
+     * DELETE
      * ========================= */
 
     @Transactional
     public void delete(Long id) {
-        if (!cafeRepository.existsById(id)) {
-            throw new NotFoundException("Cafe not found: " + id);
+        // 1. 현재 로그인한 사용자 정보를 가져옵니다. (가장 중요!)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new AccessDeniedException("삭제 권한을 확인하기 위해 로그인이 필요합니다.");
         }
+
+        String currentUsername = authentication.getName();
+        Member currentUser = memberRepository.findByEmail(currentUsername)
+                .orElseThrow(() -> new NotFoundException("현재 로그인된 사용자 정보를 찾을 수 없습니다: " + currentUsername));
+
+        // 2. 삭제할 카페 정보를 조회합니다.
+        Cafe cafe = cafeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Cafe not found: " + id));
+
+        // 3. 권한을 확인합니다. (관리자 또는 카페 소유주인지 확인)
+        boolean isAdmin = currentUser.getRoleKind() == RoleKind.ADMIN;
+        boolean isOwner = cafe.getOwner() != null && cafe.getOwner().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isOwner) {
+            throw new AccessDeniedException("이 카페를 삭제할 권한이 없습니다.");
+        }
+
+        // 4. 권한이 확인되면 카페를 삭제합니다.
+        // ON DELETE CASCADE 설정 덕분에 관련된 자식 데이터도 모두 자동 삭제됩니다.
         cafeRepository.deleteById(id);
-        // 필요 시 파일 스토리지 정리: fileStorageService.delete("cafes/" + id);
+
+        // (선택) 파일 스토리지의 관련 파일도 삭제하려면 아래 주석을 해제하세요.
+        // fileStorageService.delete("cafes/" + id);
     }
 
     /* =========================

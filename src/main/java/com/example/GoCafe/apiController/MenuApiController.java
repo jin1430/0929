@@ -36,13 +36,13 @@ public class MenuApiController {
         return service.findById(id);
     }
 
-    @PostMapping
-    public ResponseEntity<Menu> create(@RequestBody @Valid Menu body, UriComponentsBuilder uriBuilder) {
-        Menu saved = service.create(body);
-        Object id = EntityIdUtil.getId(saved);
-        URI location = uriBuilder.path("/api/menus/{id}").buildAndExpand(id).toUri();
-        return ResponseEntity.created(location).body(saved);
-    }
+//    @PostMapping
+//    public ResponseEntity<Menu> create(@RequestBody @Valid Menu body, UriComponentsBuilder uriBuilder) {
+//        Menu saved = service.create(body);
+//        Object id = EntityIdUtil.getId(saved);
+//        URI location = uriBuilder.path("/api/menus/{id}").buildAndExpand(id).toUri();
+//        return ResponseEntity.created(location).body(saved);
+//    }
 
     @PutMapping("/{id}")
     public Menu update(@PathVariable Long id, @RequestBody @Valid Menu body) {

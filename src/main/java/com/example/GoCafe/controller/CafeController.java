@@ -1,5 +1,9 @@
 package com.example.GoCafe.controller;
 
+import com.example.GoCafe.domain.RoleKind;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; // import 문 추가 확인
+import org.springframework.security.access.AccessDeniedException; // import 문 추가
+
 import com.example.GoCafe.domain.CafeStatus;
 import com.example.GoCafe.dto.CafeCardForm;
 import com.example.GoCafe.dto.CafeForm;
@@ -140,6 +144,7 @@ public class CafeController {
             }
         } catch (ReflectiveOperationException ignored) {}
 
+        // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분을 원래 코드로 되돌립니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
         // 5) CafeInfo 주입
         var cafeInfoOpt = cafeInfoService.findByCafeId(cafeId);
         if (cafeInfoOpt.isPresent()) {
@@ -153,19 +158,33 @@ public class CafeController {
         } else {
             model.addAttribute("info", false);
         }
-
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 복구 끝 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
         // 6) 사진 갤러리
+//        var photoList = cafePhotoService.list(cafeId).stream()
+//                .map(p -> new LinkedHashMap<String, Object>() {{
+//                    put("cafePhotoUrl", p.getUrl());
+//                    put("limit4", false);
+//                }})
+//                .toList();
+//        for (int i = 0; i < Math.min(4, photoList.size()); i++) {
+//            photoList.get(i).put("limit4", true);
+//        }
+//        model.addAttribute("cafePhotos", photoList);
         var photoList = cafePhotoService.list(cafeId).stream()
-                .map(p -> new LinkedHashMap<String, Object>() {{
-                    put("cafePhotoUrl", p.getUrl());
-                    put("limit4", false);
-                }})
+                .map(p -> {
+                    Map<String, Object> photoMap = new LinkedHashMap<>();
+                    photoMap.put("id", p.getId()); // <-- id 추가
+                    photoMap.put("cafePhotoUrl", p.getUrl());
+                    photoMap.put("isMain", p.getIsMain()); // <-- isMain 추가
+                    photoMap.put("limit4", false);
+                    return photoMap;
+                })
                 .toList();
+
         for (int i = 0; i < Math.min(4, photoList.size()); i++) {
             photoList.get(i).put("limit4", true);
         }
         model.addAttribute("cafePhotos", photoList);
-
         // 7) 메뉴
         var menus = menuService.findByCafeId(cafeId);
         var nf = NumberFormat.getNumberInstance(Locale.KOREA);
@@ -204,6 +223,7 @@ public class CafeController {
             }
 
             var map = new LinkedHashMap<String, Object>();
+            map.put("id", m.getId()); // <-- 이 줄을 추가합니다!
             map.put("menuName",  name);
             map.put("menuPrice", priceText);
             map.put("menuPhoto", (photo != null && !photo.isBlank()) ? photo : "/images/placeholder-cafe.jpg");
@@ -307,7 +327,9 @@ public class CafeController {
         cafeInfoService.upsertByCafeId(cafeId, entity);
 
         ra.addFlashAttribute("msg", "영업 정보가 저장되었습니다.");
-        return "redirect:/cafes/" + cafeId + "#info";
+        // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼ 이 부분을 수정합니다 ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+        return "redirect:/cafes/" + cafeId; // 기존: "redirect:/cafes/" + cafeId + "#info";
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ 수정 끝 ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
     }
 
     // ----- 목록 페이지 -----
@@ -421,5 +443,81 @@ public class CafeController {
 
         return "cafes/find";
     }
+    /**
+     * 카페 삭제 처리
+     */
+    @PostMapping("/{cafeId}/delete")
+    @PreAuthorize("isAuthenticated()")
+    public String deleteCafe(@PathVariable Long cafeId,
+                             RedirectAttributes ra) {
+        try {
+            // 서비스의 delete 메서드를 파라미터 없이 호출합니다.
+            cafeService.delete(cafeId);
+            ra.addFlashAttribute("msg", "카페가 성공적으로 삭제되었습니다.");
+            return "redirect:/"; // 삭제 후 메인 페이지로 이동
+        } catch (AccessDeniedException e) {
+            // 권한이 없는 경우
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/cafes/" + cafeId;
+        } catch (NotFoundException e) {
+            // 카페가 없는 경우
+            ra.addFlashAttribute("error", "존재하지 않는 카페입니다.");
+            return "redirect:/";
+        }
+    }
+    /**
+     * 카페 수정 폼 페이지
+     */
+    @GetMapping("/{cafeId}/edit")
+    @PreAuthorize("isAuthenticated()")
+    public String editCafeForm(@PathVariable Long cafeId, Authentication auth, Model model, RedirectAttributes ra) {
+        Cafe cafe = cafeService.findById(cafeId);
+        Member currentUser = memberService.findByEmail(auth.getName());
 
+        // 권한 확인 (관리자 또는 점주)
+        boolean isAdmin = currentUser.getRoleKind() == RoleKind.ADMIN;
+        boolean isOwner = cafe.getOwner() != null && cafe.getOwner().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isOwner) {
+            ra.addFlashAttribute("error", "이 카페를 수정할 권한이 없습니다.");
+            return "redirect:/cafes/" + cafeId;
+        }
+
+        model.addAttribute("cafe", cafe);
+        return "cafes/edit";
+    }
+
+    /**
+     * 카페 수정 처리
+     */
+    @PostMapping("/{cafeId}/edit")
+    @PreAuthorize("isAuthenticated()")
+    public String editCafe(@PathVariable Long cafeId,
+                           @ModelAttribute @Valid CafeForm form,
+                           Authentication auth,
+                           RedirectAttributes ra) {
+
+        // 권한 확인 (서비스 레이어에서도 확인하지만, 컨트롤러에서도 1차 확인)
+        Cafe existingCafe = cafeService.findById(cafeId);
+        Member currentUser = memberService.findByEmail(auth.getName());
+        boolean isAdmin = currentUser.getRoleKind() == RoleKind.ADMIN;
+        boolean isOwner = existingCafe.getOwner() != null && existingCafe.getOwner().getId().equals(currentUser.getId());
+
+        if (!isAdmin && !isOwner) {
+            ra.addFlashAttribute("error", "수정 권한이 없습니다.");
+            return "redirect:/cafes/" + cafeId;
+        }
+
+        try {
+            // CafeForm을 Cafe 엔티티로 변환하여 update 메서드에 전달
+            Cafe patch = form.toEntity();
+            cafeService.update(cafeId, patch);
+            ra.addFlashAttribute("msg", "카페 정보가 성공적으로 수정되었습니다.");
+        } catch (IllegalArgumentException e) {
+            ra.addFlashAttribute("error", e.getMessage());
+            return "redirect:/cafes/" + cafeId + "/edit"; // 수정 실패 시 다시 수정 폼으로
+        }
+
+        return "redirect:/cafes/" + cafeId; // 수정 성공 시 상세 페이지로
+    }
 }
